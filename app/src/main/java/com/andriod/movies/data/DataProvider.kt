@@ -5,7 +5,7 @@ import java.util.HashSet
 
 abstract class DataProvider {
     private var subscribers: MutableSet<Runnable> = HashSet()
-    protected val data: MutableMap<String, Movie> = HashMap()
+    val data: MutableMap<String, Movie> = HashMap()
 
     protected fun notifySubscribers() {
         for (subscriber in subscribers) {

@@ -1,18 +1,20 @@
 package com.andriod.movies.entity
 
+import com.google.gson.annotations.SerializedName
+
 data class Movie(
-    val id: String,
-    val title: String,
-    val year: Int,
-    val rated: String,
-    val runtime: String,
-    val genre: String,
-    val director: String,
-    val actors: String,
-    val plot: String,
-    val posters: String,
+    @SerializedName("imdbID") val id: String,
+    @SerializedName("Title") val title: String,
+    @SerializedName("Year") val year: Int,
+    @SerializedName("Rated") val rated: String,
+    @SerializedName("Runtime") val runtime: String,
+    @SerializedName("Genre") val genre: String,
+    @SerializedName("Director") val director: String,
+    @SerializedName("Actors") val actors: String,
+    @SerializedName("Plot") val plot: String,
+    @SerializedName("Poster") val poster: String,
     val imdbRating: String,
     val imdbVotes: String,
-    val boxOffice: String,
-    val type: String
+    @SerializedName("BoxOffice") val boxOffice: String,
+    @SerializedName("Type") val type: String,
 )
