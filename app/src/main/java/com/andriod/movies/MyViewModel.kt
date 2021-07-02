@@ -10,11 +10,10 @@ object MyViewModel {
     fun getData() {
         if (movies.value?.isEmpty() != false) {
             movies.value = HashMap()
-            val dummy = DummyDataProvider()
-            movies.value?.putAll(dummy.data)
 
-            for (movie in dummy.findMovies("")) {
-                movies.value?.put(movie.id, movie)
+            val dummy = DummyDataProvider()
+            dummy.subscribe {
+                movies.value = dummy.data
             }
         }
     }

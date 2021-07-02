@@ -1,6 +1,7 @@
 package com.andriod.movies.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,7 +31,11 @@ class ListFragment : Fragment() {
 
     private fun configureRecyclerView() {
         adapter = ListAdapter()
-        adapter.movies = MyViewModel.movies.value?.values?.toList() ?: ArrayList()
+        MyViewModel.movies.observe(viewLifecycleOwner) {
+            Log.d(TAG, "configureRecyclerView():observation called: size= ${it.values.size}")
+            adapter.movies = it.values.toList()
+        }
+
         binding?.recyclerView?.layoutManager = LinearLayoutManager(context)
         binding?.recyclerView?.adapter = adapter
     }
@@ -38,5 +43,9 @@ class ListFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         binding = null
+    }
+
+    companion object {
+        private const val TAG = "@@ListFragment"
     }
 }

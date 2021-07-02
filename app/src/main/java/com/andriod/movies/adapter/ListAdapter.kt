@@ -11,6 +11,7 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.ViewHolder>() {
     private val TAG: String = "@@ListAdapter"
     var movies: List<Movie> = ArrayList()
         set(value) {
+            Log.d(TAG, "movies: size = ${movies.size}")
             field = value
             notifyDataSetChanged()
         }
@@ -30,7 +31,6 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.ViewHolder>() {
 
     inner class ViewHolder(private val binding: ItemMovieBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(movie: Movie) {
-            Log.d(TAG, "bind() called with: movie = $movie")
             binding.textViewTitle.text = movie.title
         }
     }
