@@ -8,11 +8,14 @@ object MyViewModel {
     val movies = MutableLiveData<MutableMap<String, Movie>>()
 
     fun getData() {
-        val dummy = DummyDataProvider()
-        movies.value?.putAll(dummy.data)
+        if (movies.value?.isEmpty() != false) {
+            movies.value = HashMap()
+            val dummy = DummyDataProvider()
+            movies.value?.putAll(dummy.data)
 
-        for (movie in dummy.findMovies("")) {
-            movies.value?.put(movie.id, movie)
+            for (movie in dummy.findMovies("")) {
+                movies.value?.put(movie.id, movie)
+            }
         }
     }
 }
