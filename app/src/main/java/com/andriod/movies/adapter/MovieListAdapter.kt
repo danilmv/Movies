@@ -7,8 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.andriod.movies.databinding.ItemMovieBinding
 import com.andriod.movies.entity.Movie
 
-class ListAdapter : RecyclerView.Adapter<ListAdapter.ViewHolder>() {
-    private val TAG: String = "@@ListAdapter"
+class MovieListAdapter : RecyclerView.Adapter<MovieListAdapter.ViewHolder>() {
     var movies: List<Movie> = ArrayList()
         set(value) {
             Log.d(TAG, "movies: size = ${movies.size}")
@@ -33,5 +32,9 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.ViewHolder>() {
         fun bind(movie: Movie) {
             binding.textViewTitle.text = movie.title
         }
+    }
+
+    companion object{
+        private const val TAG: String = "@@ListAdapter"
     }
 }

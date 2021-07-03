@@ -7,7 +7,7 @@ import com.andriod.movies.entity.Movie
 object MyViewModel {
     val movies = MutableLiveData<MutableMap<String, Movie>>()
 
-    fun getData() {
+    fun initData() {
         if (movies.value?.isEmpty() != false) {
             movies.value = HashMap()
 

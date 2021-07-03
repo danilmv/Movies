@@ -20,7 +20,7 @@ abstract class DataProvider {
         subscribers.add(subscriber)
     }
 
-    fun unSubscribe(subscriber: Runnable) {
+    fun unsubscribe(subscriber: Runnable) {
         subscribers.remove(subscriber)
     }
 

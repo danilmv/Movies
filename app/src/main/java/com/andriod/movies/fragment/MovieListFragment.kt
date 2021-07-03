@@ -8,12 +8,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.andriod.movies.MyViewModel
-import com.andriod.movies.adapter.ListAdapter
+import com.andriod.movies.adapter.MovieListAdapter
 import com.andriod.movies.databinding.FragmentListBinding
 
-class ListFragment : Fragment() {
+class MovieListFragment : Fragment() {
     private var binding: FragmentListBinding? = null
-    private lateinit var adapter: ListAdapter
+    private lateinit var adapterMovie: MovieListAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,14 +30,14 @@ class ListFragment : Fragment() {
     }
 
     private fun configureRecyclerView() {
-        adapter = ListAdapter()
+        adapterMovie = MovieListAdapter()
         MyViewModel.movies.observe(viewLifecycleOwner) {
             Log.d(TAG, "configureRecyclerView():observation called: size= ${it.values.size}")
-            adapter.movies = it.values.toList()
+            adapterMovie.movies = it.values.toList()
         }
 
         binding?.recyclerView?.layoutManager = LinearLayoutManager(context)
-        binding?.recyclerView?.adapter = adapter
+        binding?.recyclerView?.adapter = adapterMovie
     }
 
     override fun onDestroyView() {

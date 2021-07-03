@@ -19,8 +19,8 @@ class DummyDataProvider : DataProvider() {
 
         val searchResult: SearchResults = gson.fromJson(SEARCH_RESULT, searchResultsType)
         Thread() {
-            for (movie2 in searchResult.search) {
-                data[movie2.id] = movie2
+            for (searchedMovie in searchResult.search) {
+                data[searchedMovie.id] = searchedMovie
                 Log.d(TAG, "data changed: size=${data.size}")
                 notifySubscribers()
                 sleep(1000)
