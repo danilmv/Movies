@@ -7,17 +7,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.andriod.movies.MovieListView
 import com.andriod.movies.MyViewModel
 import com.andriod.movies.adapter.MovieListAdapter
 import com.andriod.movies.databinding.FragmentListBinding
 import com.andriod.movies.entity.Movie
 
-class MovieListFragment : Fragment(), MovieListAdapter.OnItemClickListener {
+class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
     private var binding: FragmentListBinding? = null
-    private lateinit var adapterMovie: MovieListAdapter
 
     private val contract: MovieListContract?
         get() = activity as MovieListContract?
@@ -33,20 +30,20 @@ class MovieListFragment : Fragment(), MovieListAdapter.OnItemClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        configureRecyclerView()
+        configureContent()
     }
 
-    private fun configureRecyclerView() {
-        val movieList1 = MovieListView(context)
-        val movieList2 = MovieListView(context)
+    private fun configureContent() {
+        val movieListMovies = MovieListView(context, "Movies", this) { movie -> movie.type == "movie" }
+        val movieListSeries = MovieListView(context, "Series", this) { movie -> movie.type == "series" }
         MyViewModel.movies.observe(viewLifecycleOwner) {
             Log.d(TAG, "configureRecyclerView():observation called: size= ${it.values.size}")
-            movieList1.setData(it.values.toList())
-            movieList2.setData(it.values.toList())
+            movieListMovies.setData(it.values.toList())
+            movieListSeries.setData(it.values.toList())
         }
 
-        binding?.container?.addView(movieList1)
-        binding?.container?.addView(movieList2)
+        binding?.container?.addView(movieListMovies)
+        binding?.container?.addView(movieListSeries)
     }
 
     override fun onDestroyView() {

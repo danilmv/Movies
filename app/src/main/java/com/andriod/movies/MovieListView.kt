@@ -11,9 +11,14 @@ import com.andriod.movies.databinding.MovieListViewBinding
 import com.andriod.movies.entity.Movie
 
 
-class MovieListView : LinearLayout {
+typealias MyPredicate = (Movie) -> Boolean
+
+class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener {
     private lateinit var binding: MovieListViewBinding
     private lateinit var adapterMovie: MovieListAdapter
+    private var title: String? = null
+    private var filter: MyPredicate = { false }
+    private var listener: OnItemClickListener? = null
 
     constructor(context: Context?) : super(context) {
         initView(context)
@@ -29,6 +34,14 @@ class MovieListView : LinearLayout {
         initView(context)
     }
 
+    constructor(context: Context?, title: String, listener: OnItemClickListener, filter: MyPredicate) : super(context) {
+        this.title = title
+        this.filter = filter
+        this.listener = listener
+
+        initView(context)
+    }
+
     private fun initView(context: Context?) {
         binding = MovieListViewBinding.inflate(LayoutInflater.from(context), this, true)
 
@@ -37,15 +50,24 @@ class MovieListView : LinearLayout {
 
     private fun configureRecyclerView() {
         adapterMovie = MovieListAdapter()
+        adapterMovie.listener = this
 
         binding.recyclerView.layoutManager =
             LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
         binding.recyclerView.adapter = adapterMovie
 
-        binding.textViewHeader.text = "Movies"
+        title?.let { binding.textViewHeader.text = title }
     }
 
-    fun setData(movies: List<Movie>){
-        adapterMovie.movies = movies
+    fun setData(movies: List<Movie>) {
+        adapterMovie.movies = movies.filter(filter)
+    }
+
+    interface OnItemClickListener {
+        fun onItemClick(movie: Movie)
+    }
+
+    override fun onItemClick(movie: Movie) {
+        listener?.onItemClick(movie)
     }
 }
