@@ -15,6 +15,8 @@ class MovieListAdapter : RecyclerView.Adapter<MovieListAdapter.ViewHolder>() {
             notifyDataSetChanged()
         }
 
+    var listener: OnItemClickListener? = null
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(ItemMovieBinding.inflate(LayoutInflater.from(parent.context)))
     }
@@ -28,13 +30,25 @@ class MovieListAdapter : RecyclerView.Adapter<MovieListAdapter.ViewHolder>() {
         return movies.size
     }
 
-    inner class ViewHolder(private val binding: ItemMovieBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class ViewHolder(private val binding: ItemMovieBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        private lateinit var movie: Movie
+
+        init {
+            itemView.setOnClickListener { listener?.onItemClick(movie) }
+        }
+
         fun bind(movie: Movie) {
+            this.movie = movie
             binding.textViewTitle.text = movie.title
         }
     }
 
-    companion object{
+    companion object {
         private const val TAG: String = "@@ListAdapter"
+    }
+
+    interface OnItemClickListener {
+        fun onItemClick(movie: Movie)
     }
 }

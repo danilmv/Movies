@@ -1,5 +1,6 @@
 package com.andriod.movies.fragment
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,10 +11,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.andriod.movies.MyViewModel
 import com.andriod.movies.adapter.MovieListAdapter
 import com.andriod.movies.databinding.FragmentListBinding
+import com.andriod.movies.entity.Movie
 
-class MovieListFragment : Fragment() {
+class MovieListFragment : Fragment(), MovieListAdapter.OnItemClickListener {
     private var binding: FragmentListBinding? = null
     private lateinit var adapterMovie: MovieListAdapter
+
+    private val contract: MovieListContract?
+        get() = activity as MovieListContract?
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,6 +40,7 @@ class MovieListFragment : Fragment() {
             Log.d(TAG, "configureRecyclerView():observation called: size= ${it.values.size}")
             adapterMovie.movies = it.values.toList()
         }
+        adapterMovie.listener = this
 
         binding?.recyclerView?.layoutManager = LinearLayoutManager(context)
         binding?.recyclerView?.adapter = adapterMovie
@@ -47,5 +53,18 @@ class MovieListFragment : Fragment() {
 
     companion object {
         private const val TAG = "@@ListFragment"
+    }
+
+    interface MovieListContract {
+        fun changeMovie(movie: Movie)
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        check(context is MovieListContract) { "Activity must implement MovieListContract" }
+    }
+
+    override fun onItemClick(movie: Movie) {
+        contract?.changeMovie(movie)
     }
 }

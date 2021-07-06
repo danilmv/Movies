@@ -1,7 +1,10 @@
 package com.andriod.movies.entity
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class Movie(
     @SerializedName("imdbID") val id: String,
     @SerializedName("Title") val title: String,
@@ -17,4 +20,4 @@ data class Movie(
     val imdbVotes: String,
     @SerializedName("BoxOffice") val boxOffice: String,
     @SerializedName("Type") val type: String,
-)
+) : Parcelable
