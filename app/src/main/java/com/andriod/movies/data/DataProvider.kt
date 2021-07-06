@@ -4,9 +4,10 @@ import android.os.Handler
 import android.os.Looper
 import com.andriod.movies.entity.Movie
 import java.util.HashSet
+typealias Subscriber = (() -> Unit)
 
 abstract class DataProvider {
-    private var subscribers: MutableSet<Runnable> = HashSet()
+    private var subscribers: MutableSet<Subscriber> = HashSet()
     val data: MutableMap<String, Movie> = HashMap()
     private val handler = Handler(Looper.getMainLooper())
 
@@ -16,11 +17,11 @@ abstract class DataProvider {
         }
     }
 
-    fun subscribe(subscriber: Runnable) {
+    fun subscribe(subscriber: Subscriber) {
         subscribers.add(subscriber)
     }
 
-    fun unsubscribe(subscriber: Runnable) {
+    fun unsubscribe(subscriber: Subscriber) {
         subscribers.remove(subscriber)
     }
 
