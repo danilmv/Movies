@@ -1,8 +1,11 @@
 package com.andriod.movies
 
 import android.content.res.Configuration
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import com.andriod.movies.entity.Movie
 import com.andriod.movies.fragment.MovieFragment
 import com.andriod.movies.fragment.MovieListFragment
@@ -60,5 +63,22 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract {
                 .replace(R.id.main_container, MovieFragment.newInstance(movie))
                 .commit()
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        val searchView = menu.findItem(R.id.menu_main_item_search).actionView as SearchView
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                Toast.makeText(this@MainActivity, "Searching for: $query...", Toast.LENGTH_SHORT)
+                    .show()
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                return true
+            }
+        })
+        return true
     }
 }
