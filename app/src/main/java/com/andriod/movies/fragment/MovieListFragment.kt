@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.andriod.movies.MovieListView
 import com.andriod.movies.MyViewModel
 import com.andriod.movies.adapter.MovieListAdapter
 import com.andriod.movies.databinding.FragmentListBinding
@@ -36,17 +37,16 @@ class MovieListFragment : Fragment(), MovieListAdapter.OnItemClickListener {
     }
 
     private fun configureRecyclerView() {
-        adapterMovie = MovieListAdapter()
+        val movieList1 = MovieListView(context)
+        val movieList2 = MovieListView(context)
         MyViewModel.movies.observe(viewLifecycleOwner) {
             Log.d(TAG, "configureRecyclerView():observation called: size= ${it.values.size}")
-            adapterMovie.movies = it.values.toList()
+            movieList1.setData(it.values.toList())
+            movieList2.setData(it.values.toList())
         }
-        adapterMovie.listener = this
 
-        binding?.recyclerView?.layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
-        binding?.recyclerView?.adapter = adapterMovie
-
-        binding?.textViewHeader?.text = "Movies"
+        binding?.container?.addView(movieList1)
+        binding?.container?.addView(movieList2)
     }
 
     override fun onDestroyView() {
