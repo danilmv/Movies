@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.andriod.movies.MyViewModel
 import com.andriod.movies.adapter.MovieListAdapter
 import com.andriod.movies.databinding.FragmentListBinding
@@ -42,8 +43,10 @@ class MovieListFragment : Fragment(), MovieListAdapter.OnItemClickListener {
         }
         adapterMovie.listener = this
 
-        binding?.recyclerView?.layoutManager = LinearLayoutManager(context)
+        binding?.recyclerView?.layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
         binding?.recyclerView?.adapter = adapterMovie
+
+        binding?.textViewHeader?.text = "Movies"
     }
 
     override fun onDestroyView() {

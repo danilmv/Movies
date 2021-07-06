@@ -41,6 +41,8 @@ class MovieListAdapter : RecyclerView.Adapter<MovieListAdapter.ViewHolder>() {
         fun bind(movie: Movie) {
             this.movie = movie
             binding.textViewTitle.text = movie.title
+            binding.textViewRating.text = movie.imdbRating
+            binding.textViewYear.text = movie.year
         }
     }
 
