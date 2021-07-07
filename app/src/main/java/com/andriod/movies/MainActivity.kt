@@ -2,6 +2,7 @@ package com.andriod.movies
 
 import android.content.res.Configuration
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -60,12 +61,10 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract {
     }
 
     override fun changeMovie(movie: Movie) {
-        if (!isLandscape) {
-            supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.main_container, MovieFragment.newInstance(movie))
-                .commit()
-        }
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.main_container, MovieFragment.newInstance(movie))
+            .commit()
     }
 
     override fun onMovieChanged(movie: Movie) {
@@ -87,5 +86,14 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract {
             }
         })
         return true
+    }
+
+    override fun onResume() {
+        super.onResume()
+        setBottomView(R.id.menu_bottom_item_list)
+    }
+
+    private fun setBottomView(bottomItemId: Int) {
+        bottomNavigationView.menu.findItem(bottomItemId)?.isChecked = true
     }
 }
