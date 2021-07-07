@@ -1,6 +1,5 @@
 package com.andriod.movies.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -10,7 +9,6 @@ import com.andriod.movies.entity.Movie
 class MovieListAdapter : RecyclerView.Adapter<MovieListAdapter.ViewHolder>() {
     var movies: List<Movie> = ArrayList()
         set(value) {
-            Log.d(TAG, "movies: size = ${movies.size}")
             field = value
             notifyDataSetChanged()
         }
@@ -26,23 +24,31 @@ class MovieListAdapter : RecyclerView.Adapter<MovieListAdapter.ViewHolder>() {
     }
 
     override fun getItemCount(): Int {
-        Log.d(TAG, "getItemCount() called: list.size=${movies.size}")
         return movies.size
     }
 
     inner class ViewHolder(private val binding: ItemMovieBinding) :
         RecyclerView.ViewHolder(binding.root) {
         private lateinit var movie: Movie
+        private var isBindingInProgress = false
 
         init {
             itemView.setOnClickListener { listener?.onItemClick(movie) }
+
+            binding.toggleFavorite.setOnCheckedChangeListener { _, isChecked: Boolean ->
+                movie.isFavorite = isChecked
+                if (!isBindingInProgress) listener?.onFavoriteChanged(movie)
+            }
         }
 
         fun bind(movie: Movie) {
+            isBindingInProgress = true
             this.movie = movie
             binding.textViewTitle.text = movie.title
             binding.textViewRating.text = movie.imdbRating
             binding.textViewYear.text = movie.year
+            binding.toggleFavorite.isChecked = movie.isFavorite
+            isBindingInProgress = false
         }
     }
 
@@ -52,5 +58,6 @@ class MovieListAdapter : RecyclerView.Adapter<MovieListAdapter.ViewHolder>() {
 
     interface OnItemClickListener {
         fun onItemClick(movie: Movie)
+        fun onFavoriteChanged(movie: Movie)
     }
 }

@@ -47,12 +47,15 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract {
     }
 
     private fun showSettings() {
+        Toast.makeText(this, "Configuration is about to be done :)", Toast.LENGTH_SHORT).show()
     }
 
     private fun showList(showFavorites: Boolean) {
+        val fragment = MovieListFragment()
+        fragment.showFavorites = showFavorites
         supportFragmentManager
             .beginTransaction()
-            .replace(R.id.main_container, MovieListFragment())
+            .replace(R.id.main_container, fragment)
             .commit()
     }
 
@@ -63,6 +66,10 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract {
                 .replace(R.id.main_container, MovieFragment.newInstance(movie))
                 .commit()
         }
+    }
+
+    override fun onMovieChanged(movie: Movie) {
+        MyViewModel.updateData(movie)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

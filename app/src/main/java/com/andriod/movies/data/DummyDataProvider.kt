@@ -36,6 +36,8 @@ class DummyDataProvider : DataProvider() {
     }
 
     override fun updateData(movie: Movie) {
+        Log.d(TAG, "updateData() called with: movie = $movie")
+        notifySubscribers()
     }
 
     override fun findMovies(query: String): List<Movie> {

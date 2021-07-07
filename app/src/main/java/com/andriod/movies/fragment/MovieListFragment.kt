@@ -9,12 +9,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.andriod.movies.MovieListView
 import com.andriod.movies.MyViewModel
-import com.andriod.movies.adapter.MovieListAdapter
+import com.andriod.movies.R
 import com.andriod.movies.databinding.FragmentListBinding
 import com.andriod.movies.entity.Movie
+import javax.xml.transform.TransformerConfigurationException
 
 class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
     private var binding: FragmentListBinding? = null
+    var showFavorites = false
 
     private val contract: MovieListContract?
         get() = activity as MovieListContract?
@@ -34,8 +36,14 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
     }
 
     private fun configureContent() {
-        val movieListMovies = MovieListView(context, "Movies", this) { movie -> movie.type == "movie" }
-        val movieListSeries = MovieListView(context, "Series", this) { movie -> movie.type == "series" }
+        val movieListMovies = MovieListView(context,
+            getString(R.string.list_title_movies),
+            this) { movie -> movie.type == TYPE_MOVIE && (movie.isFavorite || !showFavorites) }
+        val movieListSeries =
+            MovieListView(context,
+                getString(R.string.list_title_series),
+                this) { movie -> movie.type == TYPE_SERIES && (movie.isFavorite || !showFavorites) }
+
         MyViewModel.movies.observe(viewLifecycleOwner) {
             Log.d(TAG, "configureRecyclerView():observation called: size= ${it.values.size}")
             movieListMovies.setData(it.values.toList())
@@ -53,10 +61,13 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
 
     companion object {
         private const val TAG = "@@ListFragment"
+        private const val TYPE_MOVIE = "movie"
+        private const val TYPE_SERIES = "series"
     }
 
     interface MovieListContract {
         fun changeMovie(movie: Movie)
+        fun onMovieChanged(movie: Movie)
     }
 
     override fun onAttach(context: Context) {
@@ -66,5 +77,9 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
 
     override fun onItemClick(movie: Movie) {
         contract?.changeMovie(movie)
+    }
+
+    override fun onFavoriteChanged(movie: Movie) {
+        contract?.onMovieChanged(movie)
     }
 }

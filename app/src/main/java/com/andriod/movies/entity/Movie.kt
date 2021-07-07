@@ -20,4 +20,5 @@ data class Movie(
     val imdbVotes: String,
     @SerializedName("BoxOffice") val boxOffice: String,
     @SerializedName("Type") val type: String,
+    var isFavorite:Boolean = false,
 ) : Parcelable

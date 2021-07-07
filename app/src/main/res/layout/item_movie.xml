@@ -15,20 +15,34 @@
         android:orientation="vertical"
         android:background="@color/teal_700">
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/image_view_poster"
-            android:layout_width="100dp"
+        <FrameLayout
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="2"
+            android:background="@color/purple_200"
             android:layout_marginStart="@dimen/item_margin"
             android:layout_marginEnd="@dimen/item_margin"
-            android:layout_marginTop="@dimen/item_margin"
-            android:background="@color/purple_200"
-            android:scaleType="center" />
+            android:layout_marginTop="@dimen/item_margin">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/image_view_poster"
+                android:layout_width="@dimen/item_poster_size"
+                android:layout_height="match_parent"
+                android:scaleType="center" />
+
+            <ToggleButton
+                android:id="@+id/toggle_favorite"
+                android:layout_width="@dimen/item_toggle_size"
+                android:layout_height="@dimen/item_toggle_size"
+                android:layout_gravity="end"
+                android:background="@drawable/toggle_favorite"
+                android:textOn=""
+                android:textOff=""/>
+        </FrameLayout>
 
         <TextView
             android:id="@+id/text_view_title"
-            android:layout_width="100dp"
+            android:layout_width="@dimen/item_poster_size"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:layout_marginStart="@dimen/item_margin"

@@ -34,7 +34,12 @@ class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener {
         initView(context)
     }
 
-    constructor(context: Context?, title: String, listener: OnItemClickListener, filter: MyPredicate) : super(context) {
+    constructor(
+        context: Context?,
+        title: String,
+        listener: OnItemClickListener,
+        filter: MyPredicate,
+    ) : super(context) {
         this.title = title
         this.filter = filter
         this.listener = listener
@@ -65,9 +70,14 @@ class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener {
 
     interface OnItemClickListener {
         fun onItemClick(movie: Movie)
+        fun onFavoriteChanged(movie: Movie)
     }
 
     override fun onItemClick(movie: Movie) {
         listener?.onItemClick(movie)
+    }
+
+    override fun onFavoriteChanged(movie: Movie) {
+        listener?.onFavoriteChanged(movie)
     }
 }
