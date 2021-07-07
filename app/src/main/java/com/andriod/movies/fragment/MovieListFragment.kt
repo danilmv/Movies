@@ -12,7 +12,6 @@ import com.andriod.movies.MyViewModel
 import com.andriod.movies.R
 import com.andriod.movies.databinding.FragmentListBinding
 import com.andriod.movies.entity.Movie
-import javax.xml.transform.TransformerConfigurationException
 
 class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
     private var binding: FragmentListBinding? = null

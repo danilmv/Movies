@@ -1,13 +1,11 @@
 package com.andriod.movies.fragment
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.andriod.movies.R
-import com.andriod.movies.databinding.FragmentListBinding
 import com.andriod.movies.databinding.FragmentMovieBinding
 import com.andriod.movies.entity.Movie
 
