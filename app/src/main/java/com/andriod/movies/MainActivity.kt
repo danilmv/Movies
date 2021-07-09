@@ -9,6 +9,7 @@ import androidx.appcompat.widget.SearchView
 import com.andriod.movies.entity.Movie
 import com.andriod.movies.fragment.MovieFragment
 import com.andriod.movies.fragment.MovieListFragment
+import com.andriod.movies.fragment.SettingsFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract {
@@ -47,7 +48,10 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract {
     }
 
     private fun showSettings() {
-        Toast.makeText(this, "Configuration is about to be done :)", Toast.LENGTH_SHORT).show()
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.main_container, SettingsFragment())
+            .commit()
     }
 
     private fun showList(showFavorites: Boolean) {

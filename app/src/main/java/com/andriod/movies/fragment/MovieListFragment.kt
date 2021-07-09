@@ -37,20 +37,24 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
     private fun configureContent() {
         val groups = mutableSetOf<String?>()
         val lists = TreeSet<MovieListView>()
-        val groupMode = 0
+        var groupBy: GroupBy = GroupBy.TYPE
+
+        MyViewModel.groupBy.observe(viewLifecycleOwner) {
+            groupBy = it
+        }
 
         MyViewModel.movies.observe(viewLifecycleOwner) {
             Log.d(TAG, "configureRecyclerView():observation called: size= ${it.values.size}")
             val list = it.values.toList()
             list.forEach { movieItem ->
-                if (!groups.contains(movieItem.fieldValue(groupBy[groupMode]))) {
-                    groups.add(movieItem.fieldValue(groupBy[groupMode]))
+                if (!groups.contains(movieItem.fieldValue(groupBy))) {
+                    groups.add(movieItem.fieldValue(groupBy))
 
                     lists.add(MovieListView(context,
-                        movieItem.fieldValue(groupBy[groupMode]),
+                        movieItem.fieldValue(groupBy),
                         this@MovieListFragment)
                     { movie ->
-                        movie.fieldValue(groupBy[groupMode]) == movieItem.fieldValue(groupBy[groupMode])
+                        movie.fieldValue(groupBy) == movieItem.fieldValue(groupBy)
                                 && (movie.isFavorite || !showFavorites)
                     }
                     )
@@ -70,16 +74,13 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
 
     companion object {
         private const val TAG = "@@ListFragment"
-        private const val GROUP_BY_TYPE = "type"
-        private const val GROUP_BY_YEAR = "year"
-        private const val GROUP_BY_GENRE = "genre"
-        val groupBy = listOf(GROUP_BY_TYPE, "year", "genre")
 
-        private fun Movie.fieldValue(fieldName: String) = when (fieldName) {
-            GROUP_BY_TYPE -> this.type
-            GROUP_BY_YEAR -> this.year
-            GROUP_BY_GENRE -> this.genre
-            else -> ""
+        enum class GroupBy(val id: Int) { TYPE(0), YEAR(1), GENRE(2) }
+
+        private fun Movie.fieldValue(groupBy: GroupBy) = when (groupBy) {
+            GroupBy.TYPE -> this.type
+            GroupBy.YEAR -> this.year
+            GroupBy.GENRE -> this.genre
         }
     }
 

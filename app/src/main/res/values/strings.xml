@@ -14,4 +14,5 @@
     <string name="details_type">Type: %1$s</string>
     <string name="list_title_movies">Movies</string>
     <string name="list_title_series">Series</string>
+    <string name="settings_group_by_title">Group by:</string>
 </resources>
