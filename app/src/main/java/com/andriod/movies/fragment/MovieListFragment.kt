@@ -38,32 +38,31 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
     private fun configureContent() {
         val groups = mutableSetOf<String?>()
         val lists = TreeSet<MovieListView>()
-        var groupBy: GroupBy = GroupBy.TYPE
+        var groupByField: GroupBy = MyViewModel.groupBy.value ?: GroupBy.TYPE
 
         MyViewModel.groupBy.observe(viewLifecycleOwner) {
-            groupBy = it
+            groupByField = it
         }
 
         MyViewModel.movies.observe(viewLifecycleOwner) {
             Log.d(TAG, "configureRecyclerView():observation called: size= ${it.values.size}")
             val list = it.values.toList()
             list.forEach { movieItem ->
-                if (!groups.contains(movieItem.fieldValue(groupBy))) {
-                    groups.add(movieItem.fieldValue(groupBy))
+                if (!groups.contains(movieItem.fieldValue(groupByField))) {
+                    groups.add(movieItem.fieldValue(groupByField))
 
                     lists.add(MovieListView(context,
-                        movieItem.fieldValue(groupBy),
+                        movieItem.fieldValue(groupByField),
                         this@MovieListFragment)
                     { movie ->
-                        movie.fieldValue(groupBy) == movieItem.fieldValue(groupBy)
+                        movie.fieldValue(groupByField) == movieItem.fieldValue(groupByField)
                                 && (movie.isFavorite || !showFavorites)
                     }
                     )
-
                     binding.container.removeAllViews()
                     lists.forEach { movieListView -> binding.container.addView(movieListView) }
                 }
-                lists.forEach { v -> v.setData(list) }
+                lists.forEach { movieListView -> movieListView.setData(list) }
             }
         }
     }

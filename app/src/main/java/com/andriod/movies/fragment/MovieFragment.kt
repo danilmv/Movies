@@ -1,5 +1,6 @@
 package com.andriod.movies.fragment
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,9 @@ class MovieFragment : Fragment() {
     private var movie: Movie? = null
     private var _binding: FragmentMovieBinding? = null
     private val binding get() = _binding!!
+
+    private val contract: MovieContract?
+        get() = activity as MovieContract?
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +54,12 @@ class MovieFragment : Fragment() {
         binding.textViewYear.text = String.format(getString(R.string.details_year), movie?.year)
         binding.textViewType.text = String.format(getString(R.string.details_type), movie?.type)
         binding.toggleFavorite.isChecked = movie?.isFavorite ?: false
+        binding.toggleFavorite.setOnCheckedChangeListener { _, isChecked: Boolean ->
+            movie?.let {
+                it.isFavorite = isChecked
+                contract?.onMovieChanged(it)
+            }
+        }
     }
 
     override fun onDetach() {
@@ -67,5 +77,14 @@ class MovieFragment : Fragment() {
                     putParcelable(MOVIE_EXTRA_KEY, movie)
                 }
             }
+    }
+
+    interface MovieContract {
+        fun onMovieChanged(movie: Movie)
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        check(context is MovieContract) { "Activity must implement MovieContract" }
     }
 }

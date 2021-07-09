@@ -12,7 +12,7 @@ import com.andriod.movies.fragment.MovieListFragment
 import com.andriod.movies.fragment.SettingsFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract {
+class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract, MovieFragment.MovieContract {
     private var isLandscape = false
     private lateinit var bottomNavigationView: BottomNavigationView
 
