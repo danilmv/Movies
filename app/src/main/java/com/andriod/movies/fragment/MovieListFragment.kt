@@ -9,9 +9,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.andriod.movies.MovieListView
 import com.andriod.movies.MyViewModel
-import com.andriod.movies.R
 import com.andriod.movies.databinding.FragmentListBinding
 import com.andriod.movies.entity.Movie
+import java.util.*
 
 class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
     private var binding: FragmentListBinding? = null
@@ -35,22 +35,32 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
     }
 
     private fun configureContent() {
-        val movieListMovies = MovieListView(context,
-            getString(R.string.list_title_movies),
-            this) { movie -> movie.type == TYPE_MOVIE && (movie.isFavorite || !showFavorites) }
-        val movieListSeries =
-            MovieListView(context,
-                getString(R.string.list_title_series),
-                this) { movie -> movie.type == TYPE_SERIES && (movie.isFavorite || !showFavorites) }
+        val groups = mutableSetOf<String?>()
+        val lists = TreeSet<MovieListView>()
+        val groupMode = 0
 
         MyViewModel.movies.observe(viewLifecycleOwner) {
             Log.d(TAG, "configureRecyclerView():observation called: size= ${it.values.size}")
-            movieListMovies.setData(it.values.toList())
-            movieListSeries.setData(it.values.toList())
-        }
+            val list = it.values.toList()
+            list.forEach { movieItem ->
+                if (!groups.contains(movieItem.fieldValue(groupBy[groupMode]))) {
+                    groups.add(movieItem.fieldValue(groupBy[groupMode]))
 
-        binding?.container?.addView(movieListMovies)
-        binding?.container?.addView(movieListSeries)
+                    lists.add(MovieListView(context,
+                        movieItem.fieldValue(groupBy[groupMode]),
+                        this@MovieListFragment)
+                    { movie ->
+                        movie.fieldValue(groupBy[groupMode]) == movieItem.fieldValue(groupBy[groupMode])
+                                && (movie.isFavorite || !showFavorites)
+                    }
+                    )
+
+                    binding?.container?.removeAllViews()
+                    lists.forEach { movieListView -> binding?.container?.addView(movieListView) }
+                }
+                lists.forEach { v -> v.setData(list) }
+            }
+        }
     }
 
     override fun onDestroyView() {
@@ -60,8 +70,17 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
 
     companion object {
         private const val TAG = "@@ListFragment"
-        private const val TYPE_MOVIE = "movie"
-        private const val TYPE_SERIES = "series"
+        private const val GROUP_BY_TYPE = "type"
+        private const val GROUP_BY_YEAR = "year"
+        private const val GROUP_BY_GENRE = "genre"
+        val groupBy = listOf(GROUP_BY_TYPE, "year", "genre")
+
+        private fun Movie.fieldValue(fieldName: String) = when (fieldName) {
+            GROUP_BY_TYPE -> this.type
+            GROUP_BY_YEAR -> this.year
+            GROUP_BY_GENRE -> this.genre
+            else -> ""
+        }
     }
 
     interface MovieListContract {
