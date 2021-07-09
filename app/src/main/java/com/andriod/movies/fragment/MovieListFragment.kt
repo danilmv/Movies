@@ -9,12 +9,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.andriod.movies.MovieListView
 import com.andriod.movies.MyViewModel
-import com.andriod.movies.databinding.FragmentListBinding
+import com.andriod.movies.databinding.FragmentMovieListBinding
 import com.andriod.movies.entity.Movie
 import java.util.*
 
 class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
-    private var binding: FragmentListBinding? = null
+    private var _binding: FragmentMovieListBinding? = null
+    private val binding: FragmentMovieListBinding get() = _binding!!
     var showFavorites = false
 
     private val contract: MovieListContract?
@@ -24,9 +25,9 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
-        binding = FragmentListBinding.inflate(inflater, container, false)
-        return binding?.root
+    ): View {
+        _binding = FragmentMovieListBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -59,8 +60,8 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
                     }
                     )
 
-                    binding?.container?.removeAllViews()
-                    lists.forEach { movieListView -> binding?.container?.addView(movieListView) }
+                    binding.container.removeAllViews()
+                    lists.forEach { movieListView -> binding.container.addView(movieListView) }
                 }
                 lists.forEach { v -> v.setData(list) }
             }
@@ -69,7 +70,7 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        binding = null
+        _binding = null
     }
 
     companion object {
