@@ -73,6 +73,10 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract, M
         MyViewModel.updateData(movie)
     }
 
+    override fun setTitle(title: String) {
+        this.title = "${getString(R.string.app_name)}: $title"
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         val searchView = menu.findItem(R.id.menu_main_item_search).actionView as SearchView

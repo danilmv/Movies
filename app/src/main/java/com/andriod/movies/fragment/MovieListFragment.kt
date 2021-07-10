@@ -2,14 +2,12 @@ package com.andriod.movies.fragment
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.andriod.movies.MovieListView
 import com.andriod.movies.MyViewModel
-import com.andriod.movies.R
 import com.andriod.movies.databinding.FragmentMovieListBinding
 import com.andriod.movies.entity.Movie
 import java.util.*
@@ -17,16 +15,11 @@ import java.util.*
 class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
     private var _binding: FragmentMovieListBinding? = null
     private val binding: FragmentMovieListBinding get() = _binding!!
-    private var showFavorites = false
 
     private val contract: MovieListContract?
         get() = activity as MovieListContract?
 
     var showMode: ShowMode = ShowMode.LIST
-        set(value) {
-            showFavorites = value == ShowMode.FAVORITES
-            field = value
-        }
 
     private val groups = mutableSetOf<String?>()
     private val lists = TreeSet<MovieListView>()
@@ -47,6 +40,12 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
     }
 
     private fun configureContent() {
+        when(showMode){
+            ShowMode.LIST->contract?.setTitle("List")
+            ShowMode.FAVORITES -> contract?.setTitle("Favorites")
+            ShowMode.SEARCHING -> contract?.setTitle("Search results")
+        }
+
         MyViewModel.groupBy.observe(viewLifecycleOwner) {
             groupByField = it
         }
@@ -104,6 +103,7 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
     interface MovieListContract {
         fun changeMovie(movie: Movie)
         fun onMovieChanged(movie: Movie)
+        fun setTitle(title: String)
     }
 
     override fun onAttach(context: Context) {
