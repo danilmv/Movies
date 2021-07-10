@@ -2,6 +2,7 @@ package com.andriod.movies
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.andriod.movies.data.DataProvider
 import com.andriod.movies.data.DummyDataProvider
 import com.andriod.movies.entity.Movie
 import com.andriod.movies.fragment.MovieListFragment
@@ -20,7 +21,7 @@ object MyViewModel {
         if (movies.value?.isEmpty() != false) {
             _movies.value = HashMap()
 
-            dummy.subscribe {
+            dummy.subscribe(DataProvider.Companion.SubscriberType.DATA) {
                 _movies.postValue(dummy.data)
             }
         }
@@ -31,8 +32,8 @@ object MyViewModel {
     }
 
     fun startSearching(query: String) {
-        dummy.subscribe {
-            _searchResults.postValue(dummy.searchResultsData)
+        dummy.subscribe(DataProvider.Companion.SubscriberType.SEARCH) {
+            _searchResults.value = dummy.searchResultsData
         }
         dummy.findMovies(query)
     }

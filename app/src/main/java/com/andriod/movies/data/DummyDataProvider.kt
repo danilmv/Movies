@@ -13,23 +13,25 @@ class DummyDataProvider : DataProvider() {
     private val searchResultsType: Type = object : TypeToken<SearchResults>() {}.type
     private val gson = Gson()
 
+    private var doSearch = { }
+
     init {
         val movie: Movie = gson.fromJson(QUERY_RESULT, movieType)
         data[movie.id] = movie
 
-        Thread() {
+        Thread {
             var searchResult: SearchResults = gson.fromJson(SEARCH_RESULT, searchResultsType)
             for (searchedMovie in searchResult.search) {
                 data[searchedMovie.id] = searchedMovie
                 Log.d(TAG, "data changed: size=${data.size}")
-                notifySubscribers()
+                notifySubscribers((DataProvider.Companion.SubscriberType.DATA))
                 sleep(1000)
             }
             searchResult = gson.fromJson(SEARCH_RESULT_2, searchResultsType)
             for (searchedMovie in searchResult.search) {
                 data[searchedMovie.id] = searchedMovie
                 Log.d(TAG, "data changed: size=${data.size}")
-                notifySubscribers()
+                notifySubscribers((DataProvider.Companion.SubscriberType.DATA))
                 sleep(1000)
             }
         }.start()
@@ -37,16 +39,19 @@ class DummyDataProvider : DataProvider() {
 
     override fun updateData(movie: Movie) {
         Log.d(TAG, "updateData() called with: movie = $movie")
-        notifySubscribers()
+        notifySubscribers((DataProvider.Companion.SubscriberType.DATA))
     }
 
     override fun findMovies(query: String) {
-        Thread {
-            sleep(1000)
+        unsubscribe(DataProvider.Companion.SubscriberType.DATA, doSearch)
+
+        doSearch = {
             searchResultsData.clear()
-            searchResultsData.addAll(data.values.filter { it.title.contains(query) })
-            notifySubscribers()
-        }.start()
+            searchResultsData.addAll(data.values.filter { it.title.contains(query, true) })
+            notifySubscribers((DataProvider.Companion.SubscriberType.SEARCH))
+        }
+        doSearch.invoke()
+        subscribe(DataProvider.Companion.SubscriberType.DATA, doSearch)
     }
 
     companion object {

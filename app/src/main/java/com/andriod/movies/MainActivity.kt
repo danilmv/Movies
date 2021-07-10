@@ -71,6 +71,8 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract, M
             .beginTransaction()
             .replace(R.id.main_container, MovieFragment.newInstance(movie))
             .commit()
+
+        setTitle(movie.title)
     }
 
     override fun onMovieChanged(movie: Movie) {
