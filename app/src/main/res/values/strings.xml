@@ -15,4 +15,8 @@
     <string name="list_title_movies">Movies</string>
     <string name="list_title_series">Series</string>
     <string name="settings_group_by_title">Group by:</string>
+    <string name="title_settings">Settings</string>
+    <string name="title_list">List</string>
+    <string name="title_favorites">Favorites</string>
+    <string name="title_search">Search results</string>
 </resources>

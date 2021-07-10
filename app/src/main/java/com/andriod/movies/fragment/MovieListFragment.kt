@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.andriod.movies.MovieListView
 import com.andriod.movies.MyViewModel
+import com.andriod.movies.R
 import com.andriod.movies.databinding.FragmentMovieListBinding
 import com.andriod.movies.entity.Movie
 import java.util.*
@@ -41,9 +42,9 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
 
     private fun configureContent() {
         when(showMode){
-            ShowMode.LIST->contract?.setTitle("List")
-            ShowMode.FAVORITES -> contract?.setTitle("Favorites")
-            ShowMode.SEARCHING -> contract?.setTitle("Search results")
+            ShowMode.LIST->contract?.setTitle(getString(R.string.title_list))
+            ShowMode.FAVORITES -> contract?.setTitle(getString(R.string.title_favorites))
+            ShowMode.SEARCHING -> contract?.setTitle(getString(R.string.title_search))
         }
 
         MyViewModel.groupBy.observe(viewLifecycleOwner) {

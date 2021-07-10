@@ -1,8 +1,10 @@
 package com.andriod.movies
 
+import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.Menu
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import com.andriod.movies.entity.Movie
@@ -51,6 +53,8 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract, M
             .beginTransaction()
             .replace(R.id.main_container, SettingsFragment())
             .commit()
+
+        setTitle(getString(R.string.title_settings))
     }
 
     private fun showList(showMode: MovieListFragment.Companion.ShowMode) {
@@ -79,10 +83,12 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract, M
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
-        val searchView = menu.findItem(R.id.menu_main_item_search).actionView as SearchView
+        val menuItem = menu.findItem(R.id.menu_main_item_search)
+        val searchView = menuItem.actionView as SearchView
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 startSearching(query)
+                menuItem.collapseActionView()
                 return true
             }
 
@@ -105,5 +111,11 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract, M
     private fun startSearching(query: String){
         MyViewModel.startSearching(query)
         showList(MovieListFragment.Companion.ShowMode.SEARCHING)
+        hideKeyboard()
+    }
+
+    private fun hideKeyboard() {
+        (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
+            .hideSoftInputFromWindow(currentFocus?.windowToken, 0)
     }
 }
