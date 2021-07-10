@@ -13,6 +13,9 @@ object MyViewModel {
 
     var groupBy = MutableLiveData(MovieListFragment.Companion.GroupBy.TYPE)
 
+    private val _searchResults = MutableLiveData<List<Movie>>()
+    val searchResults: LiveData<List<Movie>> = _searchResults
+
     fun initData() {
         if (movies.value?.isEmpty() != false) {
             _movies.value = HashMap()
@@ -25,5 +28,12 @@ object MyViewModel {
 
     fun updateData(movie: Movie) {
         dummy.updateData(movie)
+    }
+
+    fun startSearching(query: String) {
+        dummy.subscribe {
+            _searchResults.postValue(dummy.searchResultsData)
+        }
+        dummy.findMovies(query)
     }
 }

@@ -40,9 +40,13 @@ class DummyDataProvider : DataProvider() {
         notifySubscribers()
     }
 
-    override fun findMovies(query: String): List<Movie> {
-        val searchResult: SearchResults = gson.fromJson(SEARCH_RESULT, searchResultsType)
-        return searchResult.search
+    override fun findMovies(query: String) {
+        Thread {
+            sleep(1000)
+            searchResultsData.clear()
+            searchResultsData.addAll(data.values.filter { it.title.contains(query) })
+            notifySubscribers()
+        }.start()
     }
 
     companion object {

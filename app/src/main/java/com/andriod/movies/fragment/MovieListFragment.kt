@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.andriod.movies.MovieListView
 import com.andriod.movies.MyViewModel
+import com.andriod.movies.R
 import com.andriod.movies.databinding.FragmentMovieListBinding
 import com.andriod.movies.entity.Movie
 import java.util.*
@@ -16,10 +17,20 @@ import java.util.*
 class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
     private var _binding: FragmentMovieListBinding? = null
     private val binding: FragmentMovieListBinding get() = _binding!!
-    var showFavorites = false
+    private var showFavorites = false
 
     private val contract: MovieListContract?
         get() = activity as MovieListContract?
+
+    var showMode: ShowMode = ShowMode.LIST
+        set(value) {
+            showFavorites = value == ShowMode.FAVORITES
+            field = value
+        }
+
+    private val groups = mutableSetOf<String?>()
+    private val lists = TreeSet<MovieListView>()
+    private var groupByField: GroupBy = MyViewModel.groupBy.value ?: GroupBy.TYPE
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,34 +47,38 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
     }
 
     private fun configureContent() {
-        val groups = mutableSetOf<String?>()
-        val lists = TreeSet<MovieListView>()
-        var groupByField: GroupBy = MyViewModel.groupBy.value ?: GroupBy.TYPE
-
         MyViewModel.groupBy.observe(viewLifecycleOwner) {
             groupByField = it
         }
 
-        MyViewModel.movies.observe(viewLifecycleOwner) {
-            Log.d(TAG, "configureRecyclerView():observation called: size= ${it.values.size}")
-            val list = it.values.toList()
-            list.forEach { movieItem ->
-                if (!groups.contains(movieItem.fieldValue(groupByField))) {
-                    groups.add(movieItem.fieldValue(groupByField))
-
-                    lists.add(MovieListView(context,
-                        movieItem.fieldValue(groupByField),
-                        this@MovieListFragment)
-                    { movie ->
-                        movie.fieldValue(groupByField) == movieItem.fieldValue(groupByField)
-                                && (movie.isFavorite || !showFavorites)
-                    }
-                    )
-                    binding.container.removeAllViews()
-                    lists.forEach { movieListView -> binding.container.addView(movieListView) }
+        if (showMode == ShowMode.SEARCHING) {
+            MyViewModel.searchResults.observe(viewLifecycleOwner) { showData(it) }
+        } else {
+            MyViewModel.movies.observe(viewLifecycleOwner) {
+                val list = when (showMode) {
+                    ShowMode.LIST -> it.values.toList()
+                    ShowMode.FAVORITES -> it.values.toList().filter { movie -> movie.isFavorite }
+                    ShowMode.SEARCHING -> return@observe
                 }
-                lists.forEach { movieListView -> movieListView.setData(list) }
+                showData(list)
             }
+        }
+    }
+
+    private fun showData(list: List<Movie>) {
+        list.forEach { movieItem ->
+            if (!groups.contains(movieItem.fieldValue(groupByField))) {
+                groups.add(movieItem.fieldValue(groupByField))
+
+                lists.add(MovieListView(context,
+                    movieItem.fieldValue(groupByField),
+                    this@MovieListFragment)
+                { movie -> movie.fieldValue(groupByField) == movieItem.fieldValue(groupByField) }
+                )
+                binding.container.removeAllViews()
+                lists.forEach { movieListView -> binding.container.addView(movieListView) }
+            }
+            lists.forEach { movieListView -> movieListView.setData(list) }
         }
     }
 
@@ -82,6 +97,8 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
             GroupBy.YEAR -> this.year
             GroupBy.GENRE -> this.genre
         }
+
+        enum class ShowMode { LIST, FAVORITES, SEARCHING }
     }
 
     interface MovieListContract {

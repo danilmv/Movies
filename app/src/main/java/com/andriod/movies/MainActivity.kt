@@ -3,7 +3,6 @@ package com.andriod.movies
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.Menu
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import com.andriod.movies.entity.Movie
@@ -23,7 +22,7 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract, M
         isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
         configureBottomView()
-        showList(false)
+        showList(MovieListFragment.Companion.ShowMode.LIST)
     }
 
     private fun configureBottomView() {
@@ -31,10 +30,10 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract, M
         bottomNavigationView.setOnNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.menu_bottom_item_list -> {
-                    showList(false)
+                    showList(MovieListFragment.Companion.ShowMode.LIST)
                 }
                 R.id.menu_bottom_item_favorites -> {
-                    showList(true)
+                    showList(MovieListFragment.Companion.ShowMode.FAVORITES)
                 }
                 R.id.menu_bottom_item_settings -> {
                     showSettings()
@@ -54,9 +53,9 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract, M
             .commit()
     }
 
-    private fun showList(showFavorites: Boolean) {
+    private fun showList(showMode: MovieListFragment.Companion.ShowMode) {
         val fragment = MovieListFragment()
-        fragment.showFavorites = showFavorites
+        fragment.showMode = showMode
         supportFragmentManager
             .beginTransaction()
             .replace(R.id.main_container, fragment)
@@ -79,8 +78,7 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract, M
         val searchView = menu.findItem(R.id.menu_main_item_search).actionView as SearchView
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
-                Toast.makeText(this@MainActivity, "Searching for: $query...", Toast.LENGTH_SHORT)
-                    .show()
+                startSearching(query)
                 return true
             }
 
@@ -98,5 +96,10 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract, M
 
     private fun setBottomView(bottomItemId: Int) {
         bottomNavigationView.menu.findItem(bottomItemId)?.isChecked = true
+    }
+
+    private fun startSearching(query: String){
+        MyViewModel.startSearching(query)
+        showList(MovieListFragment.Companion.ShowMode.SEARCHING)
     }
 }
