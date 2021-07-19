@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">Movies</string>
+    <string name="list">list</string>
+    <string name="favorites">favorites</string>
+    <string name="settings">settings</string>
+    <string name="search">search</string>
+    <string name="details_title">Title: %1$s</string>
+    <string name="details_actors">Actors: %1$s</string>
+    <string name="details_box_office">Box office: %1$s</string>
+    <string name="details_plot">Plot: %1$s</string>
+    <string name="details_rating">Rating: %1$s</string>
+    <string name="details_votes">Number of votes: %1$s</string>
+    <string name="details_year">Year: %1$s</string>
+    <string name="details_type">Type: %1$s</string>
+    <string name="list_title_movies">Movies</string>
+    <string name="list_title_series">Series</string>
 </resources>
