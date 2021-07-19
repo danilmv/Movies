@@ -14,8 +14,8 @@ object MyViewModel {
 
     var groupBy = MutableLiveData(MovieListFragment.Companion.GroupBy.TYPE)
 
-    private val _searchResults = MutableLiveData<List<Movie>>()
-    val searchResults: LiveData<List<Movie>> = _searchResults
+    private val _searchResults = MutableLiveData<Map<String, Movie>>()
+    val searchResults: LiveData<Map<String, Movie>> = _searchResults
 
     fun initData() {
         if (movies.value?.isEmpty() != false) {
