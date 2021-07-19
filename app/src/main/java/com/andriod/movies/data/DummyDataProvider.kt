@@ -32,12 +32,6 @@ class DummyDataProvider : DataProvider() {
         }.start()
     }
 
-    override fun updateData(movie: Movie) {
-        Log.d(TAG, "updateData() called with: movie = $movie")
-        data[movie.id] = movie
-        notifySubscribers((DataProvider.Companion.SubscriberType.DATA))
-    }
-
     override fun findMovies(query: String) {
         searchResultsData.clear()
         unsubscribe(DataProvider.Companion.SubscriberType.DATA, doSearch)

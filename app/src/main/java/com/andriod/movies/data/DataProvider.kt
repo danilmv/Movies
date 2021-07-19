@@ -37,7 +37,12 @@ abstract class DataProvider {
             "unsubscribe() called with: type = ${type.name}, numOfSubscribers = ${subscribers[type]?.size}")
     }
 
-    abstract fun updateData(movie: Movie)
+
+    fun updateData(movie: Movie) {
+        data[movie.id] = movie
+        notifySubscribers((SubscriberType.DATA))
+    }
+
     abstract fun findMovies(query: String)
 
     companion object {
