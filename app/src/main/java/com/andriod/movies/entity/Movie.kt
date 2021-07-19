@@ -31,5 +31,10 @@ data class Movie(
         get() = _title ?: name ?: "?"
 
     val genre: List<String>
-        get() = if (_genre?.isNotEmpty() ?: false) _genre!! else listOf("?")
+        get() = if (_genre?.isNotEmpty() == true) _genre!! else listOf("?")
+
+    companion object{
+        const val TYPE_MOVIE = "movie"
+        const val TYPE_TV_SERIES = "tv"
+    }
 }
