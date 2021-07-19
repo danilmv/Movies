@@ -1,8 +1,11 @@
 package com.andriod.movies.data
 
+import android.util.Log
 import com.andriod.movies.BuildConfig
+import com.andriod.movies.entity.Movie
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import java.lang.Thread.sleep
 import java.net.URL
 import javax.net.ssl.HttpsURLConnection
 
@@ -17,11 +20,19 @@ class HttpConnectionDataProvider : DataProvider() {
 
         Thread {
             val reader = BufferedReader(InputStreamReader(connection.inputStream))
-            val response = reader.readLines().joinToString()
+            for (movie in Movie.jsonTrendingToList(reader.readLines().joinToString())) {
+                data[movie.id] = movie
+            }
+            Log.d(TAG, "data.size = ${data.size}")
+            notifySubscribers(DataProvider.Companion.SubscriberType.DATA)
         }.start()
     }
 
     override fun findMovies(query: String) {
         TODO("Not yet implemented")
+    }
+
+    companion object{
+        const val TAG = "@@HttpConnectionDataPr"
     }
 }

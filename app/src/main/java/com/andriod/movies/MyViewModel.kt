@@ -4,13 +4,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.andriod.movies.data.DataProvider
 import com.andriod.movies.data.DummyDataProvider
+import com.andriod.movies.data.HttpConnectionDataProvider
 import com.andriod.movies.entity.Movie
 import com.andriod.movies.fragment.MovieListFragment
 
 object MyViewModel {
     private val _movies = MutableLiveData<Map<String, Movie>>()
     val movies: LiveData<Map<String, Movie>> = _movies
-    private val dummy = DummyDataProvider()
+    private val dummy = HttpConnectionDataProvider()
 
     var groupBy = MutableLiveData(MovieListFragment.Companion.GroupBy.TYPE)
 
