@@ -123,8 +123,13 @@ class HttpConnectionDataProvider : DataProvider() {
         Thread {
             try {
                 BufferedReader(InputStreamReader(connection.inputStream)).use {
-                    data[movie.id]?.populateData(Movie.jsonDetailsToObject(it.readLines()
-                        .joinToString()))
+                    if (data.containsKey(movie.id)) {
+                        data[movie.id]?.populateData(Movie.jsonDetailsToObject(it.readLines()
+                            .joinToString()))
+                    } else {
+                        data[movie.id] = Movie.jsonDetailsToObject(it.readLines().joinToString())
+                    }
+                    updateGenres(data)
                     notifySubscribers(DataProvider.Companion.SubscriberType.DATA)
                 }
             } catch (e: Exception) {
