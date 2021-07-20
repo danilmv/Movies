@@ -13,6 +13,8 @@ import javax.net.ssl.HttpsURLConnection
 class HttpConnectionDataProvider : DataProvider() {
 
     override fun startService() {
+        errorMessage = ""
+
         val connection =
             URL("https://api.themoviedb.org/3/trending/movie/week?api_key=${BuildConfig.MOVIE_API_KEY}")
                 .openConnection() as HttpsURLConnection
@@ -21,16 +23,23 @@ class HttpConnectionDataProvider : DataProvider() {
 
         Thread {
             try {
-                val reader = BufferedReader(InputStreamReader(connection.inputStream))
-                for (movie in Movie.jsonTrendingToList(reader.readLines().joinToString())) {
-                    data[movie.id] = movie
+                BufferedReader(InputStreamReader(connection.inputStream)).use {
+                    for (movie in Movie.jsonTrendingToList(it.readLines().joinToString())) {
+                        data[movie.id] = movie
+                    }
+                    Log.d(TAG, "data.size = ${data.size}")
+                    notifySubscribers(DataProvider.Companion.SubscriberType.DATA)
                 }
-                Log.d(TAG, "data.size = ${data.size}")
-                notifySubscribers(DataProvider.Companion.SubscriberType.DATA)
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 Log.d(TAG, "init: exception: ${e.message}")
                 errorMessage = "init: exception: ${e.message}"
-                notifySubscribers(DataProvider.Companion.SubscriberType.ERROR)
+                return@Thread
+            } finally {
+                connection.disconnect()
+            }
+
+            if (data.isEmpty()) {
+                errorMessage = "no data received"
             }
         }.start()
     }
@@ -39,7 +48,7 @@ class HttpConnectionDataProvider : DataProvider() {
         TODO("Not yet implemented")
     }
 
-    companion object{
+    companion object {
         const val TAG = "@@HttpConnectionDataPr"
     }
 }

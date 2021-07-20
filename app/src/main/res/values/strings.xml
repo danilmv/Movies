@@ -22,4 +22,5 @@
     <string name="details_runtime" translatable="false">%1$s</string>
     <string name="details_released">Released: %1$s</string>
     <string name="error_message_title">Error</string>
+    <string name="retry_message">retry</string>
 </resources>

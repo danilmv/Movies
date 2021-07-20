@@ -20,6 +20,10 @@ abstract class DataProvider {
     val searchResultsData: MutableMap<String, Movie> = HashMap()
 
     var errorMessage = ""
+        set(value) {
+            field = value
+            notifySubscribers(SubscriberType.ERROR)
+        }
 
     init {
         startService()
@@ -46,12 +50,13 @@ abstract class DataProvider {
     }
 
 
-    fun updateData(movie: Movie) {
+    open fun updateData(movie: Movie) {
         data[movie.id] = movie
         notifySubscribers((SubscriberType.DATA))
     }
 
     abstract fun findMovies(query: String)
+
     abstract fun startService()
 
     companion object {

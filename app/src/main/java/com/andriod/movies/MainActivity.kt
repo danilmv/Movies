@@ -1,7 +1,6 @@
 package com.andriod.movies
 
 import android.content.Context
-import android.content.DialogInterface
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.Menu
@@ -32,18 +31,24 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
         isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
         configureBottomView()
+    }
+
+    override fun onStart() {
+        super.onStart()
         listenForErrors()
         showList(MovieListFragment.Companion.ShowMode.LIST)
     }
 
     private fun listenForErrors() {
         MyViewModel.errorMessage.observe(this, {
-            AlertDialog.Builder(this)
-                .setTitle(getString(R.string.error_message_title))
-                .setMessage(it)
-                .setPositiveButton("retry") { _, _ -> MyViewModel.retryConnection() }
-                .setCancelable(false)
-                .show()
+            if (it.isNotBlank()) {
+                AlertDialog.Builder(this)
+                    .setTitle(getString(R.string.error_message_title))
+                    .setMessage(it)
+                    .setPositiveButton(getString(R.string.retry_message)) { _, _ -> MyViewModel.retryConnection() }
+                    .setCancelable(false)
+                    .show()
+            }
         })
     }
 
