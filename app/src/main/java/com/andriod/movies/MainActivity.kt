@@ -1,6 +1,7 @@
 package com.andriod.movies
 
 import android.content.Context
+import android.content.DialogInterface
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.Menu
@@ -40,6 +41,8 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
             AlertDialog.Builder(this)
                 .setTitle(getString(R.string.error_message_title))
                 .setMessage(it)
+                .setPositiveButton("retry") { _, _ -> MyViewModel.retryConnection() }
+                .setCancelable(false)
                 .show()
         })
     }

@@ -12,7 +12,7 @@ import javax.net.ssl.HttpsURLConnection
 
 class HttpConnectionDataProvider : DataProvider() {
 
-    init {
+    override fun startService() {
         val connection =
             URL("https://api.themoviedb.org/3/trending/movie/week?api_key=${BuildConfig.MOVIE_API_KEY}")
                 .openConnection() as HttpsURLConnection

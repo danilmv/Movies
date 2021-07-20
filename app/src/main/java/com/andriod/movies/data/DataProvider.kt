@@ -21,6 +21,10 @@ abstract class DataProvider {
 
     var errorMessage = ""
 
+    init {
+        startService()
+    }
+
     protected fun notifySubscribers(type: SubscriberType) {
         subscribers[type]?.let {
             for (subscriber in it) {
@@ -48,6 +52,7 @@ abstract class DataProvider {
     }
 
     abstract fun findMovies(query: String)
+    abstract fun startService()
 
     companion object {
         const val TAG = "@@DataProvider"

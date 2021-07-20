@@ -44,4 +44,8 @@ object MyViewModel {
         }
         dummy.findMovies(query)
     }
+
+    fun retryConnection(){
+        dummy.startService()
+    }
 }
