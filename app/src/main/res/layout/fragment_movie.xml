@@ -90,7 +90,7 @@
         android:id="@+id/text_view_actors"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        tools:text="actors...."
+        tools:text="actors....a lot of different people who took part in this movie"
         android:layout_marginStart="@dimen/item_margin"
         android:layout_marginEnd="@dimen/item_margin"
         app:layout_constraintStart_toEndOf="@id/image_view_poster"
@@ -114,6 +114,17 @@
         android:layout_marginStart="@dimen/item_margin"
         app:layout_constraintStart_toEndOf="@id/image_view_poster"
         app:layout_constraintTop_toBottomOf="@id/text_view_box_office"/>
+
+    <TextView
+        android:id="@+id/text_view_genres"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        tools:text="Genres: Action, Action, Action, Action, Action"
+        android:layout_marginStart="@dimen/item_margin"
+        android:layout_marginEnd="@dimen/item_margin"
+        app:layout_constraintStart_toEndOf="@id/image_view_poster"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_view_released"/>
 
     <ScrollView
         android:layout_width="0dp"

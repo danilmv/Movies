@@ -14,7 +14,7 @@ data class Movie(
     @SerializedName("original_title") var originalTitle: String?,
     @SerializedName("runtime") var runtime: String?,
     @SerializedName("release_date") var released: String?,
-    @SerializedName("genre_ids") var _genre: List<String>?,
+    @SerializedName("genre_ids") var _genre: MutableList<String> = mutableListOf<String>(),
 //    @SerializedName("Director") val director: String,
 //    @SerializedName("Actors") val actors: String,
     @SerializedName("overview") var plot: String?,
@@ -34,7 +34,7 @@ data class Movie(
         get() = _title ?: name ?: "?"
 
     val genre: List<String>
-        get() = if (_genre?.isNotEmpty() == true) _genre!! else listOf("?")
+        get() = if (_genre.isNotEmpty() == true) _genre else listOf("?")
 
     var isDetailsReceived = false
 
@@ -51,6 +51,8 @@ data class Movie(
         val rev = _revenue
         return if (rev != null && rev > 0) rev.toString() else "?"
     }
+
+    var isGenreUpdated = false
 
     fun populateData(movie: Movie){
         if (id != movie.id)return

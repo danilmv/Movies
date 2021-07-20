@@ -3,6 +3,7 @@ package com.andriod.movies.data
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import com.andriod.movies.entity.Genre
 import com.andriod.movies.entity.Movie
 
 typealias Subscriber = (() -> Unit)
@@ -25,6 +26,8 @@ abstract class DataProvider {
             field = value
             notifySubscribers(SubscriberType.ERROR)
         }
+    val genres: MutableMap<Int, Genre> = HashMap()
+    var isGenresLoaded = false
 
     init {
         startService()
@@ -65,6 +68,6 @@ abstract class DataProvider {
     companion object {
         const val TAG = "@@DataProvider"
 
-        enum class SubscriberType { DATA, SEARCH, ERROR, DETAILS }
+        enum class SubscriberType { DATA, SEARCH, ERROR, DETAILS, GENRES }
     }
 }

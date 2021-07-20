@@ -2,6 +2,7 @@ package com.andriod.movies.data
 
 import android.util.Log
 import com.andriod.movies.BuildConfig
+import com.andriod.movies.entity.Genre
 import com.andriod.movies.entity.Movie
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -18,6 +19,8 @@ class HttpConnectionDataProvider : DataProvider() {
             { e: java.lang.Exception -> errorMessage = "init: exception: ${e.message}" },
             { errorMessage = "no data received" }
         )
+
+        requestGenres()
     }
 
     private fun requestData(
@@ -38,6 +41,7 @@ class HttpConnectionDataProvider : DataProvider() {
                     for (movie in Movie.jsonTrendingToList(it.readLines().joinToString())) {
                         data[movie.id] = movie
                     }
+                    updateGenres()
                     Log.d(TAG, "data.size = ${data.size}")
                     notifySubscribers(DataProvider.Companion.SubscriberType.DATA)
                 }
@@ -77,6 +81,7 @@ class HttpConnectionDataProvider : DataProvider() {
                     for (movie in Movie.jsonTrendingToList(it.readLines().joinToString())) {
                         searchResultsData[movie.id] = movie
                     }
+                    updateGenres(searchResultsData)
                     Log.d(TAG, "searchResultsData.size = ${searchResultsData.size}")
                     notifySubscribers(DataProvider.Companion.SubscriberType.SEARCH)
                 }
@@ -129,6 +134,46 @@ class HttpConnectionDataProvider : DataProvider() {
                 connection.disconnect()
             }
         }.start()
+    }
+
+    private fun requestGenres() {
+        if (isGenresLoaded) return
+
+        val connection =
+            URL("https://api.themoviedb.org/3/genre/movie/list?api_key=${BuildConfig.MOVIE_API_KEY}")
+                .openConnection() as HttpsURLConnection
+        connection.requestMethod = "GET"
+        connection.readTimeout = 10_000
+
+        Thread {
+            try {
+                BufferedReader(InputStreamReader(connection.inputStream)).use {
+                    for (genre in Genre.jsonToList(it.readLines().joinToString())) {
+                        genres[genre.id] = genre
+                    }
+                    Log.d(TAG, "genres.size = ${genres.size}")
+                }
+                isGenresLoaded = true
+                updateGenres()
+            } catch (e: Exception) {
+                Log.d(TAG, "requestGenres: exception: ${e.message}")
+            } finally {
+                connection.disconnect()
+            }
+
+        }.start()
+    }
+
+    private fun updateGenres(data: MutableMap<String, Movie> = this.data) {
+        if (!isGenresLoaded) return
+
+        for (movie in data.values.filter { !it.isGenreUpdated }) {
+            for (i in movie.genre.indices) {
+                movie._genre[i] = genres[movie._genre[i].toInt()]?.name ?: "?"
+            }
+            movie.isGenreUpdated = true
+        }
+        notifySubscribers(DataProvider.Companion.SubscriberType.DATA)
     }
 
     companion object {

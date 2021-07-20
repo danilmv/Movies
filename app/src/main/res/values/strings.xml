@@ -22,6 +22,7 @@
     <string name="title_search">Search results</string>
     <string name="details_runtime" translatable="false">Runtime: %1$s min</string>
     <string name="details_released">Released: %1$s</string>
+    <string name="details_genres">Genres: %1$s</string>
     <string name="error_message_title">Error</string>
     <string name="retry_message">retry</string>
 </resources>

@@ -68,6 +68,8 @@ class MovieFragment : Fragment() {
 
         binding.textViewReleased.text =
             String.format(getString(R.string.details_released), movie?.released ?: "??.??.????")
+
+        binding.textViewGenres.text = String.format(getString(R.string.details_genres), movie?.genre?.joinToString(", "))
     }
 
     override fun onDetach() {
