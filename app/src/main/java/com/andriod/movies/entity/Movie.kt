@@ -11,18 +11,18 @@ data class Movie(
     @SerializedName("id") val id: String,
     @SerializedName("title") var _title: String?,
     @SerializedName("name") val name: String?,
-    @SerializedName("original_title") val originalTitle: String,
+    @SerializedName("original_title") val originalTitle: String?,
     @SerializedName("runtime") val runtime: String?,
     @SerializedName("release_date") val released: String?,
     @SerializedName("genre_ids") var _genre: List<String>?,
 //    @SerializedName("Director") val director: String,
 //    @SerializedName("Actors") val actors: String,
-    @SerializedName("overview") val plot: String,
-    @SerializedName("poster_path") val poster: String,
-    @SerializedName("vote_average") val rating: String,
-    @SerializedName("vote_count") val votes: String,
+    @SerializedName("overview") val plot: String?,
+    @SerializedName("poster_path") val poster: String?,
+    @SerializedName("vote_average") val rating: String?,
+    @SerializedName("vote_count") val votes: String?,
     @SerializedName("revenue") val revenue: String?,
-    @SerializedName("media_type") var type: String = "",
+    @SerializedName("media_type") var type: String? = "",
     var isFavorite: Boolean = false,
 
     ) : Parcelable {
@@ -54,37 +54,72 @@ data class Movie(
             val jsonObj = JSONObject(raw)
 
             val genres = mutableListOf<String>()
-            val jsonGenres = jsonObj.getJSONArray("genre_ids")
-            for (i in 0 until jsonGenres.length()) {
-                genres.add(jsonGenres.getString(i))
+            try {
+                val jsonGenres = jsonObj.getJSONArray("genre_ids")
+                for (i in 0 until jsonGenres.length()) {
+                    genres.add(jsonGenres.getString(i))
+                }
+            } catch (exception: JSONException) {
             }
 
             return Movie(
                 jsonObj.getString("id"),
-                jsonObj.getString("title"),
+                try {
+                    jsonObj.getString("title")
+                } catch (exception: JSONException) {
+                    null
+                },
                 try {
                     jsonObj.getString("name")
                 } catch (exception: JSONException) {
                     null
                 },
-                jsonObj.getString("original_title"),
+                try {
+                    jsonObj.getString("original_title")
+                } catch (exception: JSONException) {
+                    null
+                },
                 try {
                     jsonObj.getString("runtime")
                 } catch (exception: JSONException) {
                     null
                 },
-                jsonObj.getString("release_date"),
+                try {
+                    jsonObj.getString("release_date")
+                } catch (exception: JSONException) {
+                    null
+                },
                 genres,
-                jsonObj.getString("overview"),
-                jsonObj.getString("poster_path"),
-                jsonObj.getString("vote_average"),
-                jsonObj.getString("vote_count"),
+                try {
+                    jsonObj.getString("overview")
+                } catch (exception: JSONException) {
+                    null
+                },
+                try {
+                    jsonObj.getString("poster_path")
+                } catch (exception: JSONException) {
+                    null
+                },
+                try {
+                    jsonObj.getString("vote_average")
+                } catch (exception: JSONException) {
+                    null
+                },
+                try {
+                    jsonObj.getString("vote_count")
+                } catch (exception: JSONException) {
+                    null
+                },
                 try {
                     jsonObj.getString("revenue")
                 } catch (exception: JSONException) {
                     null
                 },
-                jsonObj.getString("media_type"),
+                try {
+                    jsonObj.getString("media_type")
+                } catch (exception: JSONException) {
+                    null
+                }
             )
         }
     }

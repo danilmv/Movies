@@ -1,12 +1,10 @@
 package com.andriod.movies.data
 
 import android.util.Log
-import android.widget.Toast
 import com.andriod.movies.BuildConfig
 import com.andriod.movies.entity.Movie
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import java.lang.Thread.sleep
 import java.net.URL
 import javax.net.ssl.HttpsURLConnection
 
@@ -15,8 +13,21 @@ class HttpConnectionDataProvider : DataProvider() {
     override fun startService() {
         errorMessage = ""
 
+        requestData("https://api.themoviedb.org/3/trending/movie/week",
+            data,
+            { e: java.lang.Exception -> errorMessage = "init: exception: ${e.message}" },
+            { errorMessage = "no data received" }
+        )
+    }
+
+    private fun requestData(
+        url: String,
+        data: MutableMap<String, Movie>,
+        exceptionCallback: (java.lang.Exception) -> Unit = {},
+        dataNotFoundCallback: () -> Unit = {},
+    ) {
         val connection =
-            URL("https://api.themoviedb.org/3/trending/movie/week?api_key=${BuildConfig.MOVIE_API_KEY}")
+            URL("${url}?&api_key=${BuildConfig.MOVIE_API_KEY}")
                 .openConnection() as HttpsURLConnection
         connection.requestMethod = "GET"
         connection.readTimeout = 10_000
@@ -32,20 +43,55 @@ class HttpConnectionDataProvider : DataProvider() {
                 }
             } catch (e: Exception) {
                 Log.d(TAG, "init: exception: ${e.message}")
-                errorMessage = "init: exception: ${e.message}"
+                exceptionCallback.invoke(e)
                 return@Thread
             } finally {
                 connection.disconnect()
             }
 
             if (data.isEmpty()) {
-                errorMessage = "no data received"
+                dataNotFoundCallback.invoke()
             }
         }.start()
     }
 
     override fun findMovies(query: String) {
-        TODO("Not yet implemented")
+        searchResultsData.clear()
+        startSearch("https://api.themoviedb.org/3/search/multi?query=$query")
+    }
+
+    private fun startSearch(
+        url: String,
+        exceptionCallback: (java.lang.Exception) -> Unit = {},
+        dataNotFoundCallback: () -> Unit = {},
+    ) {
+        val connection =
+            URL("${url}?&api_key=${BuildConfig.MOVIE_API_KEY}")
+                .openConnection() as HttpsURLConnection
+        connection.requestMethod = "GET"
+        connection.readTimeout = 10_000
+
+        Thread {
+            try {
+                BufferedReader(InputStreamReader(connection.inputStream)).use {
+                    for (movie in Movie.jsonTrendingToList(it.readLines().joinToString())) {
+                        searchResultsData[movie.id] = movie
+                    }
+                    Log.d(TAG, "searchResultsData.size = ${searchResultsData.size}")
+                    notifySubscribers(DataProvider.Companion.SubscriberType.SEARCH)
+                }
+            } catch (e: Exception) {
+                Log.d(TAG, "init: exception: ${e.message}")
+                exceptionCallback.invoke(e)
+                return@Thread
+            } finally {
+                connection.disconnect()
+            }
+
+            if (searchResultsData.isEmpty()) {
+                dataNotFoundCallback.invoke()
+            }
+        }.start()
     }
 
     companion object {
