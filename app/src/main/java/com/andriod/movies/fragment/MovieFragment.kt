@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.andriod.movies.MyViewModel
 import com.andriod.movies.R
 import com.andriod.movies.databinding.FragmentMovieBinding
 import com.andriod.movies.entity.Movie
@@ -37,7 +38,8 @@ class MovieFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        showMovieDetails()
+
+        MyViewModel.movies.observe(viewLifecycleOwner, { showMovieDetails() })
     }
 
     private fun showMovieDetails() {

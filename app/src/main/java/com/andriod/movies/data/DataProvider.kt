@@ -12,6 +12,7 @@ abstract class DataProvider {
         SubscriberType.DATA to HashSet<Subscriber>(),
         SubscriberType.SEARCH to HashSet(),
         SubscriberType.ERROR to HashSet(),
+        SubscriberType.DETAILS to HashSet(),
     )
 
     val data: MutableMap<String, Movie> = HashMap()
@@ -64,6 +65,6 @@ abstract class DataProvider {
     companion object {
         const val TAG = "@@DataProvider"
 
-        enum class SubscriberType { DATA, SEARCH, ERROR }
+        enum class SubscriberType { DATA, SEARCH, ERROR, DETAILS }
     }
 }
