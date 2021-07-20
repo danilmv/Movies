@@ -18,12 +18,18 @@ object MyViewModel {
     private val _searchResults = MutableLiveData<Map<String, Movie>>()
     val searchResults: LiveData<Map<String, Movie>> = _searchResults
 
+    var errorMessage = MutableLiveData<String>()
+
     fun initData() {
         if (movies.value?.isEmpty() != false) {
             _movies.value = HashMap()
 
             dummy.subscribe(DataProvider.Companion.SubscriberType.DATA) {
                 _movies.postValue(dummy.data)
+            }
+
+            dummy.subscribe(DataProvider.Companion.SubscriberType.ERROR){
+                errorMessage.value = dummy.errorMessage
             }
         }
     }

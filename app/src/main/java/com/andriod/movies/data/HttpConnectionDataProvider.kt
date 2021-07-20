@@ -1,6 +1,7 @@
 package com.andriod.movies.data
 
 import android.util.Log
+import android.widget.Toast
 import com.andriod.movies.BuildConfig
 import com.andriod.movies.entity.Movie
 import java.io.BufferedReader
@@ -19,12 +20,18 @@ class HttpConnectionDataProvider : DataProvider() {
         connection.readTimeout = 10_000
 
         Thread {
-            val reader = BufferedReader(InputStreamReader(connection.inputStream))
-            for (movie in Movie.jsonTrendingToList(reader.readLines().joinToString())) {
-                data[movie.id] = movie
+            try {
+                val reader = BufferedReader(InputStreamReader(connection.inputStream))
+                for (movie in Movie.jsonTrendingToList(reader.readLines().joinToString())) {
+                    data[movie.id] = movie
+                }
+                Log.d(TAG, "data.size = ${data.size}")
+                notifySubscribers(DataProvider.Companion.SubscriberType.DATA)
+            }catch (e: Exception){
+                Log.d(TAG, "init: exception: ${e.message}")
+                errorMessage = "init: exception: ${e.message}"
+                notifySubscribers(DataProvider.Companion.SubscriberType.ERROR)
             }
-            Log.d(TAG, "data.size = ${data.size}")
-            notifySubscribers(DataProvider.Companion.SubscriberType.DATA)
         }.start()
     }
 

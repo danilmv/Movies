@@ -10,12 +10,16 @@ typealias Subscriber = (() -> Unit)
 abstract class DataProvider {
     private var subscribers = mutableMapOf(
         SubscriberType.DATA to HashSet<Subscriber>(),
-        SubscriberType.SEARCH to HashSet())
+        SubscriberType.SEARCH to HashSet(),
+        SubscriberType.ERROR to HashSet(),
+    )
 
     val data: MutableMap<String, Movie> = HashMap()
     private val handler = Handler(Looper.getMainLooper())
 
     val searchResultsData: MutableMap<String, Movie> = HashMap()
+
+    var errorMessage = ""
 
     protected fun notifySubscribers(type: SubscriberType) {
         subscribers[type]?.let {
@@ -48,6 +52,6 @@ abstract class DataProvider {
     companion object {
         const val TAG = "@@DataProvider"
 
-        enum class SubscriberType { DATA, SEARCH }
+        enum class SubscriberType { DATA, SEARCH, ERROR }
     }
 }
