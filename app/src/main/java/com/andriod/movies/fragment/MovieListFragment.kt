@@ -95,7 +95,7 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
         enum class GroupBy(val id: Int) { TYPE(0), YEAR(1), GENRE(2) }
 
         private fun Movie.fieldValue(groupBy: GroupBy) = when (groupBy) {
-            GroupBy.TYPE -> this.type
+            GroupBy.TYPE -> this._type
             GroupBy.YEAR -> this.year
             GroupBy.GENRE -> this.genre.joinToString(",")
         }

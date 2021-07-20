@@ -94,6 +94,43 @@ class HttpConnectionDataProvider : DataProvider() {
         }.start()
     }
 
+    override fun getMovieDetails(movie: Movie) {
+        super.getMovieDetails(movie)
+
+        requestMovieDetails(movie)
+        Log.d(TAG, "getMovieDetails() called with: movie = $movie")
+    }
+
+    private fun requestMovieDetails(
+        movie: Movie,
+    ) {
+        val connection =
+            when (movie.type) {
+                Movie.Companion.TYPE.TYPE_MOVIE -> URL("https://api.themoviedb.org/3/movie/${movie.id}?&api_key=${BuildConfig.MOVIE_API_KEY}")
+                    .openConnection() as HttpsURLConnection
+                Movie.Companion.TYPE.TYPE_TV_SERIES -> URL("https://api.themoviedb.org/3/tv/${movie.id}?&api_key=${BuildConfig.MOVIE_API_KEY}")
+                    .openConnection() as HttpsURLConnection
+                null -> return
+            }
+        connection.requestMethod = "GET"
+        connection.readTimeout = 10_000
+
+        Thread {
+            try {
+                BufferedReader(InputStreamReader(connection.inputStream)).use {
+                    data[movie.id]?.populateData(Movie.jsonDetailsToObject(it.readLines()
+                        .joinToString()))
+                    notifySubscribers(DataProvider.Companion.SubscriberType.DATA)
+                }
+            } catch (e: Exception) {
+                Log.d(TAG, "init: exception: ${e.message}")
+                return@Thread
+            } finally {
+                connection.disconnect()
+            }
+        }.start()
+    }
+
     companion object {
         const val TAG = "@@HttpConnectionDataPr"
     }

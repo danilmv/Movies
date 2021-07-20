@@ -44,8 +44,8 @@ class MovieFragment : Fragment() {
         binding.textViewTitle.text = String.format(getString(R.string.details_title), movie?.title)
 //        binding.textViewActors.text =
 //            String.format(getString(R.string.details_actors), movie?.actors ?: "?")
-//        binding.textViewBoxOffice.text =
-//            String.format(getString(R.string.details_box_office), movie?.boxOffice ?: "?")
+        binding.textViewBoxOffice.text =
+            String.format(getString(R.string.details_revenue), movie?.revenue)
         binding.textViewPlot.text =
             String.format(getString(R.string.details_plot), movie?.plot ?: "?")
         binding.textViewRating.text =
@@ -61,8 +61,8 @@ class MovieFragment : Fragment() {
                 contract?.onMovieChanged(it)
             }
         }
-//        binding.textViewRuntime.text =
-//            String.format(getString(R.string.details_runtime), movie?.runtime ?: "? min")
+        binding.textViewRuntime.text =
+            String.format(getString(R.string.details_runtime), movie?.runtime ?: "?")
 
         binding.textViewReleased.text =
             String.format(getString(R.string.details_released), movie?.released ?: "??.??.????")

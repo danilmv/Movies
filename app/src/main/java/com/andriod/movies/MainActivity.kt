@@ -92,6 +92,8 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
     }
 
     override fun changeMovie(movie: Movie) {
+        MyViewModel.getMovieDetails(movie)
+
         supportFragmentManager
             .beginTransaction()
             .replace(R.id.main_container, MovieFragment.newInstance(movie))

@@ -3,7 +3,6 @@ package com.andriod.movies
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.andriod.movies.data.DataProvider
-import com.andriod.movies.data.DummyDataProvider
 import com.andriod.movies.data.HttpConnectionDataProvider
 import com.andriod.movies.entity.Movie
 import com.andriod.movies.fragment.MovieListFragment
@@ -28,7 +27,7 @@ object MyViewModel {
                 _movies.postValue(dummy.data)
             }
 
-            dummy.subscribe(DataProvider.Companion.SubscriberType.ERROR){
+            dummy.subscribe(DataProvider.Companion.SubscriberType.ERROR) {
                 errorMessage.value = dummy.errorMessage
             }
         }
@@ -45,7 +44,11 @@ object MyViewModel {
         dummy.findMovies(query)
     }
 
-    fun retryConnection(){
+    fun retryConnection() {
         dummy.startService()
+    }
+
+    fun getMovieDetails(movie: Movie) {
+        if (!movie.isDetailsReceived) dummy.getMovieDetails(movie)
     }
 }

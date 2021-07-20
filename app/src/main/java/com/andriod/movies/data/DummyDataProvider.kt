@@ -39,14 +39,14 @@ class DummyDataProvider : DataProvider() {
         Thread {
             var searchResult: SearchResults = gson.fromJson(SEARCH_RESULT, searchResultsType)
             for (searchedMovie in searchResult.results.filter { it.title.contains(query, true) }) {
-                searchResultsData[searchedMovie.id] = searchedMovie.also { it.type = Movie.TYPE_MOVIE }
+                searchResultsData[searchedMovie.id] = searchedMovie.also { it._type = Movie.Companion.TYPE.TYPE_MOVIE.value }
                 Log.d(TAG, "data changed: size=${data.size}")
                 notifySubscribers((DataProvider.Companion.SubscriberType.SEARCH))
                 sleep(500)
             }
             searchResult = gson.fromJson(SEARCH_RESULT_2, searchResultsType)
             for (searchedTV in searchResult.results.filter { it.title.contains(query, true) }) {
-                searchResultsData[searchedTV.id] = searchedTV.also { it.type = Movie.TYPE_TV_SERIES }
+                searchResultsData[searchedTV.id] = searchedTV.also { it._type = Movie.Companion.TYPE.TYPE_TV_SERIES.value }
                 Log.d(TAG, "data changed: size=${data.size}")
                 notifySubscribers((DataProvider.Companion.SubscriberType.SEARCH))
                 sleep(500)

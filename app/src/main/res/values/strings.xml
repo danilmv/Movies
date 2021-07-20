@@ -7,6 +7,7 @@
     <string name="details_title" translatable="false">%1$s</string>
     <string name="details_actors">Actors: %1$s</string>
     <string name="details_box_office">Box office: %1$s</string>
+    <string name="details_revenue">Revenue: %1$s</string>
     <string name="details_plot" translatable="false">%1$s</string>
     <string name="details_rating" translatable="false">%1$s</string>
     <string name="details_votes" translatable="false">(%1$s)</string>
@@ -19,7 +20,7 @@
     <string name="title_list">List</string>
     <string name="title_favorites">Favorites</string>
     <string name="title_search">Search results</string>
-    <string name="details_runtime" translatable="false">%1$s</string>
+    <string name="details_runtime" translatable="false">Runtime: %1$s min</string>
     <string name="details_released">Released: %1$s</string>
     <string name="error_message_title">Error</string>
     <string name="retry_message">retry</string>
