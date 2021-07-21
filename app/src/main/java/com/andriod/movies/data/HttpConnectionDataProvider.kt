@@ -4,8 +4,10 @@ import android.util.Log
 import com.andriod.movies.BuildConfig
 import com.andriod.movies.entity.Genre
 import com.andriod.movies.entity.Movie
+import com.andriod.movies.statusbar.StatusManager
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import java.lang.Thread.sleep
 import java.net.URL
 import javax.net.ssl.HttpsURLConnection
 
@@ -43,9 +45,13 @@ class HttpConnectionDataProvider : DataProvider() {
         connection.requestMethod = "GET"
         connection.readTimeout = 10_000
 
+        var statusId: Int? = null
         Thread {
+
             try {
                 BufferedReader(InputStreamReader(connection.inputStream)).use {
+                    statusId = StatusManager.create("$listName requested")
+
                     for (movie in Movie.jsonTrendingToList(it.readLines().joinToString())) {
                         if (data.containsKey(movie.id)) {
                             data[movie.id]?.addList(listName)
@@ -59,14 +65,17 @@ class HttpConnectionDataProvider : DataProvider() {
                     updateGenres()
                     Log.d(TAG, "requestData for $listName: data.size = ${data.size}")
                     notifySubscribers(DataProvider.Companion.SubscriberType.DATA)
+                    statusId?.let { StatusManager.change(it, "$listName data received") }
                 }
             } catch (e: Exception) {
                 val message = "requestData for $listName: exception: ${e.message}"
                 Log.d(TAG, message)
                 exceptionCallback.invoke(message)
+                statusId?.let { StatusManager.change(it, "$listName error occurred") }
                 return@Thread
             } finally {
                 connection.disconnect()
+                statusId?.let { StatusManager.close(it) }
             }
 
             if (data.isEmpty()) {
@@ -91,16 +100,21 @@ class HttpConnectionDataProvider : DataProvider() {
         connection.requestMethod = "GET"
         connection.readTimeout = 10_000
 
+        var statusId: Int? = null
+
         Thread {
             try {
                 BufferedReader(InputStreamReader(connection.inputStream)).use {
+                    statusId = StatusManager.create("searching started")
                     for (movie in Movie.jsonTrendingToList(it.readLines().joinToString())) {
                         movie._type = Movie.Companion.TYPE.TYPE_MOVIE.value
                         searchResultsData[movie.id] = data[movie.id] ?: movie
                     }
                     updateGenres(searchResultsData)
+
                     Log.d(TAG, "startSearch: searchResultsData.size = ${searchResultsData.size}")
                     notifySubscribers(DataProvider.Companion.SubscriberType.SEARCH)
+                    statusId?.let { StatusManager.change(it, "searching finished") }
                 }
             } catch (e: Exception) {
                 Log.d(TAG, "startSearch: exception: ${e.message}")
@@ -108,6 +122,7 @@ class HttpConnectionDataProvider : DataProvider() {
                 return@Thread
             } finally {
                 connection.disconnect()
+                statusId?.let { StatusManager.close(it) }
             }
 
             if (searchResultsData.isEmpty()) {

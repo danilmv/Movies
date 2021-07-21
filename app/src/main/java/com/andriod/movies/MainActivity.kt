@@ -13,6 +13,7 @@ import com.andriod.movies.entity.Movie
 import com.andriod.movies.fragment.MovieFragment
 import com.andriod.movies.fragment.MovieListFragment
 import com.andriod.movies.fragment.SettingsFragment
+import com.andriod.movies.statusbar.StatusManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
@@ -31,6 +32,11 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
         isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
         configureBottomView()
+        setStatusBar()
+    }
+
+    private fun setStatusBar() {
+        binding.statusBar.setStatuses(StatusManager.statuses)
     }
 
     override fun onStart() {
