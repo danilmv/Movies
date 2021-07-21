@@ -55,7 +55,7 @@ class MovieFragment : Fragment() {
         binding.textViewVotes.text =
             String.format(getString(R.string.details_votes), movie?.votes ?: "?")
         binding.textViewYear.text = String.format(getString(R.string.details_year), movie?.year)
-        binding.textViewType.text = String.format(getString(R.string.details_type), movie?.type)
+        binding.textViewType.text = String.format(getString(R.string.details_type), movie?._type)
         binding.toggleFavorite.isChecked = movie?.isFavorite ?: false
         binding.toggleFavorite.setOnCheckedChangeListener { _, isChecked: Boolean ->
             movie?.let {

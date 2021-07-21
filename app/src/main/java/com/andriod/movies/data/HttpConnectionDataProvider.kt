@@ -38,7 +38,7 @@ class HttpConnectionDataProvider : DataProvider() {
         dataNotFoundCallback: () -> Unit = {},
     ) {
         val connection =
-            URL("${url}?&api_key=${BuildConfig.MOVIE_API_KEY}")
+            URL("${url}?api_key=${BuildConfig.MOVIE_API_KEY}")
                 .openConnection() as HttpsURLConnection
         connection.requestMethod = "GET"
         connection.readTimeout = 10_000
@@ -50,7 +50,10 @@ class HttpConnectionDataProvider : DataProvider() {
                         if (data.containsKey(movie.id)) {
                             data[movie.id]?.addList(listName)
                         } else {
-                            data[movie.id] = movie.also { it.addList(listName) }
+                            data[movie.id] = movie.apply {
+                                _type = Movie.Companion.TYPE.TYPE_MOVIE.value
+                                addList(listName)
+                            }
                         }
                     }
                     updateGenres()
@@ -93,7 +96,7 @@ class HttpConnectionDataProvider : DataProvider() {
                 BufferedReader(InputStreamReader(connection.inputStream)).use {
                     for (movie in Movie.jsonTrendingToList(it.readLines().joinToString())) {
                         movie._type = Movie.Companion.TYPE.TYPE_MOVIE.value
-                        searchResultsData[movie.id] = movie
+                        searchResultsData[movie.id] = data[movie.id] ?: movie
                     }
                     updateGenres(searchResultsData)
                     Log.d(TAG, "startSearch: searchResultsData.size = ${searchResultsData.size}")
