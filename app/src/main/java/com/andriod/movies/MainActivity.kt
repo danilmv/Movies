@@ -112,6 +112,14 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
         this.title = "${getString(R.string.app_name)}: $title"
     }
 
+    override fun onModeChange(mode: MovieListFragment.Companion.ShowMode) {
+        setBottomView(when (mode) {
+            MovieListFragment.Companion.ShowMode.LIST -> R.id.menu_bottom_item_list
+            MovieListFragment.Companion.ShowMode.FAVORITES -> R.id.menu_bottom_item_favorites
+            MovieListFragment.Companion.ShowMode.SEARCHING -> R.id.menu_bottom_item_list
+        })
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         val menuItem = menu.findItem(R.id.menu_main_item_search)
