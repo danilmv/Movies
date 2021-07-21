@@ -77,6 +77,7 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
         supportFragmentManager
             .beginTransaction()
             .replace(R.id.main_container, SettingsFragment())
+            .addToBackStack(null)
             .commit()
 
         setTitle(getString(R.string.title_settings))
@@ -97,6 +98,7 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
         supportFragmentManager
             .beginTransaction()
             .replace(R.id.main_container, MovieFragment.newInstance(movie))
+            .addToBackStack(null)
             .commit()
 
         setTitle(movie.title)
