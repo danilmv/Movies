@@ -34,28 +34,36 @@ data class Movie(
         get() = _title ?: name ?: "?"
 
     val genre: List<String>
-        get() = if (_genre.isNotEmpty() == true) _genre else listOf("?")
+        get() = if (_genre.isNotEmpty()) _genre else listOf("?")
 
     var isDetailsReceived = false
 
     val type: TYPE?
         get() {
-            return when(_type){
-                "movie"->TYPE.TYPE_MOVIE
-                "tv"->TYPE.TYPE_TV_SERIES
+            return when (_type) {
+                "movie" -> TYPE.TYPE_MOVIE
+                "tv" -> TYPE.TYPE_TV_SERIES
                 else -> null
             }
         }
 
-    val revenue:String get(){
-        val rev = _revenue
-        return if (rev != null && rev > 0) rev.toString() else "?"
-    }
+    val revenue: String
+        get() {
+            val rev = _revenue
+            return if (rev != null && rev > 0) rev.toString() else "?"
+        }
 
     var isGenreUpdated = false
 
-    fun populateData(movie: Movie){
-        if (id != movie.id)return
+    val lists = mutableListOf("")
+
+    fun addList(list: String) {
+        if (!lists.contains(list)) lists.add(list)
+        lists.remove("")
+    }
+
+    fun populateData(movie: Movie) {
+        if (id != movie.id) return
 
         if (movie._title != null) _title = movie._title
         if (movie.name != null) name = movie.name

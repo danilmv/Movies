@@ -16,17 +16,25 @@ class HttpConnectionDataProvider : DataProvider() {
 
         requestData("https://api.themoviedb.org/3/trending/movie/week",
             data,
-            { e: java.lang.Exception -> errorMessage = "init: exception: ${e.message}" },
+            "trending",
+            { message: String -> errorMessage = message },
             { errorMessage = "no data received" }
         )
+
+        requestData("https://api.themoviedb.org/3/movie/latest", listName = "latest")
+        requestData("https://api.themoviedb.org/3/movie/now_playing", listName = "now playing")
+        requestData("https://api.themoviedb.org/3/movie/popular", listName = "popular")
+        requestData("https://api.themoviedb.org/3/movie/top_rated", listName = "top rated")
+        requestData("https://api.themoviedb.org/3/movie/upcoming", listName = "upcoming")
 
         requestGenres()
     }
 
     private fun requestData(
         url: String,
-        data: MutableMap<String, Movie>,
-        exceptionCallback: (java.lang.Exception) -> Unit = {},
+        data: MutableMap<String, Movie> = this.data,
+        listName: String,
+        exceptionCallback: (String) -> Unit = {},
         dataNotFoundCallback: () -> Unit = {},
     ) {
         val connection =
@@ -39,15 +47,20 @@ class HttpConnectionDataProvider : DataProvider() {
             try {
                 BufferedReader(InputStreamReader(connection.inputStream)).use {
                     for (movie in Movie.jsonTrendingToList(it.readLines().joinToString())) {
-                        data[movie.id] = movie
+                        if (data.containsKey(movie.id)) {
+                            data[movie.id]?.addList(listName)
+                        } else {
+                            data[movie.id] = movie.also { it.addList(listName) }
+                        }
                     }
                     updateGenres()
-                    Log.d(TAG, "data.size = ${data.size}")
+                    Log.d(TAG, "requestData for $listName: data.size = ${data.size}")
                     notifySubscribers(DataProvider.Companion.SubscriberType.DATA)
                 }
             } catch (e: Exception) {
-                Log.d(TAG, "init: exception: ${e.message}")
-                exceptionCallback.invoke(e)
+                val message = "requestData for $listName: exception: ${e.message}"
+                Log.d(TAG, message)
+                exceptionCallback.invoke(message)
                 return@Thread
             } finally {
                 connection.disconnect()
@@ -61,7 +74,7 @@ class HttpConnectionDataProvider : DataProvider() {
 
     override fun findMovies(query: String) {
         searchResultsData.clear()
-        startSearch("https://api.themoviedb.org/3/search/multi?query=$query")
+        startSearch("https://api.themoviedb.org/3/search/movie?query=$query")
     }
 
     private fun startSearch(
@@ -79,14 +92,15 @@ class HttpConnectionDataProvider : DataProvider() {
             try {
                 BufferedReader(InputStreamReader(connection.inputStream)).use {
                     for (movie in Movie.jsonTrendingToList(it.readLines().joinToString())) {
+                        movie._type = Movie.Companion.TYPE.TYPE_MOVIE.value
                         searchResultsData[movie.id] = movie
                     }
                     updateGenres(searchResultsData)
-                    Log.d(TAG, "searchResultsData.size = ${searchResultsData.size}")
+                    Log.d(TAG, "startSearch: searchResultsData.size = ${searchResultsData.size}")
                     notifySubscribers(DataProvider.Companion.SubscriberType.SEARCH)
                 }
             } catch (e: Exception) {
-                Log.d(TAG, "init: exception: ${e.message}")
+                Log.d(TAG, "startSearch: exception: ${e.message}")
                 exceptionCallback.invoke(e)
                 return@Thread
             } finally {
@@ -173,10 +187,13 @@ class HttpConnectionDataProvider : DataProvider() {
         if (!isGenresLoaded) return
 
         for (movie in data.values.filter { !it.isGenreUpdated }) {
+            movie.isGenreUpdated = true
+            if (movie._genre.isNullOrEmpty()) {
+                continue
+            }
             for (i in movie.genre.indices) {
                 movie._genre[i] = genres[movie._genre[i].toInt()]?.name ?: "?"
             }
-            movie.isGenreUpdated = true
         }
         notifySubscribers(DataProvider.Companion.SubscriberType.DATA)
     }

@@ -68,15 +68,10 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
     }
 
     private fun showData(list: List<Movie>) {
-        val isArray = when (groupByField) {
-            GroupBy.TYPE -> false
-            GroupBy.YEAR -> false
-            GroupBy.GENRE -> true
-        }
         list.forEach { movieItem ->
 
             val listOfValues =
-                if (isArray) movieItem.listValue(groupByField)
+                if (groupByField.isList) movieItem.listValue(groupByField)
                 else listOf(movieItem.fieldValue(groupByField))
 
             if (listOfValues != null) {
@@ -88,7 +83,7 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
                             itemValue,
                             this@MovieListFragment)
                         { movie ->
-                            if (isArray) {
+                            if (groupByField.isList) {
                                 movie.listValue(groupByField)?.contains(itemValue!!) == true
                             } else {
                                 movie.fieldValue(groupByField) == itemValue
@@ -112,7 +107,7 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
     companion object {
         private const val TAG = "@@ListFragment"
 
-        enum class GroupBy(val id: Int) { TYPE(0), YEAR(1), GENRE(2) }
+        enum class GroupBy(val id: Int, val isList:Boolean = false) { TYPE(0), YEAR(1), GENRE(2, true), LISTS(3, true) }
 
         private fun Movie.fieldValue(groupBy: GroupBy): String? = when (groupBy) {
             GroupBy.TYPE -> this._type
@@ -122,6 +117,7 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
 
         private fun Movie.listValue(groupBy: GroupBy): List<String>? = when (groupBy) {
             GroupBy.GENRE -> this.genre
+            GroupBy.LISTS -> this.lists
             else -> null
         }
 
