@@ -12,7 +12,7 @@ object MyViewModel {
     val movies: LiveData<Map<String, Movie>> = _movies
     private val dummy = HttpConnectionDataProvider()
 
-    var groupBy = MutableLiveData(MovieListFragment.Companion.GroupBy.TYPE)
+    var groupBy = MutableLiveData(MovieListFragment.Companion.GroupBy.LISTS)
 
     private val _searchResults = MutableLiveData<Map<String, Movie>>()
     val searchResults: LiveData<Map<String, Movie>> = _searchResults
