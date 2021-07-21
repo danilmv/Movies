@@ -28,7 +28,7 @@ data class Movie(
 
     ) : Parcelable {
     val year: String
-        get() = released?.substring(0, 4) ?: "????"
+        get() = if (released.isNullOrBlank()) "????" else released!!.substring(0, 4)
 
     val title: String
         get() = _title ?: name ?: "?"
@@ -78,6 +78,7 @@ data class Movie(
         if (movie._type != null) _type = movie._type
         if (movie.budget != null) budget = movie._type
         if (movie.isDetailsReceived) isDetailsReceived = movie.isDetailsReceived
+        if (movie.isFavorite) isFavorite = movie.isFavorite
     }
 
     companion object {

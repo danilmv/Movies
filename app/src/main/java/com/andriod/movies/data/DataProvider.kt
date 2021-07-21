@@ -55,7 +55,11 @@ abstract class DataProvider {
 
 
     open fun updateData(movie: Movie) {
-        data[movie.id] = movie
+        if (data.containsKey(movie.id)) {
+            data[movie.id]?.populateData(movie)
+        } else {
+            data[movie.id] = movie
+        }
         notifySubscribers((SubscriberType.DATA))
     }
 
@@ -63,7 +67,7 @@ abstract class DataProvider {
 
     abstract fun startService()
 
-    open fun getMovieDetails(movie: Movie){}
+    open fun getMovieDetails(movie: Movie) {}
 
     companion object {
         const val TAG = "@@DataProvider"
