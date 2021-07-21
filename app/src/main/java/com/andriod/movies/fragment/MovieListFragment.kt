@@ -2,6 +2,7 @@ package com.andriod.movies.fragment
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,12 +36,15 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onStart() {
+        super.onStart()
         configureContent()
     }
 
     private fun configureContent() {
+        groups.clear()
+        lists.clear()
+
         when (showMode) {
             ShowMode.LIST -> contract?.setTitle(getString(R.string.title_list))
             ShowMode.FAVORITES -> contract?.setTitle(getString(R.string.title_favorites))
@@ -96,6 +100,8 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
                 }
             }
         }
+//        binding.container.removeAllViews()
+//        lists.forEach { movieListView -> binding.container.addView(movieListView) }
         lists.forEach { movieListView -> movieListView.setData(list) }
     }
 
