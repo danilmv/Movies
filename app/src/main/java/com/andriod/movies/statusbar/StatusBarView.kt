@@ -9,13 +9,16 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import com.andriod.movies.databinding.StatusBarViewBinding
+import java.lang.StringBuilder
 
 
 class StatusBarView : LinearLayout {
 
     private lateinit var binding: StatusBarViewBinding
 
-    private lateinit var statuses: LiveData<MutableMap<Int, String>>
+    private lateinit var statuses: LiveData<Map<Int, String>>
+
+    private val groupIndexes = HashMap<Int, Int>()
 
     constructor(context: Context?) : super(context) {
         initView(context)
@@ -33,14 +36,12 @@ class StatusBarView : LinearLayout {
     }
 
     private fun readAttributes(attrs: AttributeSet?) {
-//        val array = context.obtainStyledAttributes(attrs, R.styleable.StatusBarView)
-//        mCustomAttribute = array.getFloat(R.styleable.MyCustomView_customAttribute,
-//            0.4f)
-//
+//        val array = context.obtainStyledAttributes(attrs, R.styleable.StatusBar)
+//        mCustomAttribute = array.getDimension(R.styleable.Status,30dp)
 //        array.recycle()
     }
 
-    fun setStatuses(statuses: LiveData<MutableMap<Int, String>>) {
+    fun setStatuses(statuses: LiveData<Map<Int, String>>) {
         this.statuses = statuses
 
         statuses.observe(context as LifecycleOwner) {
@@ -51,9 +52,27 @@ class StatusBarView : LinearLayout {
                 binding.root.isVisible = false
             } else {
                 binding.root.isVisible = true
-                binding.textView.text = it.values.joinToString(", ")
+                binding.textView.text = getStatusText(it)
             }
         }
+    }
+
+    private fun getStatusText(values: Map<Int, String>): String {
+        val sb = StringBuilder()
+        for (group in StatusManager.groups) {
+            sb.append(getNextValueFromGroup(group, values))
+        }
+        return sb.toString()
+    }
+
+    private fun getNextValueFromGroup(
+        group: MutableMap.MutableEntry<Int, MutableSet<Int>>,
+        listOfValues: Map<Int, String>
+    ): String? {
+        val groupId = group.key
+        val groupValues = group.value.toList()
+        groupIndexes[groupId] = groupIndexes[groupId]?.plus(1)?.rem(groupValues.size) ?: 0
+        return listOfValues[groupValues[groupIndexes[groupId]!!]]
     }
 
     private fun initView(context: Context?) {
