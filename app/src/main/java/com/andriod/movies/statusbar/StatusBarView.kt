@@ -9,6 +9,7 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import com.andriod.movies.databinding.StatusBarViewBinding
+import java.lang.Exception
 import java.lang.StringBuilder
 import java.lang.Thread.sleep
 
@@ -63,9 +64,15 @@ class StatusBarView : LinearLayout {
     }
 
     private fun getStatusText(values: Map<Int, String>): String {
+        if (values.isEmpty()) return ""
+
         val sb = StringBuilder()
         for (group in StatusManager.groups) {
-            sb.append(getNextValueFromGroup(group, values))
+            try {
+                sb.append(getNextValueFromGroup(group, values))
+            } catch (e: Exception) {
+                return ""
+            }
         }
         return sb.toString()
     }
