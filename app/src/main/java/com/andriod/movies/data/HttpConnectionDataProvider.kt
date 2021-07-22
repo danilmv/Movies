@@ -12,6 +12,8 @@ import javax.net.ssl.HttpsURLConnection
 
 class HttpConnectionDataProvider : DataProvider() {
 
+    private val dataRequestStatusGroup = 1
+
     override fun startService() {
         errorMessage = ""
 
@@ -44,7 +46,7 @@ class HttpConnectionDataProvider : DataProvider() {
         connection.requestMethod = "GET"
         connection.readTimeout = 10_000
 
-        val statusId = StatusManager.create("$listName requested")
+        val statusId = StatusManager.create("$listName data requested", dataRequestStatusGroup)
         Thread {
 
             try {
@@ -98,7 +100,7 @@ class HttpConnectionDataProvider : DataProvider() {
         connection.requestMethod = "GET"
         connection.readTimeout = 10_000
 
-        val statusId = StatusManager.create("searching started")
+        val statusId = StatusManager.create(message = "searching started")
 
         Thread {
             try {
@@ -149,7 +151,7 @@ class HttpConnectionDataProvider : DataProvider() {
         connection.requestMethod = "GET"
         connection.readTimeout = 10_000
 
-        val statusId = StatusManager.create("details for ${movie.title} requested")
+        val statusId = StatusManager.create(message = "details for ${movie.title} requested")
 
         Thread {
             try {
