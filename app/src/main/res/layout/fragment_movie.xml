@@ -149,9 +149,7 @@
             android:id="@+id/text_view_plot"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/item_margin"
-            android:layout_marginEnd="@dimen/item_margin"
-            android:layout_marginTop="@dimen/item_margin"
+            android:padding="@dimen/item_margin"
             tools:text="sldkf sdlkfjs dlfkjsd fldjld lskdjf ljf"/>
     </ScrollView>
 

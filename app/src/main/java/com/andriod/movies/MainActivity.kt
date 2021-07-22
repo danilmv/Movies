@@ -3,11 +3,13 @@ package com.andriod.movies
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.isVisible
 import com.andriod.movies.databinding.ActivityMainBinding
 import com.andriod.movies.entity.Movie
 import com.andriod.movies.fragment.MovieFragment
@@ -37,6 +39,10 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
 
     private fun setStatusBar() {
         binding.statusBar.setStatuses(StatusManager.statuses)
+        StatusManager.statuses.observe(this){
+            Log.d(TAG, "setStatusBar() called")
+            binding.statusBar.isVisible = it.values.isNotEmpty()
+        }
     }
 
     override fun onStart() {

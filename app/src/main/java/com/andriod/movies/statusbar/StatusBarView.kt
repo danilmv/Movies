@@ -8,8 +8,8 @@ import android.widget.LinearLayout
 import androidx.core.view.isVisible
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
-import com.andriod.movies.databinding.MovieListViewBinding
 import com.andriod.movies.databinding.StatusBarViewBinding
+
 
 class StatusBarView : LinearLayout {
 
@@ -28,20 +28,29 @@ class StatusBarView : LinearLayout {
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context,
         attrs,
         defStyleAttr) {
+        readAttributes(attrs)
         initView(context)
     }
 
-    fun setStatuses(statuses: LiveData<MutableMap<Int, String>>){
+    private fun readAttributes(attrs: AttributeSet?) {
+//        val array = context.obtainStyledAttributes(attrs, R.styleable.StatusBarView)
+//        mCustomAttribute = array.getFloat(R.styleable.MyCustomView_customAttribute,
+//            0.4f)
+//
+//        array.recycle()
+    }
+
+    fun setStatuses(statuses: LiveData<MutableMap<Int, String>>) {
         this.statuses = statuses
 
         statuses.observe(context as LifecycleOwner) {
             Log.d(TAG, "statuses.observe called")
 
             if (it.isEmpty()) {
-                binding.progressBar.isVisible = false
                 binding.textView.text = ""
+                binding.root.isVisible = false
             } else {
-                binding.progressBar.isVisible = true
+                binding.root.isVisible = true
                 binding.textView.text = it.values.joinToString(", ")
             }
         }
@@ -51,7 +60,7 @@ class StatusBarView : LinearLayout {
         binding = StatusBarViewBinding.inflate(LayoutInflater.from(context), this, true)
     }
 
-    companion object{
+    companion object {
         const val TAG = "@@StatusBarView"
     }
 }
