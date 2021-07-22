@@ -31,4 +31,11 @@ connection-error handling
 <img src="printscreens/lesson5_1.png" width="32%">
 <img src="printscreens/lesson5_2.png" width="32%">
 
+## Lesson5+: Internet access
+app changes: lists of movies; my status bar
+### Preview
+<img src="printscreens/lesson5+_1.png" width="32%">
+<img src="printscreens/lesson5+_2.png" width="32%">
+
+
 
