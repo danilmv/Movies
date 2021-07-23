@@ -47,7 +47,7 @@ class HttpConnectionDataProvider : DataProvider() {
         connection.readTimeout = 10_000
 
         val statusId = StatusManager.create("$listName data requested", dataRequestStatusGroup)
-        Thread {
+        dataHandler.post {
 
             try {
                 BufferedReader(InputStreamReader(connection.inputStream)).use {
@@ -71,7 +71,7 @@ class HttpConnectionDataProvider : DataProvider() {
                 Log.d(TAG, message)
                 exceptionCallback.invoke(message)
                 StatusManager.change(statusId, "$listName error occurred")
-                return@Thread
+                return@post
             } finally {
                 connection.disconnect()
                 StatusManager.close(statusId)
@@ -80,8 +80,7 @@ class HttpConnectionDataProvider : DataProvider() {
             if (data.isEmpty()) {
                 dataNotFoundCallback.invoke()
             }
-        }.also { it.isDaemon = true }
-            .start()
+        }
     }
 
     override fun findMovies(query: String) {
@@ -102,7 +101,7 @@ class HttpConnectionDataProvider : DataProvider() {
 
         val statusId = StatusManager.create(message = "searching started")
 
-        Thread {
+        dataHandler.post {
             try {
                 BufferedReader(InputStreamReader(connection.inputStream)).use {
                     for (movie in Movie.jsonTrendingToList(it.readLines().joinToString())) {
@@ -118,7 +117,7 @@ class HttpConnectionDataProvider : DataProvider() {
             } catch (e: Exception) {
                 Log.d(TAG, "startSearch: exception: ${e.message}")
                 exceptionCallback.invoke(e)
-                return@Thread
+                return@post
             } finally {
                 connection.disconnect()
                 StatusManager.close(statusId)
@@ -127,7 +126,7 @@ class HttpConnectionDataProvider : DataProvider() {
             if (searchResultsData.isEmpty()) {
                 dataNotFoundCallback.invoke()
             }
-        }.start()
+        }
     }
 
     override fun getMovieDetails(movie: Movie) {
@@ -153,7 +152,7 @@ class HttpConnectionDataProvider : DataProvider() {
 
         val statusId = StatusManager.create(message = "details for ${movie.title} requested")
 
-        Thread {
+        dataHandler.post {
             try {
                 BufferedReader(InputStreamReader(connection.inputStream)).use {
 
@@ -170,12 +169,12 @@ class HttpConnectionDataProvider : DataProvider() {
                 }
             } catch (e: Exception) {
                 Log.d(TAG, "init: exception: ${e.message}")
-                return@Thread
+                return@post
             } finally {
                 connection.disconnect()
                 StatusManager.close(statusId)
             }
-        }.start()
+        }
     }
 
     private fun requestGenres() {
@@ -187,7 +186,9 @@ class HttpConnectionDataProvider : DataProvider() {
         connection.requestMethod = "GET"
         connection.readTimeout = 10_000
 
-        Thread {
+        val statusId = StatusManager.create("Genres data requested", dataRequestStatusGroup)
+
+        dataHandler.post {
             try {
                 BufferedReader(InputStreamReader(connection.inputStream)).use {
                     for (genre in Genre.jsonToList(it.readLines().joinToString())) {
@@ -197,13 +198,15 @@ class HttpConnectionDataProvider : DataProvider() {
                 }
                 isGenresLoaded = true
                 updateGenres()
+                StatusManager.change(statusId, "searching finished")
             } catch (e: Exception) {
                 Log.d(TAG, "requestGenres: exception: ${e.message}")
             } finally {
                 connection.disconnect()
+                StatusManager.close(statusId)
             }
 
-        }.start()
+        }
     }
 
     private fun updateGenres(data: MutableMap<String, Movie> = this.data) {

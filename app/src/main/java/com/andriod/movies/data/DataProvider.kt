@@ -1,6 +1,7 @@
 package com.andriod.movies.data
 
 import android.os.Handler
+import android.os.HandlerThread
 import android.os.Looper
 import android.util.Log
 import com.andriod.movies.entity.Genre
@@ -28,6 +29,9 @@ abstract class DataProvider {
         }
     val genres: MutableMap<Int, Genre> = HashMap()
     var isGenresLoaded = false
+
+    protected val dataThread = HandlerThread("dataThread").apply { isDaemon = true;start() }
+    protected val dataHandler = Handler(dataThread.looper)
 
     init {
         startService()
