@@ -46,9 +46,9 @@ class HttpConnectionDataProvider : DataProvider() {
         connection.requestMethod = "GET"
         connection.readTimeout = 10_000
 
-        val statusId = StatusManager.create("$listName data requested", dataRequestStatusGroup)
+        val statusId =
+            StatusManager.create("waiting for: $listName data requested", dataRequestStatusGroup)
         dataHandler.post {
-
             try {
                 BufferedReader(InputStreamReader(connection.inputStream)).use {
                     for (movie in Movie.jsonTrendingToList(it.readLines().joinToString())) {
@@ -99,7 +99,8 @@ class HttpConnectionDataProvider : DataProvider() {
         connection.requestMethod = "GET"
         connection.readTimeout = 10_000
 
-        val statusId = StatusManager.create(message = "searching started")
+        val statusId =
+            StatusManager.create(message = "waiting for: searching results")
 
         dataHandler.post {
             try {
@@ -150,9 +151,10 @@ class HttpConnectionDataProvider : DataProvider() {
         connection.requestMethod = "GET"
         connection.readTimeout = 10_000
 
-        val statusId = StatusManager.create(message = "details for ${movie.title} requested")
+        val statusId = StatusManager.create(message = "waiting for: details for ${movie.title} requested")
 
         dataHandler.post {
+
             try {
                 BufferedReader(InputStreamReader(connection.inputStream)).use {
 
@@ -186,9 +188,10 @@ class HttpConnectionDataProvider : DataProvider() {
         connection.requestMethod = "GET"
         connection.readTimeout = 10_000
 
-        val statusId = StatusManager.create("Genres data requested", dataRequestStatusGroup)
+        val statusId = StatusManager.create("waiting for: genres data requested")
 
         dataHandler.post {
+
             try {
                 BufferedReader(InputStreamReader(connection.inputStream)).use {
                     for (genre in Genre.jsonToList(it.readLines().joinToString())) {

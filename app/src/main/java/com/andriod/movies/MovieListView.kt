@@ -59,6 +59,7 @@ class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener,
     private fun configureRecyclerView() {
         adapterMovie = MovieListAdapter()
         adapterMovie.listener = this
+        adapterMovie.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
         binding.recyclerView.layoutManager =
             LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
@@ -93,4 +94,7 @@ class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener,
         else -> title.compareTo(other.title)
     }
 
+    companion object{
+        const val TAG = "@@MovieListView"
+    }
 }

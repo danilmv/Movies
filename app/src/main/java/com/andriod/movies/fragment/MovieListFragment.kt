@@ -1,5 +1,6 @@
 package com.andriod.movies.fragment
 
+import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -21,6 +22,12 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
         get() = activity as MovieListContract?
 
     var showMode: ShowMode = ShowMode.LIST
+        set(value) {
+            field = value
+            configureContent()
+        }
+
+    private var isViewCreated = false
 
     private val groups = mutableSetOf<String?>()
     private val lists = TreeSet<MovieListView>()
@@ -35,12 +42,24 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
         return binding.root
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onResume() {
+        super.onResume()
         configureContent()
     }
 
+    override fun onAttach(activity: Activity) {
+        super.onAttach(activity)
+        isViewCreated = true
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        isViewCreated = false
+    }
+
     private fun configureContent() {
+        if (!isViewCreated) return
+
         groups.clear()
         lists.clear()
 
@@ -84,24 +103,25 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
                     if (!groups.contains(itemValue)) {
                         groups.add(itemValue)
 
-                        lists.add(MovieListView(context,
-                            itemValue,
-                            this@MovieListFragment)
-                        { movie ->
-                            if (groupByField.isList) {
-                                movie.listValue(groupByField)?.contains(itemValue!!) == true
-                            } else {
-                                movie.fieldValue(groupByField) == itemValue
+                        lists.add(
+                            MovieListView(context, itemValue, this@MovieListFragment)
+                            { movie ->
+                                if (groupByField.isList) {
+                                    movie.listValue(groupByField)?.contains(itemValue!!) == true
+                                } else {
+                                    movie.fieldValue(groupByField) == itemValue
+                                }
                             }
-                        }
                         )
-                        binding.container.removeAllViews()
-                        lists.forEach { movieListView -> binding.container.addView(movieListView) }
                     }
                 }
             }
         }
-        lists.forEach { movieListView -> movieListView.setData(list) }
+        binding.container.removeAllViews()
+        lists.forEach { movieListView ->
+            binding.container.addView(movieListView)
+            movieListView.setData(list)
+        }
     }
 
     override fun onDestroyView() {
@@ -110,9 +130,14 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
     }
 
     companion object {
-        private const val TAG = "@@ListFragment"
+        private const val TAG = "@@MovieListFragment"
 
-        enum class GroupBy(val id: Int, val isList:Boolean = false) { TYPE(0), YEAR(1), GENRE(2, true), LISTS(3, true) }
+        enum class GroupBy(val id: Int, val isList: Boolean = false) {
+            TYPE(0),
+            YEAR(1),
+            GENRE(2, true),
+            LISTS(3, true)
+        }
 
         private fun Movie.fieldValue(groupBy: GroupBy): String? = when (groupBy) {
             GroupBy.TYPE -> this._type
