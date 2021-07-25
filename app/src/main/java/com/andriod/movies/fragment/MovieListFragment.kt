@@ -138,12 +138,14 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
             TYPE(0),
             YEAR(1),
             GENRE(2, true),
-            LISTS(3, true)
+            LISTS(3, true),
+            RATING(4)
         }
 
         private fun Movie.fieldValue(groupBy: GroupBy): String? = when (groupBy) {
             GroupBy.TYPE -> this._type
             GroupBy.YEAR -> this.year
+            GroupBy.RATING -> this.rating
             else -> null
         }
 

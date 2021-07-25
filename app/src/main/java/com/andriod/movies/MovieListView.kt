@@ -90,6 +90,7 @@ class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener,
         MovieListFragment.Companion.GroupBy.GENRE -> title.compareTo(other.title)
         MovieListFragment.Companion.GroupBy.YEAR -> title.compareTo(other.title) * -1
         MovieListFragment.Companion.GroupBy.TYPE -> title.compareTo(other.title)
+        MovieListFragment.Companion.GroupBy.RATING -> title.compareTo(other.title) * -1
         null -> 0
         else -> title.compareTo(other.title)
     }
