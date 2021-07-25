@@ -134,12 +134,12 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
     companion object {
         private const val TAG = "@@MovieListFragment"
 
-        enum class GroupBy(val id: Int, val isList: Boolean = false) {
+        enum class GroupBy(val id: Int, val isList: Boolean = false, val isInverse:Boolean = false) {
             TYPE(0),
-            YEAR(1),
+            YEAR(1, isInverse = true),
             GENRE(2, true),
             LISTS(3, true),
-            RATING(4)
+            RATING(4, isInverse = true)
         }
 
         private fun Movie.fieldValue(groupBy: GroupBy): String? = when (groupBy) {
