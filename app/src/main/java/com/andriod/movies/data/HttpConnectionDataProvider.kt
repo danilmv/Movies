@@ -56,7 +56,7 @@ class HttpConnectionDataProvider : DataProvider() {
         connection.readTimeout = 10_000
 
         val statusId =
-            StatusManager.create("waiting for: $listName data requested", dataRequestStatusGroup)
+            StatusManager.create("waiting for: $listName data requested, page = $page", dataRequestStatusGroup)
         dataHandler.post {
             try {
                 BufferedReader(InputStreamReader(connection.inputStream)).use {
