@@ -1,5 +1,6 @@
 package com.andriod.movies.fragment
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,9 @@ import com.andriod.movies.databinding.FragmentSettingsBinding
 class SettingsFragment : Fragment() {
     private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding!!
+
+    private val contract: SettingsContract?
+        get() = activity as SettingsContract?
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,10 +54,21 @@ class SettingsFragment : Fragment() {
                 }
 
             }
+
+        binding.buttonStartService.setOnClickListener { contract?.onStartService() }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+    }
+
+    interface SettingsContract{
+        fun onStartService()
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        check(context is SettingsContract) { "Activity must implement SettingsContract" }
     }
 }

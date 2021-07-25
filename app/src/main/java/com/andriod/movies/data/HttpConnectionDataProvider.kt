@@ -14,6 +14,8 @@ class HttpConnectionDataProvider : DataProvider() {
 
     private val dataRequestStatusGroup = 1
 
+    private var moreDataPage = 2
+
     override fun startService() {
         errorMessage = ""
 
@@ -33,15 +35,22 @@ class HttpConnectionDataProvider : DataProvider() {
         requestGenres()
     }
 
+    override fun requestMoreData() {
+        requestData("https://api.themoviedb.org/3/movie/top_rated",
+            listName = "top rated",
+            page = moreDataPage++)
+    }
+
     private fun requestData(
         url: String,
         data: MutableMap<String, Movie> = this.data,
         listName: String,
         exceptionCallback: (String) -> Unit = {},
         dataNotFoundCallback: () -> Unit = {},
+        page: Int = 1,
     ) {
         val connection =
-            URL("${url}?api_key=${BuildConfig.MOVIE_API_KEY}")
+            URL("${url}?&api_key=${BuildConfig.MOVIE_API_KEY}&page=$page")
                 .openConnection() as HttpsURLConnection
         connection.requestMethod = "GET"
         connection.readTimeout = 10_000
@@ -151,7 +160,8 @@ class HttpConnectionDataProvider : DataProvider() {
         connection.requestMethod = "GET"
         connection.readTimeout = 10_000
 
-        val statusId = StatusManager.create(message = "waiting for: details for ${movie.title} requested")
+        val statusId =
+            StatusManager.create(message = "waiting for: details for ${movie.title} requested")
 
         dataHandler.post {
 

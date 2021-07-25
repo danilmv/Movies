@@ -49,12 +49,14 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
 
     override fun onAttach(activity: Activity) {
         super.onAttach(activity)
+        check(context is MovieListContract) { "Activity must implement MovieListContract" }
         isViewCreated = true
     }
 
     override fun onDetach() {
         super.onDetach()
         isViewCreated = false
+        _binding = null
     }
 
     private fun configureContent() {

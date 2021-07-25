@@ -1,6 +1,7 @@
 package com.andriod.movies
 
 import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.Menu
@@ -15,10 +16,11 @@ import com.andriod.movies.entity.Movie
 import com.andriod.movies.fragment.MovieFragment
 import com.andriod.movies.fragment.MovieListFragment
 import com.andriod.movies.fragment.SettingsFragment
+import com.andriod.movies.services.MovieDataDownloadService
 import com.andriod.movies.statusbar.StatusManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
+class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract, SettingsFragment.SettingsContract,
     MovieFragment.MovieContract {
     private var isLandscape = false
     private lateinit var bottomNavigationView: BottomNavigationView
@@ -174,5 +176,9 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
 
     companion object {
         const val TAG = "@@MainActivity"
+    }
+
+    override fun onStartService() {
+        startService(Intent(this, MovieDataDownloadService::class.java))
     }
 }

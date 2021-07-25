@@ -72,6 +72,7 @@ abstract class DataProvider {
     abstract fun startService()
 
     open fun getMovieDetails(movie: Movie) {}
+    open fun requestMoreData(){}
 
     companion object {
         const val TAG = "@@DataProvider"
