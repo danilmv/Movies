@@ -3,7 +3,6 @@ package com.andriod.movies.fragment
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +15,7 @@ import com.andriod.movies.entity.Movie
 import kotlinx.android.synthetic.main.movie_list_view.view.*
 import java.util.*
 
-class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
+class MovieListFragment : Fragment(), MovieListView.MovieListViewContract {
     private var _binding: FragmentMovieListBinding? = null
     private val binding: FragmentMovieListBinding get() = _binding!!
 
@@ -36,6 +35,7 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
     private var groupByField: GroupBy = MyViewModel.groupBy.value ?: GroupBy.TYPE
 
     private val listOfId = mutableMapOf<String, Int>()
+    private val viewsState = mutableMapOf<Int, MovieListView.Companion.SortBy>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,16 +47,13 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        Log.d(TAG,
-            "onViewCreated() called with: view = $view, savedInstanceState = $savedInstanceState")
         super.onViewCreated(view, savedInstanceState)
         view.isSaveEnabled = true
-        configureContent()
     }
 
     override fun onResume() {
         super.onResume()
-        Log.d(TAG, "onResume() called")
+        configureContent()
     }
 
     override fun onAttach(activity: Activity) {
@@ -69,16 +66,6 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
         super.onDetach()
         isViewCreated = false
         _binding = null
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        Log.d(TAG, "onSaveInstanceState() called with: outState = $outState")
-        super.onSaveInstanceState(outState)
-    }
-
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        Log.d(TAG, "onViewStateRestored() called with: savedInstanceState = $savedInstanceState")
-        super.onViewStateRestored(savedInstanceState)
     }
 
     private fun configureContent() {
@@ -135,14 +122,16 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
                                 } else {
                                     movie.fieldValue(groupByField) == itemValue
                                 }
-                            }.apply { id = getViewIdByTitle(itemValue ?: "")
-                            isSaveEnabled = true}
+                            }.apply {
+                                id = getViewIdByTitle(itemValue ?: "")
+                                sortBy = viewsState[id] ?: MovieListView.Companion.SortBy.UNSORTED
+                                    .also { viewsState[id] = it }
+                            }
                         )
                     }
                 }
             }
         }
-        Log.d(TAG, "showData() >> listViews added")
         binding.container.removeAllViews()
         lists.forEach { movieListView ->
             binding.container.addView(movieListView)
@@ -208,5 +197,9 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
 
     override fun onFavoriteChanged(movie: Movie) {
         contract?.onMovieChanged(movie)
+    }
+
+    override fun onStateChanged(viewId: Int, sortBy: MovieListView.Companion.SortBy) {
+        viewsState[viewId] = sortBy
     }
 }

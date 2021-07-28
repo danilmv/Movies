@@ -1,10 +1,7 @@
 package com.andriod.movies
 
 import android.content.Context
-import android.os.Bundle
-import android.os.Parcelable
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.AdapterView
@@ -26,9 +23,9 @@ class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener,
     private lateinit var adapterMovie: MovieListAdapter
     lateinit var title: String
     private var filter: MyPredicate = { false }
-    private var listener: OnItemClickListener? = null
+    private var contract: MovieListViewContract? = null
 
-    var sortBy: SortBy = SortBy.SORT
+    var sortBy: SortBy = SortBy.UNSORTED
 
     constructor(context: Context?) : super(context) {
         initView(context)
@@ -47,12 +44,12 @@ class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener,
     constructor(
         context: Context?,
         title: String?,
-        listener: OnItemClickListener,
+        contract: MovieListViewContract,
         filter: MyPredicate,
     ) : super(context) {
         this.title = title ?: "?"
         this.filter = filter
-        this.listener = listener
+        this.contract = contract
 
         initView(context)
     }
@@ -61,6 +58,11 @@ class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener,
         binding = MovieListViewBinding.inflate(LayoutInflater.from(context), this, true)
 
         isSaveEnabled = true
+
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
 
         configureRecyclerView()
         configureSortBySpinner()
@@ -84,6 +86,7 @@ class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener,
                 ) {
                     sortBy = SortBy.values()[position]
                     resortData()
+                    contract?.onStateChanged(this@MovieListView.id, sortBy)
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -98,7 +101,7 @@ class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener,
     private fun List<Movie>.sort(): List<Movie> {
         return this.sortedWith { o1, o2 ->
             when (sortBy) {
-                SortBy.SORT -> 0
+                SortBy.UNSORTED -> 0
                 SortBy.RATING -> o1.rating?.let { o2.rating?.compareTo(it) }!!
                 SortBy.YEAR -> o2.year.compareTo(o1.year)
                 SortBy.TITLE -> o1.title.compareTo(o2.title)
@@ -124,17 +127,18 @@ class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener,
         binding.textViewHeader.isVisible = adapterMovie.movies.isNotEmpty()
     }
 
-    interface OnItemClickListener {
+    interface MovieListViewContract {
         fun onItemClick(movie: Movie)
         fun onFavoriteChanged(movie: Movie)
+        fun onStateChanged(viewId: Int, sortBy: SortBy)
     }
 
     override fun onItemClick(movie: Movie) {
-        listener?.onItemClick(movie)
+        contract?.onItemClick(movie)
     }
 
     override fun onFavoriteChanged(movie: Movie) {
-        listener?.onFavoriteChanged(movie)
+        contract?.onFavoriteChanged(movie)
     }
 
     override fun compareTo(other: MovieListView): Int = when (MyViewModel.groupBy.value) {
@@ -142,47 +146,14 @@ class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener,
         else -> title.compareTo(other.title) * if (MyViewModel.groupBy.value!!.isInverse) -1 else 1
     }
 
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-
-        Log.d(TAG, "onAttachedToWindow() called")
-    }
-
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        Log.d(TAG, "onDetachedFromWindow() called")
-    }
-
-    override fun onSaveInstanceState(): Parcelable {
-        Log.d(TAG, "onSaveInstanceState() called")
-        return Bundle().apply {
-            putParcelable(SAVE_INSTANCE_KEY_SUPER, super.onSaveInstanceState())
-            putString(SAVE_INSTANCE_KEY_SORTED_BY, sortBy.name)
-        }
-    }
-
-    override fun onRestoreInstanceState(state: Parcelable?) {
-        Log.d(TAG, "onRestoreInstanceState() called with: state = $state")
-        var superState = state
-        if (state != null && state is Bundle) {
-            sortBy = SortBy.valueOf(
-                state.getString(SAVE_INSTANCE_KEY_SORTED_BY) ?: SortBy.SORT.name)
-
-            superState = state.getParcelable(SAVE_INSTANCE_KEY_SUPER)
-        }
-        super.onRestoreInstanceState(superState)
-    }
-
     companion object {
         const val TAG = "@@MovieListView"
-        const val SAVE_INSTANCE_KEY_SUPER = "super"
-        const val SAVE_INSTANCE_KEY_SORTED_BY = "sorted_by"
 
         enum class SortBy(val id: Int) {
-            SORT(0),
+            UNSORTED(0),
             RATING(1),
             YEAR(2),
-            TITLE(2),
+            TITLE(3),
         }
     }
 }
