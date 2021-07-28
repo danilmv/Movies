@@ -21,7 +21,7 @@ class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener,
     Comparable<MovieListView> {
     private lateinit var binding: MovieListViewBinding
     private lateinit var adapterMovie: MovieListAdapter
-    lateinit var title: String
+    var title: String = "?"
     private var filter: MyPredicate = { false }
     private var contract: MovieListViewContract? = null
 
