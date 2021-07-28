@@ -42,5 +42,12 @@ app changes: HandlerThread processing all requests; Service (for future backgrou
 ### Preview
 <img src="printscreens/lesson6_1.png" width="32%">
 
+## Lesson+: 
+app changes: sort list; search result navigatio
+### Preview
+<img src="printscreens/lesson6+_1.png" width="32%">
+<img src="printscreens/lesson6+_2.png" width="32%">
+
+
 
 
