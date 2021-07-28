@@ -1,7 +1,10 @@
 package com.andriod.movies
 
 import android.content.Context
+import android.os.Bundle
+import android.os.Parcelable
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.AdapterView
@@ -25,7 +28,7 @@ class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener,
     private var filter: MyPredicate = { false }
     private var listener: OnItemClickListener? = null
 
-    private var sortBy: SortBy = SortBy.SORT
+    var sortBy: SortBy = SortBy.SORT
 
     constructor(context: Context?) : super(context) {
         initView(context)
@@ -56,6 +59,8 @@ class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener,
 
     private fun initView(context: Context?) {
         binding = MovieListViewBinding.inflate(LayoutInflater.from(context), this, true)
+
+        isSaveEnabled = true
 
         configureRecyclerView()
         configureSortBySpinner()
@@ -137,8 +142,41 @@ class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener,
         else -> title.compareTo(other.title) * if (MyViewModel.groupBy.value!!.isInverse) -1 else 1
     }
 
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+
+        Log.d(TAG, "onAttachedToWindow() called")
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        Log.d(TAG, "onDetachedFromWindow() called")
+    }
+
+    override fun onSaveInstanceState(): Parcelable {
+        Log.d(TAG, "onSaveInstanceState() called")
+        return Bundle().apply {
+            putParcelable(SAVE_INSTANCE_KEY_SUPER, super.onSaveInstanceState())
+            putString(SAVE_INSTANCE_KEY_SORTED_BY, sortBy.name)
+        }
+    }
+
+    override fun onRestoreInstanceState(state: Parcelable?) {
+        Log.d(TAG, "onRestoreInstanceState() called with: state = $state")
+        var superState = state
+        if (state != null && state is Bundle) {
+            sortBy = SortBy.valueOf(
+                state.getString(SAVE_INSTANCE_KEY_SORTED_BY) ?: SortBy.SORT.name)
+
+            superState = state.getParcelable(SAVE_INSTANCE_KEY_SUPER)
+        }
+        super.onRestoreInstanceState(superState)
+    }
+
     companion object {
         const val TAG = "@@MovieListView"
+        const val SAVE_INSTANCE_KEY_SUPER = "super"
+        const val SAVE_INSTANCE_KEY_SORTED_BY = "sorted_by"
 
         enum class SortBy(val id: Int) {
             SORT(0),
