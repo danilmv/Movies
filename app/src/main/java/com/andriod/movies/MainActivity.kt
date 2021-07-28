@@ -94,6 +94,8 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
     }
 
     private fun showSettings() {
+        supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+
         supportFragmentManager
             .beginTransaction()
             .replace(R.id.main_container, settingsFragment)
@@ -104,6 +106,7 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
 
     private fun showList(showMode: MovieListFragment.Companion.ShowMode) {
         listFragment.showMode = showMode
+        supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
 
         supportFragmentManager
             .beginTransaction()

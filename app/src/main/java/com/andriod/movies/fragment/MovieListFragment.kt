@@ -3,6 +3,7 @@ package com.andriod.movies.fragment
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -95,7 +96,7 @@ class MovieListFragment : Fragment(), MovieListView.MovieListViewContract {
                 val list = when (showMode) {
                     ShowMode.LIST -> it.values.toList()
                     ShowMode.FAVORITES -> it.values.toList().filter { movie -> movie.isFavorite }
-                    ShowMode.SEARCHING -> return@observe
+                    else -> return@observe
                 }
                 showData(list)
             }
@@ -114,18 +115,18 @@ class MovieListFragment : Fragment(), MovieListView.MovieListViewContract {
                     if (!groups.contains(itemValue)) {
                         groups.add(itemValue)
 
+                        val id = getViewIdByTitle(itemValue ?: "")
+                        val sortBy = viewsState[id] ?: MovieListView.Companion.SortBy.UNSORTED
+                            .also { viewsState[id] = it }
+
                         lists.add(
-                            MovieListView(context, itemValue, this@MovieListFragment)
+                            MovieListView(context, itemValue, this@MovieListFragment, sortBy, id)
                             { movie ->
                                 if (groupByField.isList) {
                                     movie.listValue(groupByField)?.contains(itemValue!!) == true
                                 } else {
                                     movie.fieldValue(groupByField) == itemValue
                                 }
-                            }.apply {
-                                id = getViewIdByTitle(itemValue ?: "")
-                                sortBy = viewsState[id] ?: MovieListView.Companion.SortBy.UNSORTED
-                                    .also { viewsState[id] = it }
                             }
                         )
                     }

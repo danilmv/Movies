@@ -45,24 +45,21 @@ class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener,
         context: Context?,
         title: String?,
         contract: MovieListViewContract,
+        sortBy: SortBy = SortBy.UNSORTED,
+        id: Int? = null,
         filter: MyPredicate,
     ) : super(context) {
         this.title = title ?: "?"
         this.filter = filter
         this.contract = contract
+        this.sortBy = sortBy
+        if (id != null) this.id = id
 
         initView(context)
     }
 
     private fun initView(context: Context?) {
         binding = MovieListViewBinding.inflate(LayoutInflater.from(context), this, true)
-
-        isSaveEnabled = true
-
-    }
-
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
 
         configureRecyclerView()
         configureSortBySpinner()
