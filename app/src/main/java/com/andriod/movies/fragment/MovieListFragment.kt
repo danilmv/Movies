@@ -36,7 +36,7 @@ class MovieListFragment : Fragment(), MovieListView.MovieListViewContract {
     private var groupByField: GroupBy = MyViewModel.groupBy.value ?: GroupBy.TYPE
 
     private val listOfId = mutableMapOf<String, Int>()
-    private val viewsState = mutableMapOf<Int, MovieListView.Companion.SortBy>()
+    private val viewsState = mutableMapOf<String, MovieListView.Companion.SortBy>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -116,8 +116,9 @@ class MovieListFragment : Fragment(), MovieListView.MovieListViewContract {
                         groups.add(itemValue)
 
                         val id = getViewIdByTitle(itemValue ?: "")
-                        val sortBy = viewsState[id] ?: MovieListView.Companion.SortBy.UNSORTED
-                            .also { viewsState[id] = it }
+                        val stateId = "$id${showMode.name}"
+                        val sortBy = viewsState[stateId] ?: MovieListView.Companion.SortBy.UNSORTED
+                            .also { viewsState[stateId] = it }
 
                         lists.add(
                             MovieListView(context, itemValue, this@MovieListFragment, sortBy, id)
@@ -201,6 +202,6 @@ class MovieListFragment : Fragment(), MovieListView.MovieListViewContract {
     }
 
     override fun onStateChanged(viewId: Int, sortBy: MovieListView.Companion.SortBy) {
-        viewsState[viewId] = sortBy
+        viewsState["$viewId${showMode.name}"] = sortBy
     }
 }
