@@ -40,10 +40,10 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
         isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
         configureBottomView()
-        setStatusBar()
+        configureStatusBar()
     }
 
-    private fun setStatusBar() {
+    private fun configureStatusBar() {
         binding.statusBar.setStatuses(StatusManager.statuses)
         StatusManager.statuses.observe(this) {
             binding.statusBar.isVisible = it.values.isNotEmpty()

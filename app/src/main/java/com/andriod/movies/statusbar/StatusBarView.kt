@@ -2,15 +2,12 @@ package com.andriod.movies.statusbar
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import androidx.core.view.isVisible
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import com.andriod.movies.databinding.StatusBarViewBinding
-import java.lang.Exception
-import java.lang.StringBuilder
 import java.lang.Thread.sleep
 
 
@@ -51,8 +48,6 @@ class StatusBarView : LinearLayout {
         this.statuses = statuses
 
         statuses.observe(context as LifecycleOwner) {
-            Log.d(TAG, "statuses.observe called")
-
             if (it.isEmpty()) {
                 binding.textView.text = ""
                 binding.root.isVisible = false
@@ -69,9 +64,8 @@ class StatusBarView : LinearLayout {
         val sb = mutableListOf<String?>()
         for (group in StatusManager.groups) {
             try {
-                sb.add(getNextValueFromGroup(group, values))
+                if (group.value.isNotEmpty()) sb.add(getNextValueFromGroup(group, values))
             } catch (e: Exception) {
-                return ""
             }
         }
         return sb.joinToString("\n")
@@ -104,8 +98,8 @@ class StatusBarView : LinearLayout {
 
                 if (System.currentTimeMillis() - lastTimeDataRefreshed >= REFRESH_TIME) {
                     statuses.value?.let {
-                        if (it.isNotEmpty()) binding.textView.post {
-                            binding.textView.text = getStatusText(it)
+                        if (it.isNotEmpty()) {
+                            binding.textView.post { binding.textView.text = getStatusText(it) }
                         }
                     }
                 }

@@ -26,11 +26,12 @@ object StatusManager {
     fun create(message: String, groupId: Int = currentGroupId++): Int {
         val id = currentId++
         statusesMap[id] = message
-        _statuses.postValue(statusesMap)
 
         if (_groups[groupId] == null) _groups[groupId] = TreeSet()
         _groups[groupId]?.add(id)
         groupById[id] = groupId
+
+        _statuses.postValue(statusesMap)
 
         return id
     }
