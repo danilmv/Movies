@@ -65,6 +65,12 @@ abstract class DataProvider {
             data[movie.id] = movie
         }
         notifySubscribers((SubscriberType.DATA))
+
+
+        if (searchResultsData.containsKey(movie.id)){
+            searchResultsData[movie.id]?.populateData(data[movie.id]?:movie)
+            notifySubscribers((SubscriberType.SEARCH))
+        }
     }
 
     abstract fun findMovies(query: String)

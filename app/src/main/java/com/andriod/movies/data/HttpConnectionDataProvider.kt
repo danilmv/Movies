@@ -177,6 +177,11 @@ class HttpConnectionDataProvider : DataProvider() {
                     updateGenres(data)
                     notifySubscribers(DataProvider.Companion.SubscriberType.DATA)
 
+                    if (searchResultsData.containsKey(movie.id)){
+                        searchResultsData[movie.id]?.populateData(data[movie.id]?:movie)
+                        notifySubscribers((DataProvider.Companion.SubscriberType.SEARCH))
+                    }
+
                     StatusManager.change(statusId, "details received")
                 }
             } catch (e: Exception) {
