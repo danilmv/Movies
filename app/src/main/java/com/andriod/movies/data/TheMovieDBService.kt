@@ -7,6 +7,6 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface TheMovieDBService {
-    @GET("/3/movie/{list}?&api_key=${BuildConfig.MOVIE_API_KEY}&page={page}")
+    @GET("3/movie/{list}?&api_key=${BuildConfig.MOVIE_API_KEY}&page={page}")
     fun getMovie(@Path("list") list: String, @Path("page") page: Int = 1): Call<List<Movie>>
 }

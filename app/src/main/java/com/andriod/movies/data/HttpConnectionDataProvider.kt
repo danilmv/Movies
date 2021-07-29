@@ -227,21 +227,6 @@ class HttpConnectionDataProvider : DataProvider() {
         }
     }
 
-    private fun updateGenres(data: MutableMap<String, Movie> = this.data) {
-        if (!isGenresLoaded) return
-
-        for (movie in data.values.filter { !it.isGenreUpdated }) {
-            movie.isGenreUpdated = true
-            if (movie._genre.isNullOrEmpty()) {
-                continue
-            }
-            for (i in movie.genre.indices) {
-                movie._genre[i] = genres[movie._genre[i].toInt()]?.name ?: "?"
-            }
-        }
-        notifySubscribers(DataProvider.Companion.SubscriberType.DATA)
-    }
-
     companion object {
         const val TAG = "@@HttpConnectionDataPr"
     }
