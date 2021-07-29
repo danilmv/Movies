@@ -1,16 +1,10 @@
 package com.andriod.movies.data
 
-import android.util.Log
-import com.andriod.movies.BuildConfig
 import com.andriod.movies.entity.*
 import com.andriod.movies.statusbar.StatusManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.net.URL
-import javax.net.ssl.HttpsURLConnection
 
 
 class RetrofitDataProvider(private val service: TheMovieDBService) : DataProvider() {
