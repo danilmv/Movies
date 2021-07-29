@@ -22,7 +22,7 @@ data class Movie(
     @SerializedName("vote_average") var rating: String?,
     @SerializedName("vote_count") var votes: String?,
     @SerializedName("revenue") var _revenue: Int?,
-    @SerializedName("media_type") var _type: String? = "",
+    @SerializedName("media_type") var _type: String = "",
     @SerializedName("budget") var budget: String? = "",
     var isFavorite: Boolean = false,
 
@@ -76,7 +76,7 @@ data class Movie(
         if (movie.rating != null) rating = movie.rating
         if (movie.votes != null) votes = movie.votes
         if (movie._revenue != null) _revenue = movie._revenue
-        if (movie._type != null) _type = movie._type
+        if (movie._type != "") _type = movie._type
         if (movie.budget != null) budget = movie._type
         if (movie.isDetailsReceived) isDetailsReceived = movie.isDetailsReceived
         if (movie.isFavorite) isFavorite = movie.isFavorite
@@ -167,7 +167,7 @@ data class Movie(
                 try {
                     jsonObj.getString("media_type")
                 } catch (exception: JSONException) {
-                    null
+                    ""
                 },
                 try {
                     jsonObj.getString("budget")
@@ -245,7 +245,7 @@ data class Movie(
                 try {
                     jsonObj.getString("media_type")
                 } catch (exception: JSONException) {
-                    null
+                    ""
                 }
             ).also { it.isDetailsReceived = true }
         }

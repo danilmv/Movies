@@ -8,11 +8,9 @@ import com.andriod.movies.statusbar.StatusManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 
-class RetrofitDataProvider(private val service:TheMovieDBService) : DataProvider() {
+class RetrofitDataProvider(private val service: TheMovieDBService) : DataProvider() {
     private val dataRequestStatusGroup = 1
 
     init {
@@ -147,6 +145,47 @@ class RetrofitDataProvider(private val service:TheMovieDBService) : DataProvider
             }
         )
     }
+
+    override fun getMovieDetails(movie: Movie) {
+        super.getMovieDetails(movie)
+
+        requestMovieDetails(movie)
+    }
+
+    private fun requestMovieDetails(movie: Movie) {
+
+        val statusId =
+            StatusManager.create(message = "waiting for: details for ${movie.title} requested")
+
+        service.getDetails(movie._type, movie.id).enqueue(object : Callback<Movie> {
+            override fun onResponse(call: Call<Movie>, response: Response<Movie>) {
+                if (response.isSuccessful) {
+                    response.body()?.let { movie->
+                        movie.isDetailsReceived = true
+                        if (data.containsKey(movie.id)) {
+                            data[movie.id]?.populateData(movie)
+                        } else {
+                            data[movie.id] = movie
+                        }
+                        updateGenres(data)
+                        notifySubscribers(Companion.SubscriberType.DATA)
+
+                        if (searchResultsData.containsKey(movie.id)) {
+                            searchResultsData[movie.id]?.populateData(data[movie.id] ?: movie)
+                            notifySubscribers((Companion.SubscriberType.SEARCH))
+                        }
+
+                        StatusManager.close(statusId)
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<Movie>, t: Throwable) {
+            }
+
+        })
+    }
+
 
     override fun findMovies(query: String) {
         TODO("Not yet implemented")
