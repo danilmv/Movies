@@ -1,13 +1,16 @@
 package com.andriod.movies.data
 
-import com.andriod.movies.entity.Genres
-import com.andriod.movies.entity.Movie
-import com.andriod.movies.entity.MovieList
-import com.andriod.movies.entity.Trending
+import android.util.Log
+import com.andriod.movies.BuildConfig
+import com.andriod.movies.entity.*
 import com.andriod.movies.statusbar.StatusManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.net.URL
+import javax.net.ssl.HttpsURLConnection
 
 
 class RetrofitDataProvider(private val service: TheMovieDBService) : DataProvider() {
@@ -160,7 +163,7 @@ class RetrofitDataProvider(private val service: TheMovieDBService) : DataProvide
         service.getDetails(movie._type, movie.id).enqueue(object : Callback<Movie> {
             override fun onResponse(call: Call<Movie>, response: Response<Movie>) {
                 if (response.isSuccessful) {
-                    response.body()?.let { movie->
+                    response.body()?.let { movie ->
                         movie.isDetailsReceived = true
                         if (data.containsKey(movie.id)) {
                             data[movie.id]?.populateData(movie)
@@ -181,6 +184,7 @@ class RetrofitDataProvider(private val service: TheMovieDBService) : DataProvide
             }
 
             override fun onFailure(call: Call<Movie>, t: Throwable) {
+                StatusManager.close(statusId)
             }
 
         })
@@ -188,6 +192,28 @@ class RetrofitDataProvider(private val service: TheMovieDBService) : DataProvide
 
 
     override fun findMovies(query: String) {
-        TODO("Not yet implemented")
+        val statusId = StatusManager.create(message = "waiting for: searching results")
+
+        searchResultsData.clear()
+
+        service.getSearching(query).enqueue(object : Callback<SearchResults> {
+            override fun onResponse(call: Call<SearchResults>, response: Response<SearchResults>) {
+                if (response.isSuccessful) {
+                    response.body()?.results?.forEach { movie ->
+                        movie._type = Movie.Companion.TYPE.TYPE_MOVIE.value
+                        searchResultsData[movie.id] = data[movie.id] ?: movie
+                    }
+                    updateGenres(searchResultsData)
+                    notifySubscribers(Companion.SubscriberType.SEARCH)
+                    StatusManager.close(statusId)
+                }
+            }
+
+            override fun onFailure(call: Call<SearchResults>, t: Throwable) {
+                StatusManager.close(statusId)
+            }
+        })
     }
+
+
 }

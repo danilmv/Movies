@@ -1,10 +1,7 @@
 package com.andriod.movies.data
 
 import com.andriod.movies.BuildConfig
-import com.andriod.movies.entity.Genres
-import com.andriod.movies.entity.Movie
-import com.andriod.movies.entity.MovieList
-import com.andriod.movies.entity.Trending
+import com.andriod.movies.entity.*
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -30,4 +27,10 @@ interface TheMovieDBService {
         @Path("type") type: String,
         @Path("id") id: String,
     ): Call<Movie>
+
+    @GET("3/search/movie?api_key=${BuildConfig.MOVIE_API_KEY}")
+    fun getSearching(
+        @Query("query") query: String,
+        @Query("page") page: Int = 1,
+    ): Call<SearchResults>
 }
