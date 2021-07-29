@@ -55,9 +55,10 @@ data class Movie(
 
     var isGenreUpdated = false
 
-    val lists = mutableListOf("")
+    var lists:MutableList<String> = mutableListOf("")
 
     fun addList(list: String) {
+        if(lists == null) lists = mutableListOf("")
         if (!lists.contains(list)) lists.add(list)
         lists.remove("")
     }
