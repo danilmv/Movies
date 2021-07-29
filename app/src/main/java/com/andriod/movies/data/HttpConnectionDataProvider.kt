@@ -16,6 +16,10 @@ class HttpConnectionDataProvider : DataProvider() {
 
     private var moreDataPage = 2
 
+    init {
+        startService()
+    }
+
     override fun startService() {
         errorMessage = ""
 

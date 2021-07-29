@@ -12,22 +12,14 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 
-class RetrofitDataProvider() : DataProvider() {
+class RetrofitDataProvider(private val service:TheMovieDBService) : DataProvider() {
     private val dataRequestStatusGroup = 1
-    private var retrofit: Retrofit? = null
-    private lateinit var service: TheMovieDBService
 
+    init {
+        startService()
+    }
 
     override fun startService() {
-        if (retrofit == null) {
-            retrofit = Retrofit.Builder()
-                .addConverterFactory(GsonConverterFactory.create())
-                .baseUrl("https://api.themoviedb.org/")
-                .build()
-
-            service = retrofit!!.create(TheMovieDBService::class.java)
-        }
-
         errorMessage = ""
 
         requestTrending("trending", { message: String -> errorMessage = message })

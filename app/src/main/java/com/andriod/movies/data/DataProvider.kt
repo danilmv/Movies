@@ -30,12 +30,8 @@ abstract class DataProvider {
     val genres: MutableMap<Int, Genre> = HashMap()
     var isGenresLoaded = false
 
-    protected val dataThread = HandlerThread("dataThread").apply { isDaemon = true;start() }
+    private val dataThread = HandlerThread("dataThread").apply { isDaemon = true;start() }
     protected val dataHandler = Handler(dataThread.looper)
-
-    init {
-        startService()
-    }
 
     protected fun notifySubscribers(type: SubscriberType) {
         subscribers[type]?.let {
