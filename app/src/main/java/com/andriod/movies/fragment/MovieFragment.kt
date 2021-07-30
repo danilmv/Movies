@@ -77,6 +77,8 @@ class MovieFragment : Fragment() {
         movie?.poster?.let {
             Glide.with(binding.root)
                 .load(it)
+                .placeholder(binding.imageViewPoster.drawable)
+                .centerCrop()
                 .into(binding.imageViewPoster)
         }
     }
