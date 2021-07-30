@@ -37,6 +37,7 @@ class RetrofitDataProvider(private val service: TheMovieDBService) : DataProvide
     ) {
         val statusId = StatusManager.create("waiting for: $listName data requested, page = $page",
             dataRequestStatusGroup)
+
         service.getMovieList(url, page).enqueue(
             object : Callback<MovieList> {
                 override fun onResponse(call: Call<MovieList>, response: Response<MovieList>) {

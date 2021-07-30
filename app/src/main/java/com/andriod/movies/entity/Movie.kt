@@ -7,26 +7,51 @@ import org.json.JSONException
 import org.json.JSONObject
 
 @Parcelize
-data class Movie(
-    @SerializedName("id") val id: String,
-    @SerializedName("title") var _title: String?,
-    @SerializedName("name") var name: String?,
-    @SerializedName("original_title") var originalTitle: String?,
-    @SerializedName("runtime") var runtime: String?,
-    @SerializedName("release_date") var released: String?,
-    @SerializedName("genre_ids") var _genre: MutableList<String> = mutableListOf<String>(),
-//    @SerializedName("Director") val director: String,
-//    @SerializedName("Actors") val actors: String,
-    @SerializedName("overview") var plot: String?,
-    @SerializedName("poster_path") var poster: String?,
-    @SerializedName("vote_average") var rating: String?,
-    @SerializedName("vote_count") var votes: String?,
-    @SerializedName("revenue") var _revenue: Int?,
-    @SerializedName("media_type") var _type: String = "",
-    @SerializedName("budget") var budget: String? = "",
-    var isFavorite: Boolean = false,
+class Movie : Parcelable {
+    @SerializedName("id")
+    lateinit var id: String
 
-    ) : Parcelable {
+    @SerializedName("title")
+    var _title: String? = null
+
+    @SerializedName("name")
+    var name: String? = null
+
+    @SerializedName("original_title")
+    var originalTitle: String? = null
+
+    @SerializedName("runtime")
+    var runtime: String? = null
+
+    @SerializedName("release_date")
+    var released: String? = null
+
+    @SerializedName("genre_ids")
+    var _genre: MutableList<String> = mutableListOf<String>()
+
+    //    @SerializedName("Director") val director: String,
+//    @SerializedName("Actors") val actors: String,
+    @SerializedName("overview")
+    var plot: String? = null
+
+    @SerializedName("poster_path")
+    var poster: String? = null
+
+    @SerializedName("vote_average")
+    var rating: String? = null
+
+    @SerializedName("vote_count")
+    var votes: String? = null
+
+    @SerializedName("revenue")
+    var _revenue: Int? = null
+
+    @SerializedName("media_type")
+    var _type: String = ""
+
+    @SerializedName("budget")
+    var budget: String? = ""
+    var isFavorite: Boolean = false
     val year: String
         get() = if (released.isNullOrBlank()) "????" else released!!.substring(0, 4)
 
@@ -37,6 +62,8 @@ data class Movie(
         get() = if (_genre.isNotEmpty()) _genre else listOf("?")
 
     var isDetailsReceived = false
+
+    var lists: MutableList<String> = mutableListOf("")
 
     val type: TYPE?
         get() {
@@ -55,10 +82,7 @@ data class Movie(
 
     var isGenreUpdated = false
 
-    var lists:MutableList<String> = mutableListOf("")
-
     fun addList(list: String) {
-        if(lists == null) lists = mutableListOf("")
         if (!lists.contains(list)) lists.add(list)
         lists.remove("")
     }
@@ -111,70 +135,71 @@ data class Movie(
             } catch (exception: JSONException) {
             }
 
-            return Movie(
-                jsonObj.getString("id"),
-                try {
-                    jsonObj.getString("title")
-                } catch (exception: JSONException) {
-                    null
-                },
-                try {
-                    jsonObj.getString("name")
-                } catch (exception: JSONException) {
-                    null
-                },
-                try {
-                    jsonObj.getString("original_title")
-                } catch (exception: JSONException) {
-                    null
-                },
-                try {
-                    jsonObj.getString("runtime")
-                } catch (exception: JSONException) {
-                    null
-                },
-                try {
-                    jsonObj.getString("release_date")
-                } catch (exception: JSONException) {
-                    null
-                },
-                genres,
-                try {
-                    jsonObj.getString("overview")
-                } catch (exception: JSONException) {
-                    null
-                },
-                try {
-                    jsonObj.getString("poster_path")
-                } catch (exception: JSONException) {
-                    null
-                },
-                try {
-                    jsonObj.getString("vote_average")
-                } catch (exception: JSONException) {
-                    null
-                },
-                try {
-                    jsonObj.getString("vote_count")
-                } catch (exception: JSONException) {
-                    null
-                },
-                try {
-                    jsonObj.getInt("revenue")
-                } catch (exception: JSONException) {
-                    0
-                },
-                try {
-                    jsonObj.getString("media_type")
-                } catch (exception: JSONException) {
-                    ""
-                },
-                try {
-                    jsonObj.getString("budget")
-                } catch (exception: JSONException) {
-                    null
-                },
-            )
+            val movie = Movie()
+            movie.id = jsonObj.getString("id")
+            movie._title = try {
+                jsonObj.getString("title")
+            } catch (exception: JSONException) {
+                null
+            }
+            movie.name = try {
+                jsonObj.getString("name")
+            } catch (exception: JSONException) {
+                null
+            }
+            movie.originalTitle = try {
+                jsonObj.getString("original_title")
+            } catch (exception: JSONException) {
+                null
+            }
+            movie.runtime = try {
+                jsonObj.getString("runtime")
+            } catch (exception: JSONException) {
+                null
+            }
+            movie.released = try {
+                jsonObj.getString("release_date")
+            } catch (exception: JSONException) {
+                null
+            }
+            movie._genre = genres
+            movie.plot = try {
+                jsonObj.getString("overview")
+            } catch (exception: JSONException) {
+                null
+            }
+            movie.poster = try {
+                jsonObj.getString("poster_path")
+            } catch (exception: JSONException) {
+                null
+            }
+            movie.rating = try {
+                jsonObj.getString("vote_average")
+            } catch (exception: JSONException) {
+                null
+            }
+            movie.votes = try {
+                jsonObj.getString("vote_count")
+            } catch (exception: JSONException) {
+                null
+            }
+            movie._revenue = try {
+                jsonObj.getInt("revenue")
+            } catch (exception: JSONException) {
+                0
+            }
+            movie._type = try {
+                jsonObj.getString("media_type")
+            } catch (exception: JSONException) {
+                ""
+            }
+            movie.budget = try {
+                jsonObj.getString("budget")
+            } catch (exception: JSONException) {
+                null
+            }
+
+            return movie
         }
 
         fun jsonDetailsToObject(raw: String): Movie {
@@ -189,65 +214,66 @@ data class Movie(
             } catch (exception: JSONException) {
             }
 
-            return Movie(
-                jsonObj.getString("id"),
-                try {
-                    jsonObj.getString("title")
-                } catch (exception: JSONException) {
-                    null
-                },
-                try {
-                    jsonObj.getString("name")
-                } catch (exception: JSONException) {
-                    null
-                },
-                try {
-                    jsonObj.getString("original_title")
-                } catch (exception: JSONException) {
-                    null
-                },
-                try {
-                    jsonObj.getString("runtime")
-                } catch (exception: JSONException) {
-                    null
-                },
-                try {
-                    jsonObj.getString("release_date")
-                } catch (exception: JSONException) {
-                    null
-                },
-                genres,
-                try {
-                    jsonObj.getString("overview")
-                } catch (exception: JSONException) {
-                    null
-                },
-                try {
-                    jsonObj.getString("poster_path")
-                } catch (exception: JSONException) {
-                    null
-                },
-                try {
-                    jsonObj.getString("vote_average")
-                } catch (exception: JSONException) {
-                    null
-                },
-                try {
-                    jsonObj.getString("vote_count")
-                } catch (exception: JSONException) {
-                    null
-                },
-                try {
-                    jsonObj.getInt("revenue")
-                } catch (exception: JSONException) {
-                    0
-                },
-                try {
-                    jsonObj.getString("media_type")
-                } catch (exception: JSONException) {
-                    ""
-                }
-            ).also { it.isDetailsReceived = true }
+            val movie = Movie()
+            movie.id = jsonObj.getString("id")
+            movie._title = try {
+                jsonObj.getString("title")
+            } catch (exception: JSONException) {
+                null
+            }
+            movie.name = try {
+                jsonObj.getString("name")
+            } catch (exception: JSONException) {
+                null
+            }
+            movie.originalTitle = try {
+                jsonObj.getString("original_title")
+            } catch (exception: JSONException) {
+                null
+            }
+            movie.runtime = try {
+                jsonObj.getString("runtime")
+            } catch (exception: JSONException) {
+                null
+            }
+            movie.released = try {
+                jsonObj.getString("release_date")
+            } catch (exception: JSONException) {
+                null
+            }
+            movie._genre = genres
+            movie.plot = try {
+                jsonObj.getString("overview")
+            } catch (exception: JSONException) {
+                null
+            }
+            movie.poster = try {
+                jsonObj.getString("poster_path")
+            } catch (exception: JSONException) {
+                null
+            }
+            movie.rating = try {
+                jsonObj.getString("vote_average")
+            } catch (exception: JSONException) {
+                null
+            }
+            movie.votes = try {
+                jsonObj.getString("vote_count")
+            } catch (exception: JSONException) {
+                null
+            }
+            movie._revenue = try {
+                jsonObj.getInt("revenue")
+            } catch (exception: JSONException) {
+                0
+            }
+            movie._type = try {
+                jsonObj.getString("media_type")
+            } catch (exception: JSONException) {
+                ""
+            }
+            movie.isDetailsReceived = true
+            return movie
         }
     }
 }
