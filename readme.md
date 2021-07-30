@@ -42,11 +42,16 @@ app changes: HandlerThread processing all requests; Service (for future backgrou
 ### Preview
 <img src="printscreens/lesson6_1.png" width="32%">
 
-## Lesson+: 
+## Lesson6+: 
 app changes: sort list; search result navigatio
 ### Preview
 <img src="printscreens/lesson6+_1.png" width="32%">
 <img src="printscreens/lesson6+_2.png" width="32%">
+
+## Lesson7: Retrofit and Glide 
+app changes: replaced dataProvider with retrofit; image loading with Glide
+<img src="printscreens/lesson7.png" width="32%">
+
 
 
 
