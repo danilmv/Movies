@@ -50,6 +50,7 @@ app changes: sort list; search result navigatio
 
 ## Lesson7: Retrofit and Glide 
 app changes: replaced dataProvider with retrofit; image loading with Glide
+### Preview
 <img src="printscreens/lesson7.png" width="32%">
 
 
