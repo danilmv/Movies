@@ -14,6 +14,7 @@ data class MovieDto(
     @ColumnInfo(name = "released_date") val released: String,
     @ColumnInfo val year: String,
     @ColumnInfo val plot: String,
+    @ColumnInfo val poster: String,
     @ColumnInfo val rating: String,
     @ColumnInfo(name = "vote_count") val votes: String,
     @ColumnInfo val revenue: String,

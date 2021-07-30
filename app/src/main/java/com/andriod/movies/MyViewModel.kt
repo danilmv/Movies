@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.andriod.movies.data.DataProvider
 import com.andriod.movies.data.RetrofitDataProvider
 import com.andriod.movies.data.TheMovieDBService
+import com.andriod.movies.data.dao.MovieDatabase
 import com.andriod.movies.entity.Movie
 import com.andriod.movies.fragment.MovieListFragment
 import retrofit2.Retrofit
@@ -21,8 +22,6 @@ object MyViewModel {
 
     private val service: TheMovieDBService = retrofit.create(TheMovieDBService::class.java)
 
-    private val dummy: DataProvider = RetrofitDataProvider(service)
-
     var groupBy = MutableLiveData(MovieListFragment.Companion.GroupBy.LISTS)
 
     private val _searchResults = MutableLiveData<Map<String, Movie>>()
@@ -30,40 +29,46 @@ object MyViewModel {
 
     var errorMessage = MutableLiveData<String>()
 
-    fun initData() {
+    private val dataProvider: DataProvider by lazy { RetrofitDataProvider(service) }
+
+    lateinit var database: MovieDatabase
+
+    fun initData(database: MovieDatabase) {
+        this.database = database
+
         if (movies.value?.isEmpty() != false) {
             _movies.value = HashMap()
 
-            dummy.subscribe(DataProvider.Companion.SubscriberType.DATA) {
-                _movies.postValue(dummy.data)
+            dataProvider.subscribe(DataProvider.Companion.SubscriberType.DATA) {
+                _movies.postValue(dataProvider.data)
             }
 
-            dummy.subscribe(DataProvider.Companion.SubscriberType.ERROR) {
-                errorMessage.value = dummy.errorMessage
+            dataProvider.subscribe(DataProvider.Companion.SubscriberType.ERROR) {
+                errorMessage.value = dataProvider.errorMessage
             }
         }
     }
 
     fun updateData(movie: Movie) {
-        dummy.updateData(movie)
+        dataProvider.updateData(movie)
     }
 
     fun startSearching(query: String) {
-        dummy.subscribe(DataProvider.Companion.SubscriberType.SEARCH) {
-            _searchResults.value = dummy.searchResultsData
+        dataProvider.subscribe(DataProvider.Companion.SubscriberType.SEARCH) {
+            _searchResults.value = dataProvider.searchResultsData
         }
-        dummy.findMovies(query)
+        dataProvider.findMovies(query)
     }
 
     fun retryConnection() {
-        dummy.startService()
+        dataProvider.startService()
     }
 
     fun getMovieDetails(movie: Movie) {
-        if (!movie.isDetailsReceived) dummy.getMovieDetails(movie)
+        if (!movie.isDetailsReceived) dataProvider.getMovieDetails(movie)
     }
 
     fun getMoreData() {
-        dummy.requestMoreData()
+        dataProvider.requestMoreData()
     }
 }
