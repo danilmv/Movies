@@ -9,6 +9,7 @@ import retrofit2.Response
 
 class RetrofitDataProvider(private val service: TheMovieDBService) : DataProvider() {
     private val dataRequestStatusGroup = 1
+    private var moreDataPage = 2
 
     init {
         startService()
@@ -210,5 +211,9 @@ class RetrofitDataProvider(private val service: TheMovieDBService) : DataProvide
         })
     }
 
-
+    override fun requestMoreData() {
+        requestMovieList("top_rated",
+            listName = "top rated",
+            page = moreDataPage++)
+    }
 }

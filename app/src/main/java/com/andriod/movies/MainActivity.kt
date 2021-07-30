@@ -191,4 +191,9 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
     override fun onStartService() {
         startService(Intent(this, MovieDataDownloadService::class.java))
     }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        listFragment.setTitle()
+    }
 }
