@@ -35,7 +35,10 @@ class Movie : Parcelable {
     var plot: String? = null
 
     @SerializedName("poster_path")
-    var poster: String? = null
+    var _poster: String? = null
+
+    val poster: String?
+        get() = if (_poster == null) null else "https://image.tmdb.org/t/p/w500/$_poster"
 
     @SerializedName("vote_average")
     var rating: String? = null
@@ -96,7 +99,7 @@ class Movie : Parcelable {
         if (movie.runtime != null) runtime = movie.runtime
         if (movie.released != null) released = movie.released
         if (movie.plot != null) plot = movie.plot
-        if (movie.poster != null) poster = movie.poster
+        if (movie._poster != null) _poster = movie.poster
         if (movie.rating != null) rating = movie.rating
         if (movie.votes != null) votes = movie.votes
         if (movie._revenue != null) _revenue = movie._revenue
@@ -168,7 +171,7 @@ class Movie : Parcelable {
             } catch (exception: JSONException) {
                 null
             }
-            movie.poster = try {
+            movie._poster = try {
                 jsonObj.getString("poster_path")
             } catch (exception: JSONException) {
                 null
@@ -247,7 +250,7 @@ class Movie : Parcelable {
             } catch (exception: JSONException) {
                 null
             }
-            movie.poster = try {
+            movie._poster = try {
                 jsonObj.getString("poster_path")
             } catch (exception: JSONException) {
                 null

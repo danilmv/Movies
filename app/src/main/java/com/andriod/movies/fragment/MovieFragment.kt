@@ -10,6 +10,7 @@ import com.andriod.movies.MyViewModel
 import com.andriod.movies.R
 import com.andriod.movies.databinding.FragmentMovieBinding
 import com.andriod.movies.entity.Movie
+import com.bumptech.glide.Glide
 
 class MovieFragment : Fragment() {
 
@@ -72,6 +73,12 @@ class MovieFragment : Fragment() {
         binding.textViewGenres.text = String.format(getString(R.string.details_genres), movie?.genre?.joinToString(", "))
 
         binding.textViewLists.text = String.format(getString(R.string.details_lists), movie?.lists?.joinToString(", "))
+
+        movie?.poster?.let {
+            Glide.with(binding.root)
+                .load(it)
+                .into(binding.imageViewPoster)
+        }
     }
 
     override fun onDetach() {
