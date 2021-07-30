@@ -8,7 +8,6 @@ import androidx.room.PrimaryKey
 data class MovieDto(
     @PrimaryKey val id: String,
     @ColumnInfo val title: String,
-    @ColumnInfo val name: String,
     @ColumnInfo(name = "original_title") val originalTitle: String,
     @ColumnInfo val runtime: String,
     @ColumnInfo(name = "released_date") val released: String,

@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.andriod.movies.data.DataProvider
 import com.andriod.movies.data.RetrofitDataProvider
+import com.andriod.movies.data.RoomDataProvider
 import com.andriod.movies.data.TheMovieDBService
 import com.andriod.movies.data.dao.MovieDatabase
 import com.andriod.movies.entity.Movie
@@ -15,12 +16,15 @@ object MyViewModel {
     private val _movies = MutableLiveData<Map<String, Movie>>()
     val movies: LiveData<Map<String, Movie>> = _movies
 
-    private val retrofit: Retrofit = Retrofit.Builder()
-        .addConverterFactory(GsonConverterFactory.create())
-        .baseUrl("https://api.themoviedb.org/")
-        .build()
-
-    private val service: TheMovieDBService = retrofit.create(TheMovieDBService::class.java)
+    private val retrofit: Retrofit by lazy {
+        Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create())
+            .baseUrl("https://api.themoviedb.org/")
+            .build()
+    }
+    private val service: TheMovieDBService by lazy {
+        retrofit.create(TheMovieDBService::class.java)
+    }
 
     var groupBy = MutableLiveData(MovieListFragment.Companion.GroupBy.LISTS)
 
@@ -29,7 +33,7 @@ object MyViewModel {
 
     var errorMessage = MutableLiveData<String>()
 
-    private val dataProvider: DataProvider by lazy { RetrofitDataProvider(service) }
+    private val dataProvider: DataProvider by lazy { RoomDataProvider(database) }
 
     lateinit var database: MovieDatabase
 
