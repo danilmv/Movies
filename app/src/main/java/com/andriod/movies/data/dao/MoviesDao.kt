@@ -1,12 +1,11 @@
 package com.andriod.movies.data.dao
 
 import androidx.room.*
-import com.andriod.movies.entity.room.ListsDto
-import com.andriod.movies.entity.room.MovieDto
-import com.andriod.movies.entity.room.MovieListDto
+import com.andriod.movies.entity.room.*
 
 @Dao
 interface MoviesDao {
+//    Movie
     @Query("SELECT * FROM movies")
     fun getAll(): List<MovieDto>
 
@@ -21,6 +20,8 @@ interface MoviesDao {
 
     @Delete
     fun deleteDto(movieDto: MovieDto)
+
+//    MovieList
 
     @Query("SELECT * FROM lists WHERE lang = :lang")
     fun getLists(lang: String = "EN"): List<ListsDto>
@@ -39,4 +40,24 @@ interface MoviesDao {
 
     @Update
     fun updateMovieList(vararg movieListDto: MovieListDto): Int
+
+//    MovieGenre
+
+    @Query("SELECT * FROM Genres WHERE lang = :lang")
+    fun getGenres(lang: String = "EN"): List<GenreDto>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun insertGenres(vararg genreDto: GenreDto)
+
+    @Update
+    fun updateGenres(vararg genreDto: GenreDto): Int
+
+    @Query("SELECT * FROM MovieGenre WHERE movieId = :movieId")
+    fun getMovieGenres(movieId: String): List<MovieGenreDto>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun insertMovieGenres(vararg movieGenreDto: MovieGenreDto)
+
+    @Update
+    fun updateMovieGenres(vararg movieGenreDto: MovieGenreDto): Int
 }
