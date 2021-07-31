@@ -56,6 +56,7 @@ class SettingsFragment : Fragment() {
             }
 
         binding.buttonStartService.setOnClickListener { contract?.onStartService() }
+        binding.buttonStartLoading.setOnClickListener { contract?.onStartLoading() }
     }
 
     override fun onDestroy() {
@@ -65,6 +66,7 @@ class SettingsFragment : Fragment() {
 
     interface SettingsContract{
         fun onStartService()
+        fun onStartLoading()
     }
 
     override fun onAttach(context: Context) {

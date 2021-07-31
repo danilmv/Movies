@@ -63,7 +63,6 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
                     .setTitle(getString(R.string.error_message_title))
                     .setMessage(it)
                     .setPositiveButton(getString(R.string.retry_message)) { _, _ -> MyViewModel.retryConnection() }
-                    .setCancelable(false)
                     .show()
             }
         })
@@ -190,6 +189,10 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
 
     override fun onStartService() {
         startService(Intent(this, MovieDataDownloadService::class.java))
+    }
+
+    override fun onStartLoading() {
+        MyViewModel.retryConnection()
     }
 
     override fun onBackPressed() {
