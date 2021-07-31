@@ -27,7 +27,7 @@ class Movie : Parcelable {
     var released: String = ""
 
     @SerializedName("genre_ids")
-    var _genre: MutableList<String> = mutableListOf<String>()
+    var _genre: MutableList<String> = mutableListOf()
 
     //    @SerializedName("Director") val director: String,
 //    @SerializedName("Actors") val actors: String,
@@ -61,8 +61,7 @@ class Movie : Parcelable {
     val title: String
         get() = _title ?: name ?: "?"
 
-    val genre: List<String>
-        get() = if (_genre.isNotEmpty()) _genre else listOf("?")
+    val genre:MutableList<String> = mutableListOf()
 
     var isDetailsReceived = false
 

@@ -7,7 +7,7 @@ import com.andriod.movies.entity.room.*
 interface MoviesDao {
 //    Movie
     @Query("SELECT * FROM movies")
-    fun getAll(): List<MovieDto>
+    fun getAllMovies(): List<MovieDto>
 
     @Query("SELECT * FROM movies WHERE id = :id")
     fun getMovie(id: String): MovieDto
@@ -19,7 +19,7 @@ interface MoviesDao {
     fun updateMovie(movieDto: MovieDto): Int
 
     @Delete
-    fun deleteDto(movieDto: MovieDto)
+    fun deleteMovie(movieDto: MovieDto)
 
 //    MovieList
 
@@ -52,8 +52,8 @@ interface MoviesDao {
     @Update
     fun updateGenres(vararg genreDto: GenreDto): Int
 
-    @Query("SELECT * FROM MovieGenre WHERE movieId = :movieId")
-    fun getMovieGenres(movieId: String): List<MovieGenreDto>
+    @Query("SELECT genreId FROM MovieGenre WHERE movieId = :movieId")
+    fun getMovieGenres(movieId: String): List<String>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertMovieGenres(vararg movieGenreDto: MovieGenreDto)

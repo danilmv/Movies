@@ -3,7 +3,7 @@ package com.andriod.movies.entity
 import org.json.JSONObject
 
 data class Genre(
-    val id: Int,
+    val id: String,
     val name: String,
 ) {
     companion object {
@@ -21,7 +21,7 @@ data class Genre(
         private fun jsonToObject(raw: String): Genre {
             val jsonObj = JSONObject(raw)
             return Genre(
-                jsonObj.getInt("id"),
+                jsonObj.getString("id"),
                 jsonObj.getString("name")
             )
         }

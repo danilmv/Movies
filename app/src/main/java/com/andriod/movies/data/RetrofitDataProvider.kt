@@ -89,6 +89,7 @@ open class RetrofitDataProvider(private val service: TheMovieDBService) : DataPr
                     if (genres.isNotEmpty()) {
                         isGenresLoaded = true
                         updateGenres()
+                        notifySubscribers(Companion.SubscriberType.GENRES)
                     }
                     StatusManager.close(statusId)
                 }

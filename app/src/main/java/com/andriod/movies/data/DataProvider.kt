@@ -4,7 +4,6 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.os.Looper
 import android.util.Log
-import androidx.room.Room
 import com.andriod.movies.entity.Genre
 import com.andriod.movies.entity.Movie
 
@@ -16,6 +15,7 @@ abstract class DataProvider {
         SubscriberType.SEARCH to HashSet(),
         SubscriberType.ERROR to HashSet(),
         SubscriberType.DETAILS to HashSet(),
+        SubscriberType.GENRES to HashSet(),
     )
 
     val data: MutableMap<String, Movie> = HashMap()
@@ -28,7 +28,7 @@ abstract class DataProvider {
             field = value
             notifySubscribers(SubscriberType.ERROR)
         }
-    val genres: MutableMap<Int, Genre> = HashMap()
+    val genres: MutableMap<String, Genre> = HashMap()
     var isGenresLoaded = false
 
     private val dataThread = HandlerThread("dataThread").apply { isDaemon = true;start() }
@@ -87,8 +87,9 @@ abstract class DataProvider {
             if (movie._genre.isNullOrEmpty()) {
                 continue
             }
-            for (i in movie.genre.indices) {
-                movie._genre[i] = genres[movie._genre[i].toInt()]?.name ?: "?"
+            movie.genre.addAll(movie._genre)
+            for (i in movie._genre.indices) {
+                movie.genre[i] = genres[movie._genre[i]]?.name ?: "?"
             }
             dataChanged = true
         }

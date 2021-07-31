@@ -2,10 +2,9 @@ package com.andriod.movies.data
 
 import android.util.Log
 import com.andriod.movies.data.dao.MoviesDao
+import com.andriod.movies.entity.Genre
 import com.andriod.movies.entity.Movie
-import com.andriod.movies.entity.room.ListsDto
-import com.andriod.movies.entity.room.MovieDto
-import com.andriod.movies.entity.room.MovieListDto
+import com.andriod.movies.entity.room.*
 
 class RoomDataProvider(
     service: TheMovieDBService,
@@ -14,18 +13,34 @@ class RoomDataProvider(
 
     override fun startService() {
         dataHandler.post {
-            dao.getAll().forEach {
-                val movie = it.fromDto()
+            dao.getGenres().forEach {
+                genres[it.genreId] = it.toGenre()
+                if (genres.isNotEmpty()) isGenresLoaded = true
+            }
+            dao.getAllMovies().forEach {
+                val movie = it.toMovie()
                 dao.getMovieList(movie.id).forEach {
                     movie.addList(it.listId)
                 }
+                movie._genre = dao.getMovieGenres(movie.id).toMutableList()
                 addMovieToData(movie)
+
+                updateGenres(mutableMapOf(Pair(movie.id, movie)))
             }
+
             notifySubscribers(DataProvider.Companion.SubscriberType.DATA)
             Log.d(TAG, "startService() data=${data.size}")
         }
 
         super.startService()
+
+        subscribe(DataProvider.Companion.SubscriberType.GENRES) {
+            val genresDto = genres.values.toDto().toTypedArray()
+            dataHandler.post {
+                if (dao.updateGenres(*genresDto) < genres.size)
+                    dao.insertGenres(*genresDto)
+            }
+        }
     }
 
     override fun updateData(movie: Movie) {
@@ -42,6 +57,10 @@ class RoomDataProvider(
             val movieListDto = movie.lists.toMovieListDto(movie.id).toTypedArray()
             if (dao.updateMovieList(*movieListDto) < movie.lists.size)
                 dao.insertMovieList(*movieListDto)
+
+            val movieGenreDto = movie._genre.toMovieGenresDto(movie.id).toTypedArray()
+            if (dao.updateMovieGenres(*movieGenreDto) < movie.lists.size)
+                dao.insertMovieGenres(*movieGenreDto)
         }
     }
 
@@ -72,7 +91,7 @@ class RoomDataProvider(
             if (isDetailsReceived) 1 else 0)
 
 
-    private fun MovieDto.fromDto(): Movie {
+    private fun MovieDto.toMovie(): Movie {
         val movie = Movie()
 
         movie.id = id
@@ -122,6 +141,31 @@ class RoomDataProvider(
 
         return result
     }
+
+    private fun MutableList<String>.toMovieGenresDto(movieId: String): List<MovieGenreDto> {
+        val result = ArrayList<MovieGenreDto>()
+        repeat(this.size) {
+            if (this[it].isNotBlank()) {
+                result.add(MovieGenreDto(
+                    movieId,
+                    this[it],
+                ))
+            }
+        }
+
+        return result
+    }
+
+    private fun MutableCollection<Genre>.toDto(lang: String = "EN"): List<GenreDto> {
+        val result = ArrayList<GenreDto>()
+        forEach { genre ->
+            result.add(GenreDto(genre.id, lang, genre.name))
+        }
+
+        return result
+    }
+
+    private fun GenreDto.toGenre() = Genre(genreId, text)
 
     companion object {
         const val TAG = "@@RoomDataProvider"
