@@ -3,6 +3,7 @@ package com.andriod.movies
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.andriod.movies.data.DataProvider
+import com.andriod.movies.data.RetrofitDataProvider
 import com.andriod.movies.data.RoomDataProvider
 import com.andriod.movies.data.TheMovieDBService
 import com.andriod.movies.data.dao.MovieDatabase
@@ -66,7 +67,8 @@ object MyViewModel {
     }
 
     fun retryConnection() {
-        dataProvider.startService()
+        if (dataProvider is RetrofitDataProvider)
+            dataProvider.startService()
     }
 
     fun getMovieDetails(movie: Movie) {

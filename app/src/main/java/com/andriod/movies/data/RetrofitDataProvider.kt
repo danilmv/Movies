@@ -73,7 +73,10 @@ open class RetrofitDataProvider(private val service: TheMovieDBService) : DataPr
                 addList(listName)
             }
         }
+        dataChanged(movie)
     }
+
+    protected open fun dataChanged(movie: Movie) {}
 
     private fun requestGenres() {
         if (isGenresLoaded) return

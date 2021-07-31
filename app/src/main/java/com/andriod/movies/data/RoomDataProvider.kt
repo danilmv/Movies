@@ -1,22 +1,28 @@
 package com.andriod.movies.data
 
-import android.util.Log
 import com.andriod.movies.data.dao.MoviesDao
 import com.andriod.movies.entity.Genre
 import com.andriod.movies.entity.Movie
 import com.andriod.movies.entity.room.*
+import com.andriod.movies.statusbar.StatusManager
 
 class RoomDataProvider(
     service: TheMovieDBService,
     private val dao: MoviesDao,
 ) : RetrofitDataProvider(service) {
 
+    private val dataRequestStatusGroup = 2
+
     override fun startService() {
+        val statusId = StatusManager.create("DB requested", dataRequestStatusGroup)
         dataHandler.post {
+            StatusManager.change(statusId, "DB requested... genres")
             dao.getGenres().forEach {
                 genres[it.genreId] = it.toGenre()
                 if (genres.isNotEmpty()) isGenresLoaded = true
             }
+
+            StatusManager.change(statusId, "DB requested... movies")
             dao.getAllMovies().forEach {
                 val movie = it.toMovie()
                 dao.getMovieList(movie.id).forEach {
@@ -29,7 +35,8 @@ class RoomDataProvider(
             }
 
             notifySubscribers(DataProvider.Companion.SubscriberType.DATA)
-            Log.d(TAG, "startService() data=${data.size}")
+
+            StatusManager.close(statusId)
         }
 
         super.startService()
@@ -45,6 +52,10 @@ class RoomDataProvider(
 
     override fun updateData(movie: Movie) {
         super.updateData(movie)
+        saveDataToDB(movie)
+    }
+
+    private fun saveDataToDB(movie: Movie) {
         dataHandler.post {
             val movieDto = movie.toListsDto()
             if (dao.updateMovie(movieDto) == 0)
@@ -71,6 +82,11 @@ class RoomDataProvider(
     override fun getMovieDetails(movie: Movie) {
         super.getMovieDetails(movie)
         updateData(movie)
+    }
+
+    override fun dataChanged(movie: Movie) {
+        super.dataChanged(movie)
+        saveDataToDB(movie)
     }
 
     private fun Movie.toListsDto() =
