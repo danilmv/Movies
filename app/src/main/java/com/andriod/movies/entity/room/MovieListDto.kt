@@ -1,10 +1,9 @@
 package com.andriod.movies.entity.room
 
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 
-@Entity(tableName = "MovieList")
+@Entity(tableName = "MovieList", primaryKeys = ["movieId", "listId"] )
 data class MovieListDto(
-    @PrimaryKey val movieId: String,
-    @PrimaryKey val listId: String,
+    val movieId: String,
+    val listId: String,
 )

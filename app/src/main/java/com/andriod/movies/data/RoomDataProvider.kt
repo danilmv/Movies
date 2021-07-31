@@ -3,7 +3,9 @@ package com.andriod.movies.data
 import android.util.Log
 import com.andriod.movies.data.dao.MoviesDao
 import com.andriod.movies.entity.Movie
+import com.andriod.movies.entity.room.ListsDto
 import com.andriod.movies.entity.room.MovieDto
+import com.andriod.movies.entity.room.MovieListDto
 
 class RoomDataProvider(
     service: TheMovieDBService,
@@ -19,15 +21,23 @@ class RoomDataProvider(
             Log.d(TAG, "startService() data=${data.size}")
         }
 
-//        super.startService()
+        super.startService()
     }
 
     override fun updateData(movie: Movie) {
         super.updateData(movie)
         dataHandler.post {
-            val dto = movie.toDto()
-            if (dao.updateMovie(dto) == 0)
-                dao.insertMovie(movie.toDto())
+            val movieDto = movie.toListsDto()
+            if (dao.updateMovie(movieDto) == 0)
+                dao.insertMovie(movie.toListsDto())
+
+            val listsDto = movie.lists.toListsDto().toTypedArray()
+            if (dao.updateList(*listsDto) < movie.lists.size)
+                dao.insertList(*listsDto)
+
+            val movieListDto = movie.lists.toMovieListDto(movie.id).toTypedArray()
+            if (dao.updateMovieList(*movieListDto) < movie.lists.size)
+                dao.insertMovieList(*movieListDto)
         }
     }
 
@@ -35,7 +45,7 @@ class RoomDataProvider(
         super.findMovies(query)
     }
 
-    private fun Movie.toDto() =
+    private fun Movie.toListsDto() =
         MovieDto(id,
             title,
             originalTitle,
@@ -73,6 +83,35 @@ class RoomDataProvider(
         movie.isDetailsReceived = isDetailed == 1
 
         return movie
+    }
+
+    private fun MutableList<String>.toListsDto(lang: String = "EN"): List<ListsDto> {
+        val result = ArrayList<ListsDto>()
+        repeat(this.size) {
+            if (this[it].isNotBlank()) {
+                result.add(ListsDto(
+                    this[it],
+                    lang,
+                    this[it],
+                ))
+            }
+        }
+
+        return result
+    }
+
+    private fun MutableList<String>.toMovieListDto(movieId: String): List<MovieListDto> {
+        val result = ArrayList<MovieListDto>()
+        repeat(this.size) {
+            if (this[it].isNotBlank()) {
+                result.add(MovieListDto(
+                    movieId,
+                    this[it],
+                ))
+            }
+        }
+
+        return result
     }
 
     companion object {
