@@ -2,7 +2,9 @@ package com.andriod.movies
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.andriod.movies.data.*
+import com.andriod.movies.data.DataProvider
+import com.andriod.movies.data.RoomDataProvider
+import com.andriod.movies.data.TheMovieDBService
 import com.andriod.movies.data.dao.MovieDatabase
 import com.andriod.movies.entity.Movie
 import com.andriod.movies.fragment.MovieListFragment
@@ -39,6 +41,8 @@ object MyViewModel {
 
         if (movies.value?.isEmpty() != false) {
             _movies.value = HashMap()
+
+            dataProvider.startService()
 
             dataProvider.subscribe(DataProvider.Companion.SubscriberType.DATA) {
                 _movies.postValue(dataProvider.data)

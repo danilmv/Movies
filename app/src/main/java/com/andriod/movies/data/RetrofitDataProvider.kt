@@ -11,10 +11,6 @@ open class RetrofitDataProvider(private val service: TheMovieDBService) : DataPr
     private val dataRequestStatusGroup = 1
     private var moreDataPage = 2
 
-    init {
-        startService()
-    }
-
     override fun startService() {
         errorMessage = ""
 
@@ -33,7 +29,6 @@ open class RetrofitDataProvider(private val service: TheMovieDBService) : DataPr
         url: String,
         listName: String,
         exceptionCallback: (String) -> Unit = {},
-        data: MutableMap<String, Movie> = this.data,
         page: Int = 1,
     ) {
         val statusId = StatusManager.create("waiting for: $listName data requested, page = $page",
@@ -44,14 +39,7 @@ open class RetrofitDataProvider(private val service: TheMovieDBService) : DataPr
                 override fun onResponse(call: Call<MovieList>, response: Response<MovieList>) {
                     if (response.isSuccessful) {
                         response.body()?.results?.forEach { movie ->
-                            if (data.containsKey(movie.id)) {
-                                data[movie.id]?.addList(listName)
-                            } else {
-                                data[movie.id] = movie.apply {
-                                    _type = Movie.Companion.TYPE.TYPE_MOVIE.value
-                                    addList(listName)
-                                }
-                            }
+                            addMovieToData(movie, listName)
                         }
 
                         updateGenres()
@@ -74,6 +62,17 @@ open class RetrofitDataProvider(private val service: TheMovieDBService) : DataPr
 
             }
         )
+    }
+
+    protected fun addMovieToData(movie: Movie, listName: String = ""){
+        if (data.containsKey(movie.id)) {
+            data[movie.id]?.addList(listName)
+        } else {
+            data[movie.id] = movie.apply {
+                _type = Movie.Companion.TYPE.TYPE_MOVIE.value
+                addList(listName)
+            }
+        }
     }
 
     private fun requestGenres() {
@@ -103,7 +102,6 @@ open class RetrofitDataProvider(private val service: TheMovieDBService) : DataPr
     private fun requestTrending(
         listName: String,
         exceptionCallback: (String) -> Unit = {},
-        data: MutableMap<String, Movie> = this.data,
         page: Int = 1,
     ) {
         val statusId = StatusManager.create("waiting for: $listName data requested, page = $page",
@@ -113,14 +111,7 @@ open class RetrofitDataProvider(private val service: TheMovieDBService) : DataPr
                 override fun onResponse(call: Call<Trending>, response: Response<Trending>) {
                     if (response.isSuccessful) {
                         response.body()?.results?.forEach { movie ->
-                            if (data.containsKey(movie.id)) {
-                                data[movie.id]?.addList(listName)
-                            } else {
-                                data[movie.id] = movie.apply {
-                                    _type = Movie.Companion.TYPE.TYPE_MOVIE.value
-                                    addList(listName)
-                                }
-                            }
+                            addMovieToData(movie, listName)
                         }
 
                         updateGenres()
@@ -169,11 +160,11 @@ open class RetrofitDataProvider(private val service: TheMovieDBService) : DataPr
 
                         if (searchResultsData.containsKey(movie.id)) {
                             searchResultsData[movie.id]?.populateData(data[movie.id] ?: movie)
-                            notifySubscribers((Companion.SubscriberType.SEARCH))
                         }
                     }
                     updateGenres(data)
                     notifySubscribers(Companion.SubscriberType.DATA)
+                    notifySubscribers((Companion.SubscriberType.SEARCH))
                     StatusManager.close(statusId)
                 }
             }
