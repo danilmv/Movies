@@ -59,6 +59,7 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
     private fun listenForErrors() {
         MyViewModel.errorMessage.observe(this, {
             if (it.isNotBlank()) {
+                MyViewModel.errorMessage.value = ""
                 AlertDialog.Builder(this)
                     .setTitle(getString(R.string.error_message_title))
                     .setMessage(it)

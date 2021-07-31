@@ -12,6 +12,8 @@ import com.andriod.movies.MyViewModel
 import com.andriod.movies.R
 import com.andriod.movies.databinding.FragmentMovieListBinding
 import com.andriod.movies.entity.Movie
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.movie_list_view.view.*
 import java.util.*
 
@@ -37,6 +39,8 @@ class MovieListFragment : Fragment(), MovieListView.MovieListViewContract {
     private val listOfId = mutableMapOf<String, Int>()
     private val viewsState = mutableMapOf<String, MovieListView.Companion.SortBy>()
 
+    private val gson = Gson()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -53,6 +57,7 @@ class MovieListFragment : Fragment(), MovieListView.MovieListViewContract {
 
     override fun onResume() {
         super.onResume()
+        restoreState()
         configureContent()
     }
 
@@ -60,12 +65,42 @@ class MovieListFragment : Fragment(), MovieListView.MovieListViewContract {
         super.onAttach(activity)
         check(context is MovieListContract) { "Activity must implement MovieListContract" }
         isViewCreated = true
+        restoreState()
+    }
+
+    private fun restoreState() {
+        val stringData: String = activity?.getPreferences(Context.MODE_PRIVATE)
+            ?.getString(SHARED_KEY_VIEWS_STATE, "") ?: ""
+        if (stringData.isNotBlank()) {
+            val setType =
+                object : TypeToken<HashMap<String, MovieListView.Companion.SortBy>?>() {}.type
+            viewsState.putAll(gson.fromJson(stringData, setType))
+        }
     }
 
     override fun onDetach() {
         super.onDetach()
         isViewCreated = false
         _binding = null
+        saveState()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        saveState()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        saveState()
+    }
+
+    private fun saveState() {
+        val stringData: String = gson.toJson(viewsState)
+        if (stringData.isNotBlank()) activity?.getPreferences(Context.MODE_PRIVATE)
+            ?.edit()
+            ?.putString(SHARED_KEY_VIEWS_STATE, stringData)
+            ?.apply()
     }
 
     private fun configureContent() {
@@ -155,6 +190,7 @@ class MovieListFragment : Fragment(), MovieListView.MovieListViewContract {
 
     companion object {
         private const val TAG = "@@MovieListFragment"
+        private const val SHARED_KEY_VIEWS_STATE = "views state"
 
         enum class GroupBy(
             val id: Int,
@@ -204,7 +240,7 @@ class MovieListFragment : Fragment(), MovieListView.MovieListViewContract {
         contract?.onMovieChanged(movie)
     }
 
-    override fun onStateChanged(viewId: Int, sortBy: MovieListView.Companion.SortBy) {
-        viewsState["$viewId${showMode.name}"] = sortBy
+    override fun onStateChanged(title:String, sortBy: MovieListView.Companion.SortBy) {
+        viewsState["$title${showMode.name}"] = sortBy
     }
 }
