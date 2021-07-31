@@ -42,7 +42,7 @@ class RoomDataProvider(
         super.startService()
 
         subscribe(DataProvider.Companion.SubscriberType.GENRES) {
-            val genresDto = genres.values.toDto().toTypedArray()
+            val genresDto = genres.values.toGenreDto().toTypedArray()
             dataHandler.post {
                 if (dao.updateGenres(*genresDto) < genres.size)
                     dao.insertGenres(*genresDto)
@@ -57,9 +57,9 @@ class RoomDataProvider(
 
     private fun saveDataToDB(movie: Movie) {
         dataHandler.post {
-            val movieDto = movie.toListsDto()
+            val movieDto = movie.toMovieDto()
             if (dao.updateMovie(movieDto) == 0)
-                dao.insertMovie(movie.toListsDto())
+                dao.insertMovie(movieDto)
 
             val listsDto = movie.lists.toListsDto().toTypedArray()
             if (dao.updateList(*listsDto) < movie.lists.size)
@@ -69,7 +69,7 @@ class RoomDataProvider(
             if (dao.updateMovieList(*movieListDto) < movie.lists.size)
                 dao.insertMovieList(*movieListDto)
 
-            val movieGenreDto = movie._genre.toMovieGenresDto(movie.id).toTypedArray()
+            val movieGenreDto = movie._genre.toMovieGenreDto(movie.id).toTypedArray()
             if (dao.updateMovieGenres(*movieGenreDto) < movie.lists.size)
                 dao.insertMovieGenres(*movieGenreDto)
         }
@@ -89,7 +89,7 @@ class RoomDataProvider(
         saveDataToDB(movie)
     }
 
-    private fun Movie.toListsDto() =
+    private fun Movie.toMovieDto() =
         MovieDto(id,
             title,
             originalTitle,
@@ -158,7 +158,7 @@ class RoomDataProvider(
         return result
     }
 
-    private fun MutableList<String>.toMovieGenresDto(movieId: String): List<MovieGenreDto> {
+    private fun MutableList<String>.toMovieGenreDto(movieId: String): List<MovieGenreDto> {
         val result = ArrayList<MovieGenreDto>()
         repeat(this.size) {
             if (this[it].isNotBlank()) {
@@ -172,7 +172,7 @@ class RoomDataProvider(
         return result
     }
 
-    private fun MutableCollection<Genre>.toDto(lang: String = "EN"): List<GenreDto> {
+    private fun MutableCollection<Genre>.toGenreDto(lang: String = "EN"): List<GenreDto> {
         val result = ArrayList<GenreDto>()
         forEach { genre ->
             result.add(GenreDto(genre.id, lang, genre.name))
