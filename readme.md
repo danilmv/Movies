@@ -55,6 +55,11 @@ app changes: replaced dataProvider with retrofit; image loading with Glide
 
 [movies.apk from lesson7](apks/app-debug-7.apk)
 
+## Lesson8: Room and SharedPreferences
+app changes: room added - all data is saved locally; list sort view is saved in SharedPreferences
+
+[movies.apk from lesson8](apks/app-debug-8.apk)
+
 
 
 
