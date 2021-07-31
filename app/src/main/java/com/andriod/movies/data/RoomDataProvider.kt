@@ -4,19 +4,22 @@ import com.andriod.movies.data.dao.MovieDatabase
 import com.andriod.movies.entity.Movie
 import com.andriod.movies.entity.room.MovieDto
 
-class RoomDataProvider(private val database: MovieDatabase) : DataProvider() {
+class RoomDataProvider(
+    private val service: TheMovieDBService,
+    private val database: MovieDatabase,
+) : RetrofitDataProvider(service) {
 
     init {
         startService()
     }
 
     override fun startService() {
+        super.startService()
     }
 
     override fun updateData(movie: Movie) {
         super.updateData(movie)
-
-        database.moviesDao().updateMovie(movie.toDto())
+//        database.moviesDao().updateMovie(movie.toDto())
     }
 
     override fun findMovies(query: String) {

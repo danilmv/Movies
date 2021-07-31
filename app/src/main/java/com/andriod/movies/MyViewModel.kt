@@ -2,10 +2,7 @@ package com.andriod.movies
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.andriod.movies.data.DataProvider
-import com.andriod.movies.data.RetrofitDataProvider
-import com.andriod.movies.data.RoomDataProvider
-import com.andriod.movies.data.TheMovieDBService
+import com.andriod.movies.data.*
 import com.andriod.movies.data.dao.MovieDatabase
 import com.andriod.movies.entity.Movie
 import com.andriod.movies.fragment.MovieListFragment
@@ -33,7 +30,7 @@ object MyViewModel {
 
     var errorMessage = MutableLiveData<String>()
 
-    private val dataProvider: DataProvider by lazy { RoomDataProvider(database) }
+    private val dataProvider: DataProvider by lazy { RoomDataProvider(service, database) }
 
     lateinit var database: MovieDatabase
 

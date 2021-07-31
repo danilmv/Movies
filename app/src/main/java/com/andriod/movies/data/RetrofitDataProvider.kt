@@ -7,7 +7,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 
-class RetrofitDataProvider(private val service: TheMovieDBService) : DataProvider() {
+open class RetrofitDataProvider(private val service: TheMovieDBService) : DataProvider() {
     private val dataRequestStatusGroup = 1
     private var moreDataPage = 2
 
@@ -166,16 +166,15 @@ class RetrofitDataProvider(private val service: TheMovieDBService) : DataProvide
                         } else {
                             data[movie.id] = movie
                         }
-                        updateGenres(data)
-                        notifySubscribers(Companion.SubscriberType.DATA)
 
                         if (searchResultsData.containsKey(movie.id)) {
                             searchResultsData[movie.id]?.populateData(data[movie.id] ?: movie)
                             notifySubscribers((Companion.SubscriberType.SEARCH))
                         }
-
-                        StatusManager.close(statusId)
                     }
+                    updateGenres(data)
+                    notifySubscribers(Companion.SubscriberType.DATA)
+                    StatusManager.close(statusId)
                 }
             }
 
