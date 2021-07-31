@@ -12,10 +12,10 @@ interface MoviesDao {
     fun getMovie(id: String): MovieDto
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insertMovie(movieDto: MovieDto)
+    fun insertMovie(movieDto: MovieDto): Long
 
     @Update
-    fun updateMovie(movieDto: MovieDto)
+    fun updateMovie(movieDto: MovieDto): Int
 
     @Delete
     fun deleteDto(movieDto: MovieDto)

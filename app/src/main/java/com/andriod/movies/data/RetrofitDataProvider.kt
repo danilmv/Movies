@@ -64,7 +64,7 @@ open class RetrofitDataProvider(private val service: TheMovieDBService) : DataPr
         )
     }
 
-    protected fun addMovieToData(movie: Movie, listName: String = ""){
+    protected fun addMovieToData(movie: Movie, listName: String = "") {
         if (data.containsKey(movie.id)) {
             data[movie.id]?.addList(listName)
         } else {
@@ -144,27 +144,14 @@ open class RetrofitDataProvider(private val service: TheMovieDBService) : DataPr
 
     private fun requestMovieDetails(movie: Movie) {
 
-        val statusId =
-            StatusManager.create(message = "waiting for: details for ${movie.title} requested")
+        val statusId = StatusManager.create("waiting for: details for ${movie.title} requested")
 
         service.getDetails(movie._type, movie.id).enqueue(object : Callback<Movie> {
             override fun onResponse(call: Call<Movie>, response: Response<Movie>) {
                 if (response.isSuccessful) {
                     response.body()?.let { movie ->
-                        movie.isDetailsReceived = true
-                        if (data.containsKey(movie.id)) {
-                            data[movie.id]?.populateData(movie)
-                        } else {
-                            data[movie.id] = movie
-                        }
-
-                        if (searchResultsData.containsKey(movie.id)) {
-                            searchResultsData[movie.id]?.populateData(data[movie.id] ?: movie)
-                        }
+                        updateData(movie)
                     }
-                    updateGenres(data)
-                    notifySubscribers(Companion.SubscriberType.DATA)
-                    notifySubscribers((Companion.SubscriberType.SEARCH))
                     StatusManager.close(statusId)
                 }
             }
@@ -178,7 +165,7 @@ open class RetrofitDataProvider(private val service: TheMovieDBService) : DataPr
 
 
     override fun findMovies(query: String) {
-        val statusId = StatusManager.create(message = "waiting for: searching results")
+        val statusId = StatusManager.create("waiting for: searching results")
 
         searchResultsData.clear()
 

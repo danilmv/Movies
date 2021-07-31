@@ -63,8 +63,8 @@ abstract class DataProvider {
         notifySubscribers((SubscriberType.DATA))
 
 
-        if (searchResultsData.containsKey(movie.id)){
-            searchResultsData[movie.id]?.populateData(data[movie.id]?:movie)
+        if (searchResultsData.containsKey(movie.id)) {
+            searchResultsData[movie.id]?.populateData(data[movie.id] ?: movie)
             notifySubscribers((SubscriberType.SEARCH))
         }
     }
@@ -74,10 +74,12 @@ abstract class DataProvider {
     abstract fun startService()
 
     open fun getMovieDetails(movie: Movie) {}
-    open fun requestMoreData(){}
+    open fun requestMoreData() {}
 
     protected open fun updateGenres(data: MutableMap<String, Movie> = this.data) {
         if (!isGenresLoaded) return
+
+        var dataChanged = false
 
         for (movie in data.values.filter { !it.isGenreUpdated }) {
             movie.isGenreUpdated = true
@@ -87,8 +89,9 @@ abstract class DataProvider {
             for (i in movie.genre.indices) {
                 movie._genre[i] = genres[movie._genre[i].toInt()]?.name ?: "?"
             }
+            dataChanged = true
         }
-        notifySubscribers(SubscriberType.DATA)
+        if (dataChanged) notifySubscribers(SubscriberType.DATA)
     }
 
     companion object {

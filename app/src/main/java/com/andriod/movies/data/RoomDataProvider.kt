@@ -1,18 +1,18 @@
 package com.andriod.movies.data
 
 import android.util.Log
-import com.andriod.movies.data.dao.MovieDatabase
+import com.andriod.movies.data.dao.MoviesDao
 import com.andriod.movies.entity.Movie
 import com.andriod.movies.entity.room.MovieDto
 
 class RoomDataProvider(
     service: TheMovieDBService,
-    private val database: MovieDatabase,
+    private val dao: MoviesDao,
 ) : RetrofitDataProvider(service) {
 
     override fun startService() {
         dataHandler.post {
-            database.moviesDao().getAll().forEach {
+            dao.getAll().forEach {
                 addMovieToData(it.fromDto())
             }
             notifySubscribers(DataProvider.Companion.SubscriberType.DATA)
@@ -25,13 +25,14 @@ class RoomDataProvider(
     override fun updateData(movie: Movie) {
         super.updateData(movie)
         dataHandler.post {
-            database.moviesDao().insertMovie(movie.toDto())
-//            database.moviesDao().updateMovie(movie.toDto())
+            val dto = movie.toDto()
+            if (dao.updateMovie(dto) == 0)
+                dao.insertMovie(movie.toDto())
         }
     }
 
     override fun findMovies(query: String) {
-        TODO("Not yet implemented")
+        super.findMovies(query)
     }
 
     private fun Movie.toDto() =

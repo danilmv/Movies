@@ -32,7 +32,7 @@ object MyViewModel {
 
     var errorMessage = MutableLiveData<String>()
 
-    private val dataProvider: DataProvider by lazy { RoomDataProvider(service, database) }
+    private val dataProvider: DataProvider by lazy { RoomDataProvider(service, database.moviesDao()) }
 
     lateinit var database: MovieDatabase
 
