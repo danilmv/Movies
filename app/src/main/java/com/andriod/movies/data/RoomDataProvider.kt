@@ -15,7 +15,11 @@ class RoomDataProvider(
     override fun startService() {
         dataHandler.post {
             dao.getAll().forEach {
-                addMovieToData(it.fromDto())
+                val movie = it.fromDto()
+                dao.getMovieList(movie.id).forEach {
+                    movie.addList(it.listId)
+                }
+                addMovieToData(movie)
             }
             notifySubscribers(DataProvider.Companion.SubscriberType.DATA)
             Log.d(TAG, "startService() data=${data.size}")
@@ -43,6 +47,11 @@ class RoomDataProvider(
 
     override fun findMovies(query: String) {
         super.findMovies(query)
+    }
+
+    override fun getMovieDetails(movie: Movie) {
+        super.getMovieDetails(movie)
+        updateData(movie)
     }
 
     private fun Movie.toListsDto() =

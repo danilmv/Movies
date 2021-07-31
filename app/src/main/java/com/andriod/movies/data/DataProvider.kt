@@ -4,6 +4,7 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.os.Looper
 import android.util.Log
+import androidx.room.Room
 import com.andriod.movies.entity.Genre
 import com.andriod.movies.entity.Movie
 
