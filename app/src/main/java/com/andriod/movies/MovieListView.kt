@@ -100,6 +100,8 @@ class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener,
                 SortBy.RATING -> o1.rating.let { o2.rating.compareTo(it) }
                 SortBy.YEAR -> o2.year.compareTo(o1.year)
                 SortBy.TITLE -> o1.title.compareTo(o2.title)
+                SortBy.REVENUE -> o1.revenue.compareTo(o2.revenue)
+                SortBy.RELEASED -> o2.released.compareTo(o1.released)
             }
         }
     }
@@ -149,6 +151,8 @@ class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener,
             RATING(1),
             YEAR(2),
             TITLE(3),
+            REVENUE(4),
+            RELEASED(5),
         }
     }
 }
