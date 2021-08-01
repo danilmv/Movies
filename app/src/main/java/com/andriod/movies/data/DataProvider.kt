@@ -75,6 +75,7 @@ abstract class DataProvider {
     abstract fun startService()
 
     open fun getMovieDetails(movie: Movie) {}
+    open fun getMovieDetails(movies: List<Movie>) {}
     open fun requestMoreData() {}
 
     protected open fun updateGenres(data: MutableMap<String, Movie> = this.data) {
@@ -100,5 +101,12 @@ abstract class DataProvider {
         const val TAG = "@@DataProvider"
 
         enum class SubscriberType { DATA, SEARCH, ERROR, DETAILS, GENRES }
+
+        enum class StatusGroup(val id: Int){
+            WEB_DATA_REQUESTED(1),
+            ROOM_DATA_REQUESTED(2),
+            WEB_DETAILS_REQUESTED(3),
+
+        }
     }
 }

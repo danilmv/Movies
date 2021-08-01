@@ -81,7 +81,7 @@ class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener,
                 ) {
                     sortBy = SortBy.values()[position]
                     resortData()
-                    contract?.onStateChanged(this@MovieListView.title, sortBy)
+                    contract?.onStateChanged(this@MovieListView.title, sortBy, adapterMovie.movies)
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -127,7 +127,7 @@ class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener,
     interface MovieListViewContract {
         fun onItemClick(movie: Movie)
         fun onFavoriteChanged(movie: Movie)
-        fun onStateChanged(title: String, sortBy: SortBy)
+        fun onStateChanged(title: String, sortBy: SortBy, movies: List<Movie>)
     }
 
     override fun onItemClick(movie: Movie) {

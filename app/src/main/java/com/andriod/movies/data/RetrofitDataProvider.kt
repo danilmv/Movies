@@ -8,7 +8,6 @@ import retrofit2.Response
 
 
 open class RetrofitDataProvider(private val service: TheMovieDBService) : DataProvider() {
-    private val dataRequestStatusGroup = 1
     private var moreDataPage = 2
 
     override fun startService() {
@@ -32,7 +31,7 @@ open class RetrofitDataProvider(private val service: TheMovieDBService) : DataPr
         page: Int = 1,
     ) {
         val statusId = StatusManager.create("waiting for: $listName data requested, page = $page",
-            dataRequestStatusGroup)
+            Companion.StatusGroup.WEB_DATA_REQUESTED.id)
 
         service.getMovieList(url, page).enqueue(
             object : Callback<MovieList> {
@@ -109,7 +108,7 @@ open class RetrofitDataProvider(private val service: TheMovieDBService) : DataPr
         page: Int = 1,
     ) {
         val statusId = StatusManager.create("waiting for: $listName data requested, page = $page",
-            dataRequestStatusGroup)
+            Companion.StatusGroup.WEB_DATA_REQUESTED.id)
         service.getTrending(page).enqueue(
             object : Callback<Trending> {
                 override fun onResponse(call: Call<Trending>, response: Response<Trending>) {
@@ -143,28 +142,39 @@ open class RetrofitDataProvider(private val service: TheMovieDBService) : DataPr
     override fun getMovieDetails(movie: Movie) {
         super.getMovieDetails(movie)
 
-        requestMovieDetails(movie)
+        requestMovieDetails(listOf(movie))
     }
 
-    private fun requestMovieDetails(movie: Movie) {
+    override fun getMovieDetails(movies: List<Movie>) {
+        requestMovieDetails(movies)
+    }
 
-        val statusId = StatusManager.create("waiting for: details for ${movie.title} requested")
+    private fun requestMovieDetails(movies: List<Movie>) {
 
-        service.getDetails(movie._type, movie.id).enqueue(object : Callback<Movie> {
-            override fun onResponse(call: Call<Movie>, response: Response<Movie>) {
-                if (response.isSuccessful) {
-                    response.body()?.let { movie ->
-                        updateData(movie)
+        movies.forEach { movie ->
+            if (!movie.isDetailsReceived) {
+                val statusId =
+                    StatusManager.create("waiting for: details for ${movie.title} requested",
+                        Companion.StatusGroup.WEB_DETAILS_REQUESTED.id)
+
+                service.getDetails(movie._type, movie.id).enqueue(object : Callback<Movie> {
+                    override fun onResponse(call: Call<Movie>, response: Response<Movie>) {
+                        if (response.isSuccessful) {
+                            response.body()?.let { responseMovie ->
+                                responseMovie.isDetailsReceived = true
+                                updateData(responseMovie)
+                            }
+                            StatusManager.close(statusId)
+                        }
                     }
-                    StatusManager.close(statusId)
-                }
-            }
 
-            override fun onFailure(call: Call<Movie>, t: Throwable) {
-                StatusManager.close(statusId)
-            }
+                    override fun onFailure(call: Call<Movie>, t: Throwable) {
+                        StatusManager.close(statusId)
+                    }
 
-        })
+                })
+            }
+        }
     }
 
 

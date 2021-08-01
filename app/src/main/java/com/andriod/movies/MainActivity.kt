@@ -143,6 +143,10 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
         })
     }
 
+    override fun onMassDetailsRequested(movies: List<Movie>) {
+        MyViewModel.getMassMovieDetails(movies)
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         val menuItem = menu.findItem(R.id.menu_main_item_search)

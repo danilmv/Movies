@@ -213,6 +213,7 @@ class MovieListFragment : Fragment(), MovieListView.MovieListViewContract {
         fun onMovieChanged(movie: Movie)
         fun setTitle(title: String)
         fun onModeChange(mode: ShowMode)
+        fun onMassDetailsRequested(movies: List<Movie>)
     }
 
     override fun onAttach(context: Context) {
@@ -228,8 +229,11 @@ class MovieListFragment : Fragment(), MovieListView.MovieListViewContract {
         contract?.onMovieChanged(movie)
     }
 
-    override fun onStateChanged(title: String, sortBy: MovieListView.Companion.SortBy) {
+    override fun onStateChanged(title: String, sortBy: MovieListView.Companion.SortBy, movies: List<Movie>) {
         viewsState["$title${showMode.name}"] = sortBy
         saveState()
+        if (sortBy == MovieListView.Companion.SortBy.REVENUE){
+            contract?.onMassDetailsRequested(movies)
+        }
     }
 }

@@ -11,10 +11,8 @@ class RoomDataProvider(
     private val dao: MoviesDao,
 ) : RetrofitDataProvider(service) {
 
-    private val dataRequestStatusGroup = 2
-
     override fun startService() {
-        val statusId = StatusManager.create("DB requested", dataRequestStatusGroup)
+        val statusId = StatusManager.create("DB requested", DataProvider.Companion.StatusGroup.ROOM_DATA_REQUESTED.id)
         dataHandler.post {
             StatusManager.change(statusId, "DB requested... genres")
             dao.getGenres().forEach {

@@ -75,6 +75,10 @@ object MyViewModel {
         if (!movie.isDetailsReceived) dataProvider.getMovieDetails(movie)
     }
 
+    fun getMassMovieDetails(movies: List<Movie>){
+        dataProvider.getMovieDetails(movies)
+    }
+
     fun getMoreData() {
         dataProvider.requestMoreData()
     }
