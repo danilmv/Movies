@@ -57,7 +57,6 @@ class MovieListFragment : Fragment(), MovieListView.MovieListViewContract {
 
     override fun onResume() {
         super.onResume()
-        restoreState()
         configureContent()
     }
 
@@ -65,10 +64,10 @@ class MovieListFragment : Fragment(), MovieListView.MovieListViewContract {
         super.onAttach(activity)
         check(context is MovieListContract) { "Activity must implement MovieListContract" }
         isViewCreated = true
-        restoreState()
     }
 
     private fun restoreState() {
+        if (viewsState.isNotEmpty()) return
         val stringData: String = activity?.getPreferences(Context.MODE_PRIVATE)
             ?.getString(SHARED_KEY_VIEWS_STATE, "") ?: ""
         if (stringData.isNotBlank()) {
@@ -82,17 +81,6 @@ class MovieListFragment : Fragment(), MovieListView.MovieListViewContract {
         super.onDetach()
         isViewCreated = false
         _binding = null
-        saveState()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        saveState()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        saveState()
     }
 
     private fun saveState() {
@@ -105,6 +93,7 @@ class MovieListFragment : Fragment(), MovieListView.MovieListViewContract {
 
     private fun configureContent() {
         if (!isViewCreated) return
+        restoreState()
 
         groups.clear()
         lists.clear()
@@ -153,13 +142,12 @@ class MovieListFragment : Fragment(), MovieListView.MovieListViewContract {
                     if (!groups.contains(itemValue)) {
                         groups.add(itemValue)
 
-                        val id = getViewIdByTitle(itemValue ?: "")
-                        val stateId = "$id${showMode.name}"
+                        val stateId = "$itemValue${showMode.name}"
                         val sortBy = viewsState[stateId] ?: MovieListView.Companion.SortBy.UNSORTED
                             .also { viewsState[stateId] = it }
 
                         lists.add(
-                            MovieListView(context, itemValue, this@MovieListFragment, sortBy, id)
+                            MovieListView(context, itemValue, this@MovieListFragment, sortBy)
                             { movie ->
                                 if (groupByField.isList) {
                                     movie.listValue(groupByField)?.contains(itemValue!!) == true
@@ -240,7 +228,8 @@ class MovieListFragment : Fragment(), MovieListView.MovieListViewContract {
         contract?.onMovieChanged(movie)
     }
 
-    override fun onStateChanged(title:String, sortBy: MovieListView.Companion.SortBy) {
+    override fun onStateChanged(title: String, sortBy: MovieListView.Companion.SortBy) {
         viewsState["$title${showMode.name}"] = sortBy
+        saveState()
     }
 }

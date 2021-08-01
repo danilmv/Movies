@@ -46,14 +46,12 @@ class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener,
         title: String?,
         contract: MovieListViewContract,
         sortBy: SortBy = SortBy.UNSORTED,
-        id: Int? = null,
         filter: MyPredicate,
     ) : super(context) {
         this.title = title ?: "?"
         this.filter = filter
         this.contract = contract
         this.sortBy = sortBy
-        if (id != null) this.id = id
 
         initView(context)
     }
