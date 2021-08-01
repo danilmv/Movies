@@ -121,7 +121,7 @@ class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener,
 
     fun setData(movies: List<Movie>) {
         adapterMovie.movies = movies.filter(filter).sort()
-        binding.textViewHeader.isVisible = adapterMovie.movies.isNotEmpty()
+        binding.root.isVisible = adapterMovie.movies.isNotEmpty()
     }
 
     interface MovieListViewContract {
