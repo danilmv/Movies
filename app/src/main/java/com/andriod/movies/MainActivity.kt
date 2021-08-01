@@ -17,6 +17,7 @@ import com.andriod.movies.fragment.MovieFragment
 import com.andriod.movies.fragment.MovieListFragment
 import com.andriod.movies.fragment.SettingsFragment
 import com.andriod.movies.services.MovieDataDownloadService
+import com.andriod.movies.statusbar.StatusConsoleFragment
 import com.andriod.movies.statusbar.StatusManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -31,6 +32,8 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
 
     private val listFragment = MovieListFragment()
     private val settingsFragment = SettingsFragment()
+
+    private val statusConsoleFragment = StatusConsoleFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +51,13 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
         StatusManager.statuses.observe(this) {
             binding.statusBar.isVisible = it.values.isNotEmpty()
         }
+        binding.statusBar.setOnClickListener {
+            showStatusConsole()
+        }
+    }
+
+    private fun showStatusConsole() {
+        statusConsoleFragment.show(supportFragmentManager, FRAGMENT_TAG_STATUS_CONSOLE)
     }
 
     override fun onStart() {
@@ -190,6 +200,7 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
 
     companion object {
         const val TAG = "@@MainActivity"
+        const val FRAGMENT_TAG_STATUS_CONSOLE = "status consele"
     }
 
     override fun onStartService() {
