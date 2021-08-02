@@ -211,6 +211,10 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
         MyViewModel.retryConnection()
     }
 
+    override fun onShowStatusConsole() {
+        showStatusConsole()
+    }
+
     override fun onBackPressed() {
         super.onBackPressed()
         listFragment.setTitle()

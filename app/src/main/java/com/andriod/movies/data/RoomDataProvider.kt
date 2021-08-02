@@ -34,7 +34,7 @@ class RoomDataProvider(
 
             notifySubscribers(DataProvider.Companion.SubscriberType.DATA)
 
-            StatusManager.close(statusId)
+            StatusManager.close(statusId, "DB data received")
         }
 
         super.startService()

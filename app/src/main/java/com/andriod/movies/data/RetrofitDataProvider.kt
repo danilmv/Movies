@@ -37,26 +37,25 @@ open class RetrofitDataProvider(private val service: TheMovieDBService) : DataPr
             object : Callback<MovieList> {
                 override fun onResponse(call: Call<MovieList>, response: Response<MovieList>) {
                     if (response.isSuccessful) {
-                        response.body()?.results?.forEach { movie ->
-                            addMovieToData(movie, listName)
-                        }
+                        dataHandler.post {
+                            response.body()?.results?.forEach { movie ->
+                                addMovieToData(movie, listName)
+                            }
 
-                        updateGenres()
-                        notifySubscribers(Companion.SubscriberType.DATA)
-                        StatusManager.change(statusId, "$listName data received")
+                            updateGenres()
+                            notifySubscribers(Companion.SubscriberType.DATA)
+                            StatusManager.close(statusId, "$listName data received")
+                        }
                     } else {
+                        StatusManager.close(statusId, "Failed to load data for $listName")
                         exceptionCallback.invoke("Failed to load data for $listName")
                     }
-
-                    StatusManager.close(statusId)
                 }
 
                 override fun onFailure(call: Call<MovieList>, t: Throwable) {
-                    StatusManager.change(statusId,
+                    StatusManager.close(statusId,
                         "Failed to load data for $listName: ${t.message}")
                     t.message?.let { exceptionCallback.invoke(it) }
-
-                    StatusManager.close(statusId)
                 }
 
             }
@@ -72,7 +71,7 @@ open class RetrofitDataProvider(private val service: TheMovieDBService) : DataPr
                 addList(listName)
             }
         }
-        dataChanged(movie)
+        data[movie.id]?.let { dataChanged(it) }
     }
 
     protected open fun dataChanged(movie: Movie) {}
@@ -85,19 +84,21 @@ open class RetrofitDataProvider(private val service: TheMovieDBService) : DataPr
         service.getGenres().enqueue(
             object : Callback<Genres> {
                 override fun onResponse(call: Call<Genres>, response: Response<Genres>) {
-                    for (genre in response.body()?.genres!!) {
-                        genres[genre.id] = genre
+                    dataHandler.post {
+                        for (genre in response.body()?.genres!!) {
+                            genres[genre.id] = genre
+                        }
+                        if (genres.isNotEmpty()) {
+                            isGenresLoaded = true
+                            updateGenres()
+                            notifySubscribers(Companion.SubscriberType.GENRES)
+                        }
+                        StatusManager.close(statusId)
                     }
-                    if (genres.isNotEmpty()) {
-                        isGenresLoaded = true
-                        updateGenres()
-                        notifySubscribers(Companion.SubscriberType.GENRES)
-                    }
-                    StatusManager.close(statusId)
                 }
 
                 override fun onFailure(call: Call<Genres>, t: Throwable) {
-                    StatusManager.close(statusId)
+                    StatusManager.close(statusId, "Failed to receive Genres")
                 }
             })
     }
@@ -113,26 +114,25 @@ open class RetrofitDataProvider(private val service: TheMovieDBService) : DataPr
             object : Callback<Trending> {
                 override fun onResponse(call: Call<Trending>, response: Response<Trending>) {
                     if (response.isSuccessful) {
-                        response.body()?.results?.forEach { movie ->
-                            addMovieToData(movie, listName)
-                        }
+                        dataHandler.post {
+                            response.body()?.results?.forEach { movie ->
+                                addMovieToData(movie, listName)
+                            }
 
-                        updateGenres()
-                        notifySubscribers(Companion.SubscriberType.DATA)
-                        StatusManager.change(statusId, "$listName data received")
+                            updateGenres()
+                            notifySubscribers(Companion.SubscriberType.DATA)
+                            StatusManager.close(statusId, "$listName data received")
+                        }
                     } else {
+                        StatusManager.close(statusId, "Failed to load data for $listName")
                         exceptionCallback.invoke("Failed to load data for $listName")
                     }
-
-                    StatusManager.close(statusId)
                 }
 
                 override fun onFailure(call: Call<Trending>, t: Throwable) {
-                    StatusManager.change(statusId,
+                    StatusManager.close(statusId,
                         "Failed to load data for $listName: ${t.message}")
                     t.message?.let { exceptionCallback.invoke(it) }
-
-                    StatusManager.close(statusId)
                 }
 
             }
@@ -160,21 +160,29 @@ open class RetrofitDataProvider(private val service: TheMovieDBService) : DataPr
                 service.getDetails(movie._type, movie.id).enqueue(object : Callback<Movie> {
                     override fun onResponse(call: Call<Movie>, response: Response<Movie>) {
                         if (response.isSuccessful) {
-                            response.body()?.let { responseMovie ->
-                                responseMovie.isDetailsReceived = true
-                                updateData(responseMovie)
+                            dataHandler.post {
+                                response.body()?.let { responseMovie ->
+                                    responseMovie.isDetailsReceived = true
+                                    updateData(responseMovie)
+                                }
+                                StatusManager.close(statusId, "details for ${movie.title} received")
                             }
-                            StatusManager.close(statusId)
                         }
                     }
 
                     override fun onFailure(call: Call<Movie>, t: Throwable) {
-                        StatusManager.close(statusId)
+                        StatusManager.close(statusId,
+                            "Failed to receive details for ${movie.title}")
                     }
 
                 })
             }
         }
+    }
+
+    override fun updateData(movie: Movie) {
+        super.updateData(movie)
+        dataChanged(movie)
     }
 
 
@@ -192,12 +200,12 @@ open class RetrofitDataProvider(private val service: TheMovieDBService) : DataPr
                     }
                     updateGenres(searchResultsData)
                     notifySubscribers(Companion.SubscriberType.SEARCH)
-                    StatusManager.close(statusId)
+                    StatusManager.close(statusId, "search results received")
                 }
             }
 
             override fun onFailure(call: Call<SearchResults>, t: Throwable) {
-                StatusManager.close(statusId)
+                StatusManager.close(statusId, "Failed to receive search results")
             }
         })
     }

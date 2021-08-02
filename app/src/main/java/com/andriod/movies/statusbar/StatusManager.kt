@@ -50,9 +50,9 @@ object StatusManager {
         _history.postValue(historyValue)
     }
 
-    fun close(id: Int) {
+    fun close(id: Int, message: String = "") {
         statusesMap.remove(id)
-        historyValue.add("$id: closed")
+        historyValue.add("$id: closed $message")
 
         _statuses.postValue(statusesMap)
         _groups[groupById[id]]?.remove(id)
