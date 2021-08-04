@@ -44,42 +44,45 @@ class MovieFragment : Fragment() {
     }
 
     private fun showMovieDetails() {
-        binding.textViewTitle.text = String.format(getString(R.string.details_title), movie?.title)
-//        binding.textViewActors.text =
-//            String.format(getString(R.string.details_actors), movie?.actors ?: "?")
-        binding.textViewBoxOffice.text =
-            String.format(getString(R.string.details_revenue), movie?.revenue)
-        binding.textViewPlot.text =
-            String.format(getString(R.string.details_plot), movie?.plot ?: "?")
-        binding.textViewRating.text =
-            String.format(getString(R.string.details_rating), movie?.rating ?: "?.?")
-        binding.textViewVotes.text =
-            String.format(getString(R.string.details_votes), movie?.votes ?: "?")
-        binding.textViewYear.text = String.format(getString(R.string.details_year), movie?.year)
-        binding.textViewType.text = String.format(getString(R.string.details_type), movie?._type)
-        binding.toggleFavorite.isChecked = movie?.isFavorite ?: false
-        binding.toggleFavorite.setOnCheckedChangeListener { _, isChecked: Boolean ->
-            movie?.let {
-                it.isFavorite = isChecked
-                contract?.onMovieChanged(it)
+        binding.apply {
+            textViewTitle.text =
+                String.format(getString(R.string.details_title), movie?.title)
+//        textViewActors.text = String.format(getString(R.string.details_actors), movie?.actors ?: "?")
+            textViewBoxOffice.text =
+                String.format(getString(R.string.details_revenue), movie?.revenue)
+            textViewPlot.text = String.format(getString(R.string.details_plot), movie?.plot ?: "?")
+            textViewRating.text =
+                String.format(getString(R.string.details_rating), movie?.rating ?: "?.?")
+            textViewVotes.text =
+                String.format(getString(R.string.details_votes), movie?.votes ?: "?")
+            textViewYear.text = String.format(getString(R.string.details_year), movie?.year)
+            textViewType.text = String.format(getString(R.string.details_type), movie?._type)
+            toggleFavorite.isChecked = movie?.isFavorite ?: false
+            toggleFavorite.setOnCheckedChangeListener { _, isChecked: Boolean ->
+                movie?.let {
+                    it.isFavorite = isChecked
+                    contract?.onMovieChanged(it)
+                }
             }
-        }
-        binding.textViewRuntime.text =
-            String.format(getString(R.string.details_runtime), movie?.runtime ?: "?")
+            textViewRuntime.text =
+                String.format(getString(R.string.details_runtime), movie?.runtime ?: "?")
 
-        binding.textViewReleased.text =
-            String.format(getString(R.string.details_released), movie?.released ?: "??.??.????")
+            textViewReleased.text =
+                String.format(getString(R.string.details_released), movie?.released ?: "??.??.????")
 
-        binding.textViewGenres.text = String.format(getString(R.string.details_genres), movie?.genre?.joinToString(", "))
+            textViewGenres.text =
+                String.format(getString(R.string.details_genres), movie?.genre?.joinToString(", "))
 
-        binding.textViewLists.text = String.format(getString(R.string.details_lists), movie?.lists?.joinToString(", "))
+            textViewLists.text =
+                String.format(getString(R.string.details_lists), movie?.lists?.joinToString(", "))
 
-        movie?.poster?.let {
-            Glide.with(binding.root)
-                .load(it)
-                .placeholder(binding.imageViewPoster.drawable)
-                .centerCrop()
-                .into(binding.imageViewPoster)
+            movie?.poster?.let {
+                Glide.with(root)
+                    .load(it)
+                    .placeholder(imageViewPoster.drawable)
+                    .centerCrop()
+                    .into(imageViewPoster)
+            }
         }
     }
 

@@ -27,15 +27,8 @@ class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener,
 
     var sortBy: SortBy = SortBy.UNSORTED
 
-    constructor(context: Context?) : super(context) {
-        initView(context)
-    }
-
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {
-        initView(context)
-    }
-
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context,
+    @JvmOverloads
+    constructor(context: Context?, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : super(context,
         attrs,
         defStyleAttr) {
         initView(context)
