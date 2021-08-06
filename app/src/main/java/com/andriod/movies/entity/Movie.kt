@@ -84,6 +84,8 @@ class Movie : Parcelable {
 
     var isGenreUpdated = false
 
+    val videos = mutableSetOf<Video>()
+
     fun addList(list: String) {
         if (!lists.contains(list)) lists.add(list)
         lists.remove("")

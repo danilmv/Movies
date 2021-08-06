@@ -167,17 +167,52 @@ open class RetrofitDataProvider(private val service: TheMovieDBService) : DataPr
                                 }
                                 StatusManager.close(statusId, "details for ${movie.title} received")
                             }
+                        } else {
+                            StatusManager.close(statusId,
+                                "Failed to receive details for ${movie.title}")
                         }
                     }
 
                     override fun onFailure(call: Call<Movie>, t: Throwable) {
                         StatusManager.close(statusId,
-                            "Failed to receive details for ${movie.title}")
+                            "Failed to receive details for ${movie.title}: ${t.message}")
                     }
 
                 })
             }
         }
+    }
+
+    override fun getMovieVideos(movie: Movie) {
+        super.getMovieVideos(movie)
+
+        requestMovieVideos(movie)
+    }
+
+    private fun requestMovieVideos(movie: Movie) {
+        val statusId =
+            StatusManager.create("waiting for: video links for ${movie.title} requested",
+                Companion.StatusGroup.WEB_DETAILS_REQUESTED.id)
+
+        service.getVideos(movie.id).enqueue(object : Callback<MovieVideos> {
+            override fun onResponse(call: Call<MovieVideos>, response: Response<MovieVideos>) {
+                if (response.isSuccessful) {
+                    response.body()?.let { resultVideo ->
+                        resultVideo.results.forEach { movie.videos.add(it) }
+                    }
+                    updateData(movie)
+                    StatusManager.close(statusId, "videos for ${movie.title} received")
+                } else {
+                    StatusManager.close(statusId,
+                        "Failed to receive videos for ${movie.title}")
+                }
+            }
+
+            override fun onFailure(call: Call<MovieVideos>, t: Throwable) {
+                StatusManager.close(statusId,
+                    "Failed to receive videos for ${movie.title}: ${t.message}")
+            }
+        })
     }
 
     override fun updateData(movie: Movie) {

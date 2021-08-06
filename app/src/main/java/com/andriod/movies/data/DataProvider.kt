@@ -77,6 +77,7 @@ abstract class DataProvider {
     open fun getMovieDetails(movie: Movie) {}
     open fun getMovieDetails(movies: List<Movie>) {}
     open fun requestMoreData() {}
+    open fun getMovieVideos(movie: Movie){}
 
     protected open fun updateGenres(data: MutableMap<String, Movie> = this.data) {
         if (!isGenresLoaded) return

@@ -36,28 +36,30 @@ class SettingsFragment : Fragment() {
                 android.R.layout.simple_spinner_dropdown_item,
                 spinnerValues)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.spinnerGroupBy.adapter = adapter
+        binding.apply {
+            spinnerGroupBy.adapter = adapter
 
-        val groupBy = MyViewModel.groupBy.value?.id ?: 0
-        binding.spinnerGroupBy.setSelection(groupBy)
+            val groupBy = MyViewModel.groupBy.value?.id ?: 0
+            spinnerGroupBy.setSelection(groupBy)
 
-        binding.spinnerGroupBy.onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>?, view: View?, position: Int, id: Long,
-                ) {
-                    MyViewModel.groupBy.value =
-                        MovieListFragment.Companion.GroupBy.values()[position]
+            spinnerGroupBy.onItemSelectedListener =
+                object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(
+                        parent: AdapterView<*>?, view: View?, position: Int, id: Long,
+                    ) {
+                        MyViewModel.groupBy.value =
+                            MovieListFragment.Companion.GroupBy.values()[position]
+                    }
+
+                    override fun onNothingSelected(parent: AdapterView<*>?) {
+                    }
+
                 }
 
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-                }
-
-            }
-
-        binding.buttonStartService.setOnClickListener { contract?.onStartService() }
-        binding.buttonStartLoading.setOnClickListener { contract?.onStartLoading() }
-        binding.buttonShowStatusConsole.setOnClickListener { contract?.onShowStatusConsole() }
+            buttonStartService.setOnClickListener { contract?.onStartService() }
+            buttonStartLoading.setOnClickListener { contract?.onStartLoading() }
+            buttonShowStatusConsole.setOnClickListener { contract?.onShowStatusConsole() }
+        }
     }
 
     override fun onDestroy() {
@@ -65,7 +67,7 @@ class SettingsFragment : Fragment() {
         _binding = null
     }
 
-    interface SettingsContract{
+    interface SettingsContract {
         fun onStartService()
         fun onStartLoading()
         fun onShowStatusConsole()
