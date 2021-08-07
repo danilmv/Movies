@@ -26,7 +26,7 @@ class MovieFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            movie = it.getParcelable<Movie>(MOVIE_EXTRA_KEY)
+            movie = it.getParcelable(MOVIE_EXTRA_KEY)
         }
     }
 
@@ -89,7 +89,7 @@ class MovieFragment : Fragment() {
             imageButtonVideo.isVisible = movie?.videos?.isNotEmpty() ?: false
             imageButtonVideo.setOnClickListener {
                 movie?.let {
-                    contract?.onPlayVideos(it.videos.values.toList())
+                    contract?.onPlayVideos(it.videos.values.elementAt(0))
                 }
             }
         }
@@ -114,7 +114,7 @@ class MovieFragment : Fragment() {
 
     interface MovieContract {
         fun onMovieChanged(movie: Movie)
-        fun onPlayVideos(videos: List<Video>)
+        fun onPlayVideos(video: Video)
     }
 
     override fun onAttach(context: Context) {

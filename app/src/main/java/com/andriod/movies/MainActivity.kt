@@ -3,6 +3,7 @@ package com.andriod.movies
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
+import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.inputmethod.InputMethodManager
@@ -142,8 +143,10 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
         MyViewModel.updateData(movie)
     }
 
-    override fun onPlayVideos(videos: List<Video>) {
-        //todo:call DialogFragment
+    override fun onPlayVideos(video: Video) {
+//        val playVideoDialog = DialogPlayVideo.newInstance(video)
+//        playVideoDialog.show(supportFragmentManager, "play video")
+        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(video.link)))
     }
 
     override fun setTitle(title: String) {
