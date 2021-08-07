@@ -197,8 +197,8 @@ open class RetrofitDataProvider(private val service: TheMovieDBService) : DataPr
         service.getVideos(movie.id).enqueue(object : Callback<MovieVideos> {
             override fun onResponse(call: Call<MovieVideos>, response: Response<MovieVideos>) {
                 if (response.isSuccessful) {
-                    response.body()?.let { resultVideo ->
-                        resultVideo.results.forEach { movie.videos.add(it) }
+                    response.body()?.let { videos ->
+                        videos.results.forEach { movie.videos[it.key] = it }
                     }
                     updateData(movie)
                     StatusManager.close(statusId, "videos for ${movie.title} received")

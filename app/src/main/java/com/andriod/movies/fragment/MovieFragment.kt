@@ -5,11 +5,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.andriod.movies.MyViewModel
 import com.andriod.movies.R
 import com.andriod.movies.databinding.FragmentMovieBinding
 import com.andriod.movies.entity.Movie
+import com.andriod.movies.entity.Video
 import com.bumptech.glide.Glide
 
 class MovieFragment : Fragment() {
@@ -83,6 +85,13 @@ class MovieFragment : Fragment() {
                     .centerCrop()
                     .into(imageViewPoster)
             }
+
+            imageButtonVideo.isVisible = movie?.videos?.isNotEmpty() ?: false
+            imageButtonVideo.setOnClickListener {
+                movie?.let {
+                    contract?.onPlayVideos(it.videos.values.toList())
+                }
+            }
         }
     }
 
@@ -105,6 +114,7 @@ class MovieFragment : Fragment() {
 
     interface MovieContract {
         fun onMovieChanged(movie: Movie)
+        fun onPlayVideos(videos: List<Video>)
     }
 
     override fun onAttach(context: Context) {

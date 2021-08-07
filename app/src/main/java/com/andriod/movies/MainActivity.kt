@@ -13,6 +13,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import com.andriod.movies.databinding.ActivityMainBinding
 import com.andriod.movies.entity.Movie
+import com.andriod.movies.entity.Video
 import com.andriod.movies.fragment.MovieFragment
 import com.andriod.movies.fragment.MovieListFragment
 import com.andriod.movies.fragment.SettingsFragment
@@ -139,6 +140,10 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
 
     override fun onMovieChanged(movie: Movie) {
         MyViewModel.updateData(movie)
+    }
+
+    override fun onPlayVideos(videos: List<Video>) {
+        //todo:call DialogFragment
     }
 
     override fun setTitle(title: String) {
