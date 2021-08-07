@@ -12,4 +12,6 @@ data class Video(
 ) : Parcelable {
     val link: String
         get() = "https://www.youtube.com/watch?v=$key"
+
+    var isSavedToDB = false
 }

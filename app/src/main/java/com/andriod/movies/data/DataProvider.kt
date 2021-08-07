@@ -80,7 +80,8 @@ abstract class DataProvider {
     open fun getMovieVideos(movie: Movie){}
 
     protected open fun updateGenres(data: MutableMap<String, Movie> = this.data) {
-        if (!isGenresLoaded) return
+//        if (!isGenresLoaded) return
+        if (genres.isEmpty()) return
 
         var dataChanged = false
 

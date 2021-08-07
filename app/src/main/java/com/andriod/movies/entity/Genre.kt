@@ -6,6 +6,8 @@ data class Genre(
     val id: String,
     val name: String,
 ) {
+    var isSavedToDB = false
+
     companion object {
         fun jsonToList(raw: String): List<Genre> {
             val result = mutableListOf<Genre>()
