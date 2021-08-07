@@ -36,6 +36,7 @@ interface TheMovieDBService {
 
     @GET("3/movie/{id}/videos?api_key=${BuildConfig.MOVIE_API_KEY}")
     fun getVideos(
-        @Path("id") id: String
+        @Path("id") id: String,
+        @Query("lang") lang: String = "en",
     ): Call<MovieVideos>
 }

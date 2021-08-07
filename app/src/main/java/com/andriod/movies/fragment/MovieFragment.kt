@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.andriod.movies.MyViewModel
@@ -22,6 +24,8 @@ class MovieFragment : Fragment() {
 
     private val contract: MovieContract?
         get() = activity as MovieContract?
+
+    private var videoToPlay: Video? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,14 +89,50 @@ class MovieFragment : Fragment() {
                     .centerCrop()
                     .into(imageViewPoster)
             }
+        }
 
-            imageButtonVideo.isVisible = movie?.videos?.isNotEmpty() ?: false
-            imageButtonVideo.setOnClickListener {
-                movie?.let {
-                    contract?.onPlayVideos(it.videos.values.elementAt(0))
+        showVideosList()
+    }
+
+    private fun showVideosList() {
+        val spinnerValues = mutableListOf<String>()
+        var visible = true
+        movie?.videos?.forEach { spinnerValues.add(it.value.name) }
+
+        if (spinnerValues.isNotEmpty()) {
+
+            val adapter =
+                ArrayAdapter(requireContext(),
+                    R.layout.item_spinner_videos,
+                    spinnerValues)
+
+            binding.spinnerVideos.apply {
+                this.adapter = adapter
+
+                onItemSelectedListener =
+                    object : AdapterView.OnItemSelectedListener {
+                        override fun onItemSelected(
+                            parent: AdapterView<*>?, view: View?, position: Int, id: Long,
+                        ) {
+                            videoToPlay = movie?.videos?.values?.elementAt(position)
+                        }
+
+                        override fun onNothingSelected(parent: AdapterView<*>?) {
+                        }
+                    }
+            }
+            binding.imageButtonVideo.setOnClickListener {
+                videoToPlay?.let {
+                    contract?.onPlayVideo(it)
                 }
             }
+
+        } else {
+            visible = false
         }
+
+        binding.spinnerVideos.isVisible = visible
+        binding.imageButtonVideo.isVisible = visible
     }
 
     override fun onDetach() {
@@ -114,7 +154,7 @@ class MovieFragment : Fragment() {
 
     interface MovieContract {
         fun onMovieChanged(movie: Movie)
-        fun onPlayVideos(video: Video)
+        fun onPlayVideo(video: Video)
     }
 
     override fun onAttach(context: Context) {

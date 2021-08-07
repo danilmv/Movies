@@ -143,7 +143,7 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
         MyViewModel.updateData(movie)
     }
 
-    override fun onPlayVideos(video: Video) {
+    override fun onPlayVideo(video: Video) {
 //        val playVideoDialog = DialogPlayVideo.newInstance(video)
 //        playVideoDialog.show(supportFragmentManager, "play video")
         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(video.link)))
