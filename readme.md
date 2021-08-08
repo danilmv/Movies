@@ -61,9 +61,10 @@ app changes: room added - all data is saved locally; list view sort state is sav
 [movies.apk from lesson8](apks/app-debug-8.apk)
 
 ## Lesson8+: Room 
-app changes: added status console; fixed bugs with concurrency and wrong db update
+app changes: added status console; fixed bugs with concurrency(nope) and wrong db update; added videos;
 ### Preview
 <img src="printscreens/lesson8+.png" width="32%">
+<img src="printscreens/lesson8+_2.png" width="32%">
 
 [movies.apk from lesson8+](apks/app-debug-8+.apk)
 
