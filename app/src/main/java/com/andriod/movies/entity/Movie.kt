@@ -54,6 +54,12 @@ class Movie : Parcelable {
 
     @SerializedName("budget")
     var budget: String = ""
+
+    @SerializedName("backdrop_path")
+    var _background: String? = null
+    val background: String?
+        get() = if (_background == null) null else "https://image.tmdb.org/t/p/w500/$_background"
+
     var isFavorite: Boolean = false
     val year: String
         get() = if (released.isBlank()) "????" else released.substring(0, 4)
@@ -61,7 +67,7 @@ class Movie : Parcelable {
     val title: String
         get() = _title ?: name ?: "?"
 
-    val genre:MutableList<String> = mutableListOf()
+    val genre: MutableList<String> = mutableListOf()
 
     var isDetailsReceived = false
 
@@ -113,6 +119,7 @@ class Movie : Parcelable {
         if (movie.budget != "") budget = movie._type
         if (movie.isDetailsReceived) isDetailsReceived = movie.isDetailsReceived
         if (movie.isFavorite) isFavorite = movie.isFavorite
+        if (movie._background != null) _background = movie._background
 
         isSavedToDB = false
     }

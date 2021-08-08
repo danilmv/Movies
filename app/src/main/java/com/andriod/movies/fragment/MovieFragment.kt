@@ -82,12 +82,22 @@ class MovieFragment : Fragment() {
             textViewLists.text =
                 String.format(getString(R.string.details_lists), movie?.lists?.joinToString(", "))
 
-            movie?.poster?.let {
+            if (movie?.background?.isNotBlank() == true && MyViewModel.showFullscreenBackground) {
                 Glide.with(root)
-                    .load(it)
-                    .placeholder(imageViewPoster.drawable)
+                    .load(movie?.background)
+//                    .placeholder(imageViewBackground.drawable)
                     .centerCrop()
-                    .into(imageViewPoster)
+                    .into(imageViewBackground)
+
+                imageViewPoster.isVisible = false
+            }else{
+                movie?.poster?.let {
+                    Glide.with(root)
+                        .load(it)
+                        .placeholder(imageViewPoster.drawable)
+                        .centerCrop()
+                        .into(imageViewPoster)
+                }
             }
         }
 
