@@ -1,11 +1,12 @@
 package com.andriod.movies.data.dao
 
+import android.database.Cursor
 import androidx.room.*
 import com.andriod.movies.entity.room.*
 
 @Dao
 interface MoviesDao {
-//    Movie
+    //    Movie
     @Query("SELECT * FROM movies")
     fun getAllMovies(): List<MovieDto>
 
@@ -74,4 +75,7 @@ interface MoviesDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertVideos(vararg videoDto: VideoDto)
+
+    @Query("SELECT * FROM MovieVideo Inner JOIN Videos On MovieVideo.videoId = Videos.videoId WHERE movieId = :movieId")
+    fun getMovieVideosCursor(movieId: String): Cursor
 }
