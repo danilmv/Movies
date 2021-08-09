@@ -1,6 +1,7 @@
 package com.andriod.movies.fragment
 
 import android.content.Context
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -82,22 +83,19 @@ class MovieFragment : Fragment() {
             textViewLists.text =
                 String.format(getString(R.string.details_lists), movie?.lists?.joinToString(", "))
 
-            if (movie?.background?.isNotBlank() == true && MyViewModel.showFullscreenBackground) {
+            movie?.poster?.let {
+                Glide.with(root)
+                    .load(it)
+                    .placeholder(imageViewPoster.drawable)
+                    .centerCrop()
+                    .into(imageViewPoster)
+            }
+
+            if (movie?.background?.isNotBlank() == true && MyViewModel.showFullscreenBackground.value == true) {
                 Glide.with(root)
                     .load(movie?.background)
-//                    .placeholder(imageViewBackground.drawable)
                     .centerCrop()
                     .into(imageViewBackground)
-
-                imageViewPoster.isVisible = false
-            }else{
-                movie?.poster?.let {
-                    Glide.with(root)
-                        .load(it)
-                        .placeholder(imageViewPoster.drawable)
-                        .centerCrop()
-                        .into(imageViewPoster)
-                }
             }
         }
 

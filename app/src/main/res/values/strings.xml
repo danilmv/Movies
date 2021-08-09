@@ -31,4 +31,5 @@
     <string name="start_loading_button">start loading</string>
     <string name="show_status_console_button">Show status console</string>
     <string name="authorities" translatable="false">com.andriod.movies.provider</string>
+    <string name="background_switch">Background image</string>
 </resources>

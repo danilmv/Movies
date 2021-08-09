@@ -37,7 +37,7 @@ object MyViewModel {
 
     lateinit var database: MovieDatabase
 
-    const val showFullscreenBackground = false
+    val showFullscreenBackground = MutableLiveData(true)
 
     fun initData(database: MovieDatabase) {
         this.database = database

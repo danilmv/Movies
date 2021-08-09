@@ -59,6 +59,9 @@ class SettingsFragment : Fragment() {
             buttonStartService.setOnClickListener { contract?.onStartService() }
             buttonStartLoading.setOnClickListener { contract?.onStartLoading() }
             buttonShowStatusConsole.setOnClickListener { contract?.onShowStatusConsole() }
+
+            switchBackground.isChecked = MyViewModel.showFullscreenBackground.value == true
+            switchBackground.setOnCheckedChangeListener { _, isChecked -> MyViewModel.showFullscreenBackground.postValue(isChecked) }
         }
     }
 
