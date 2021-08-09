@@ -12,6 +12,9 @@ import com.andriod.movies.MyViewModel
 import com.andriod.movies.R
 import com.andriod.movies.databinding.FragmentMovieListBinding
 import com.andriod.movies.entity.Movie
+import com.andriod.movies.statusbar.StatusBarView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.movie_list_view.view.*
@@ -42,6 +45,10 @@ class MovieListFragment : Fragment(), MovieListView.MovieListViewContract {
     private val gson = Gson()
 
     private var configurationStarted = false
+
+    private lateinit var refreshBackgroundThread: Thread
+    private var lastTimeBackgroundRefreshed: Long = 0
+    private val random = Random()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -183,11 +190,13 @@ class MovieListFragment : Fragment(), MovieListView.MovieListViewContract {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        refreshBackgroundThread.interrupt()
     }
 
     companion object {
         private const val TAG = "@@MovieListFragment"
         private const val SHARED_KEY_VIEWS_STATE = "views state"
+        private const val REFRESH_TIME: Long = 10_000
 
         enum class GroupBy(
             val id: Int,
@@ -228,6 +237,7 @@ class MovieListFragment : Fragment(), MovieListView.MovieListViewContract {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         check(context is MovieListContract) { "Activity must implement MovieListContract" }
+        startThread()
     }
 
     override fun onItemClick(movie: Movie) {
@@ -248,5 +258,44 @@ class MovieListFragment : Fragment(), MovieListView.MovieListViewContract {
         if (sortBy == MovieListView.Companion.SortBy.REVENUE) {
             contract?.onMassDetailsRequested(movies)
         }
+    }
+
+    private fun startThread() {
+        refreshBackgroundThread = Thread {
+            while (!Thread.currentThread().isInterrupted) {
+                try {
+                    Thread.sleep(1000)
+                } catch (e: InterruptedException) {
+                    break
+                }
+
+                if (System.currentTimeMillis() - lastTimeBackgroundRefreshed >= REFRESH_TIME) {
+                    lastTimeBackgroundRefreshed = System.currentTimeMillis()
+                    getNextPicture()?.let {
+                        binding.imageViewListBackground.post {
+                            Glide.with(binding.root)
+                                .load(it)
+                                .centerCrop()
+                                .transition(DrawableTransitionOptions.withCrossFade())
+                                .into(binding.imageViewListBackground)
+
+                        }
+                    }
+                }
+            }
+        }.apply { isDaemon = true }
+        refreshBackgroundThread.start()
+    }
+
+    private fun getNextPicture(): String? {
+        if (MyViewModel.showFullscreenBackground.value != true) return null
+        val size = MyViewModel.movies.value?.size ?: 0
+        MyViewModel.movies.value?.let {
+            val list = it.values.toList()
+            for (i in 0 until size) {
+                list[random.nextInt(size)].background?.let { picture -> return picture }
+            }
+        }
+        return null
     }
 }
