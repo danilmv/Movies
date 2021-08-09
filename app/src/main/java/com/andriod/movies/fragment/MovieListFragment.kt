@@ -12,7 +12,6 @@ import com.andriod.movies.MyViewModel
 import com.andriod.movies.R
 import com.andriod.movies.databinding.FragmentMovieListBinding
 import com.andriod.movies.entity.Movie
-import com.andriod.movies.statusbar.StatusBarView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.gson.Gson
@@ -261,10 +260,11 @@ class MovieListFragment : Fragment(), MovieListView.MovieListViewContract {
     }
 
     private fun startThread() {
+        lastTimeBackgroundRefreshed = 0
         refreshBackgroundThread = Thread {
             while (!Thread.currentThread().isInterrupted) {
                 try {
-                    Thread.sleep(1000)
+                    Thread.sleep(500)
                 } catch (e: InterruptedException) {
                     break
                 }

@@ -73,6 +73,13 @@ app changes: added ContentProvider, responding to queries
 
 [movies.apk from lesson9](apks/app-debug-9.apk)
 
+## Lesson9+
+app changes: added background picture (changing on list)
+### Preview
+<img src="printscreens/lesson9+.png" width="32%">
+
+[movies.apk from lesson9+](apks/app-debug-9+.apk)
+
 
 
 
