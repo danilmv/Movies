@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.andriod.movies.adapter.MovieListAdapter
 import com.andriod.movies.databinding.MovieListViewBinding
 import com.andriod.movies.entity.Movie
+import com.andriod.movies.fragment.MovieListFragment
 
 
 typealias MyPredicate = (Movie) -> Boolean
@@ -84,7 +85,11 @@ class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener,
         listener?.onFavoriteChanged(movie)
     }
 
-    override fun compareTo(other: MovieListView): Int {
-        return title.compareTo(other.title) * -1
+    override fun compareTo(other: MovieListView): Int = when (MyViewModel.groupBy.value) {
+        MovieListFragment.Companion.GroupBy.GENRE -> title.compareTo(other.title)
+        MovieListFragment.Companion.GroupBy.YEAR -> title.compareTo(other.title) * -1
+        MovieListFragment.Companion.GroupBy.TYPE -> title.compareTo(other.title)
+        null -> 0
     }
+
 }

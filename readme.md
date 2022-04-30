@@ -22,4 +22,13 @@ dynamic lists, searching, rebuilding details screen
 <img src="printscreens/lesson4_3.png" width="32%">
 <img src="printscreens/lesson4_4.png" width="32%">
 
+## Lesson5: Internet access
+app changes: request data from https://www.themoviedb.org: trending, details, search, genres
+'manual' parsing of json-files with JSONObject
+groupBy list-field: split list into separate values 
+connection-error handling
+### Preview
+<img src="printscreens/lesson5_1.png" width="32%">
+<img src="printscreens/lesson5_2.png" width="32%">
+
 

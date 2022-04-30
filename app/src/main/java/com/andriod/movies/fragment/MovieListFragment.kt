@@ -68,20 +68,40 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
     }
 
     private fun showData(list: List<Movie>) {
-        list.forEach { movieItem ->
-            if (!groups.contains(movieItem.fieldValue(groupByField))) {
-                groups.add(movieItem.fieldValue(groupByField))
-
-                lists.add(MovieListView(context,
-                    movieItem.fieldValue(groupByField),
-                    this@MovieListFragment)
-                { movie -> movie.fieldValue(groupByField) == movieItem.fieldValue(groupByField) }
-                )
-                binding.container.removeAllViews()
-                lists.forEach { movieListView -> binding.container.addView(movieListView) }
-            }
-            lists.forEach { movieListView -> movieListView.setData(list) }
+        val isArray = when (groupByField) {
+            GroupBy.TYPE -> false
+            GroupBy.YEAR -> false
+            GroupBy.GENRE -> true
         }
+        list.forEach { movieItem ->
+
+            val listOfValues =
+                if (isArray) movieItem.listValue(groupByField)
+                else listOf(movieItem.fieldValue(groupByField))
+
+            if (listOfValues != null) {
+                for (itemValue in listOfValues) {
+                    if (!groups.contains(itemValue)) {
+                        groups.add(itemValue)
+
+                        lists.add(MovieListView(context,
+                            itemValue,
+                            this@MovieListFragment)
+                        { movie ->
+                            if (isArray) {
+                                movie.listValue(groupByField)?.contains(itemValue!!) == true
+                            } else {
+                                movie.fieldValue(groupByField) == itemValue
+                            }
+                        }
+                        )
+                        binding.container.removeAllViews()
+                        lists.forEach { movieListView -> binding.container.addView(movieListView) }
+                    }
+                }
+            }
+        }
+        lists.forEach { movieListView -> movieListView.setData(list) }
     }
 
     override fun onDestroyView() {
@@ -94,10 +114,15 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
 
         enum class GroupBy(val id: Int) { TYPE(0), YEAR(1), GENRE(2) }
 
-        private fun Movie.fieldValue(groupBy: GroupBy) = when (groupBy) {
-            GroupBy.TYPE -> this.type
+        private fun Movie.fieldValue(groupBy: GroupBy): String? = when (groupBy) {
+            GroupBy.TYPE -> this._type
             GroupBy.YEAR -> this.year
-            GroupBy.GENRE -> this.genre.joinToString(",")
+            else -> null
+        }
+
+        private fun Movie.listValue(groupBy: GroupBy): List<String>? = when (groupBy) {
+            GroupBy.GENRE -> this.genre
+            else -> null
         }
 
         enum class ShowMode { LIST, FAVORITES, SEARCHING }

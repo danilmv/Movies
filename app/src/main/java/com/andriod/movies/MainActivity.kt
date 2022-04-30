@@ -5,31 +5,56 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.view.Menu
 import android.view.inputmethod.InputMethodManager
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import com.andriod.movies.databinding.ActivityMainBinding
 import com.andriod.movies.entity.Movie
 import com.andriod.movies.fragment.MovieFragment
 import com.andriod.movies.fragment.MovieListFragment
 import com.andriod.movies.fragment.SettingsFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract, MovieFragment.MovieContract {
+class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
+    MovieFragment.MovieContract {
     private var isLandscape = false
     private lateinit var bottomNavigationView: BottomNavigationView
+    private var _binding: ActivityMainBinding? = null
+    private val binding
+        get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        _binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
         configureBottomView()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        listenForErrors()
         showList(MovieListFragment.Companion.ShowMode.LIST)
+    }
+
+    private fun listenForErrors() {
+        MyViewModel.errorMessage.observe(this, {
+            if (it.isNotBlank()) {
+                AlertDialog.Builder(this)
+                    .setTitle(getString(R.string.error_message_title))
+                    .setMessage(it)
+                    .setPositiveButton(getString(R.string.retry_message)) { _, _ -> MyViewModel.retryConnection() }
+                    .setCancelable(false)
+                    .show()
+            }
+        })
     }
 
     private fun configureBottomView() {
         bottomNavigationView = findViewById(R.id.bottom_view)
-        bottomNavigationView.setOnNavigationItemSelectedListener {
+        bottomNavigationView.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.menu_bottom_item_list -> {
                     showList(MovieListFragment.Companion.ShowMode.LIST)
@@ -41,7 +66,7 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract, M
                     showSettings()
                 }
                 else -> {
-                    return@setOnNavigationItemSelectedListener false
+                    return@setOnItemSelectedListener false
                 }
             }
             true
@@ -67,6 +92,8 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract, M
     }
 
     override fun changeMovie(movie: Movie) {
+        MyViewModel.getMovieDetails(movie)
+
         supportFragmentManager
             .beginTransaction()
             .replace(R.id.main_container, MovieFragment.newInstance(movie))
@@ -110,7 +137,7 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract, M
         bottomNavigationView.menu.findItem(bottomItemId)?.isChecked = true
     }
 
-    private fun startSearching(query: String){
+    private fun startSearching(query: String) {
         MyViewModel.startSearching(query)
         showList(MovieListFragment.Companion.ShowMode.SEARCHING)
         hideKeyboard()
@@ -119,5 +146,9 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract, M
     private fun hideKeyboard() {
         (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
             .hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+    }
+
+    companion object {
+        const val TAG = "@@MainActivity"
     }
 }

@@ -3,6 +3,7 @@ package com.andriod.movies.data
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import com.andriod.movies.entity.Genre
 import com.andriod.movies.entity.Movie
 
 typealias Subscriber = (() -> Unit)
@@ -10,12 +11,27 @@ typealias Subscriber = (() -> Unit)
 abstract class DataProvider {
     private var subscribers = mutableMapOf(
         SubscriberType.DATA to HashSet<Subscriber>(),
-        SubscriberType.SEARCH to HashSet())
+        SubscriberType.SEARCH to HashSet(),
+        SubscriberType.ERROR to HashSet(),
+        SubscriberType.DETAILS to HashSet(),
+    )
 
     val data: MutableMap<String, Movie> = HashMap()
     private val handler = Handler(Looper.getMainLooper())
 
     val searchResultsData: MutableMap<String, Movie> = HashMap()
+
+    var errorMessage = ""
+        set(value) {
+            field = value
+            notifySubscribers(SubscriberType.ERROR)
+        }
+    val genres: MutableMap<Int, Genre> = HashMap()
+    var isGenresLoaded = false
+
+    init {
+        startService()
+    }
 
     protected fun notifySubscribers(type: SubscriberType) {
         subscribers[type]?.let {
@@ -37,12 +53,21 @@ abstract class DataProvider {
             "unsubscribe() called with: type = ${type.name}, numOfSubscribers = ${subscribers[type]?.size}")
     }
 
-    abstract fun updateData(movie: Movie)
+
+    open fun updateData(movie: Movie) {
+        data[movie.id] = movie
+        notifySubscribers((SubscriberType.DATA))
+    }
+
     abstract fun findMovies(query: String)
+
+    abstract fun startService()
+
+    open fun getMovieDetails(movie: Movie){}
 
     companion object {
         const val TAG = "@@DataProvider"
 
-        enum class SubscriberType { DATA, SEARCH }
+        enum class SubscriberType { DATA, SEARCH, ERROR, DETAILS, GENRES }
     }
 }

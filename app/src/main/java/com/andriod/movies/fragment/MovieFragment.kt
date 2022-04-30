@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.andriod.movies.MyViewModel
 import com.andriod.movies.R
 import com.andriod.movies.databinding.FragmentMovieBinding
 import com.andriod.movies.entity.Movie
@@ -37,15 +38,16 @@ class MovieFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        showMovieDetails()
+
+        MyViewModel.movies.observe(viewLifecycleOwner, { showMovieDetails() })
     }
 
     private fun showMovieDetails() {
         binding.textViewTitle.text = String.format(getString(R.string.details_title), movie?.title)
 //        binding.textViewActors.text =
 //            String.format(getString(R.string.details_actors), movie?.actors ?: "?")
-//        binding.textViewBoxOffice.text =
-//            String.format(getString(R.string.details_box_office), movie?.boxOffice ?: "?")
+        binding.textViewBoxOffice.text =
+            String.format(getString(R.string.details_revenue), movie?.revenue)
         binding.textViewPlot.text =
             String.format(getString(R.string.details_plot), movie?.plot ?: "?")
         binding.textViewRating.text =
@@ -61,11 +63,13 @@ class MovieFragment : Fragment() {
                 contract?.onMovieChanged(it)
             }
         }
-//        binding.textViewRuntime.text =
-//            String.format(getString(R.string.details_runtime), movie?.runtime ?: "? min")
+        binding.textViewRuntime.text =
+            String.format(getString(R.string.details_runtime), movie?.runtime ?: "?")
 
         binding.textViewReleased.text =
             String.format(getString(R.string.details_released), movie?.released ?: "??.??.????")
+
+        binding.textViewGenres.text = String.format(getString(R.string.details_genres), movie?.genre?.joinToString(", "))
     }
 
     override fun onDetach() {
