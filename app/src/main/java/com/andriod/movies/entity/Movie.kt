@@ -11,6 +11,7 @@ data class Movie(
     @SerializedName("Year") val year: String,
     @SerializedName("Rated") val rated: String,
     @SerializedName("Runtime") val runtime: String,
+    @SerializedName("Released") val released: String,
     @SerializedName("Genre") val genre: String,
     @SerializedName("Director") val director: String,
     @SerializedName("Actors") val actors: String,
