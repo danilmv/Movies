@@ -18,33 +18,33 @@ class Movie : Parcelable {
     var name: String? = null
 
     @SerializedName("original_title")
-    var originalTitle: String? = null
+    var originalTitle: String = ""
 
     @SerializedName("runtime")
-    var runtime: String? = null
+    var runtime: String = ""
 
     @SerializedName("release_date")
-    var released: String? = null
+    var released: String = ""
 
     @SerializedName("genre_ids")
-    var _genre: MutableList<String> = mutableListOf<String>()
+    var _genre: MutableList<String> = mutableListOf()
 
     //    @SerializedName("Director") val director: String,
 //    @SerializedName("Actors") val actors: String,
     @SerializedName("overview")
-    var plot: String? = null
+    var plot: String = ""
 
     @SerializedName("poster_path")
     var _poster: String? = null
 
-    val poster: String?
-        get() = if (_poster == null) null else "https://image.tmdb.org/t/p/w500/$_poster"
+    val poster: String
+        get() = if (_poster == null) "" else "https://image.tmdb.org/t/p/w500/$_poster"
 
     @SerializedName("vote_average")
-    var rating: String? = null
+    var rating: String = ""
 
     @SerializedName("vote_count")
-    var votes: String? = null
+    var votes: String = ""
 
     @SerializedName("revenue")
     var _revenue: Int? = null
@@ -53,16 +53,15 @@ class Movie : Parcelable {
     var _type: String = ""
 
     @SerializedName("budget")
-    var budget: String? = ""
+    var budget: String = ""
     var isFavorite: Boolean = false
     val year: String
-        get() = if (released.isNullOrBlank()) "????" else released!!.substring(0, 4)
+        get() = if (released.isBlank()) "????" else released.substring(0, 4)
 
     val title: String
         get() = _title ?: name ?: "?"
 
-    val genre: List<String>
-        get() = if (_genre.isNotEmpty()) _genre else listOf("?")
+    val genre:MutableList<String> = mutableListOf()
 
     var isDetailsReceived = false
 
@@ -95,16 +94,16 @@ class Movie : Parcelable {
 
         if (movie._title != null) _title = movie._title
         if (movie.name != null) name = movie.name
-        if (movie.originalTitle != null) originalTitle = movie.originalTitle
-        if (movie.runtime != null) runtime = movie.runtime
-        if (movie.released != null) released = movie.released
-        if (movie.plot != null) plot = movie.plot
+        if (movie.originalTitle != "") originalTitle = movie.originalTitle
+        if (movie.runtime != "") runtime = movie.runtime
+        if (movie.released != "") released = movie.released
+        if (movie.plot != "") plot = movie.plot
         if (movie._poster != null) _poster = movie.poster
-        if (movie.rating != null) rating = movie.rating
-        if (movie.votes != null) votes = movie.votes
+        if (movie.rating != "") rating = movie.rating
+        if (movie.votes != "") votes = movie.votes
         if (movie._revenue != null) _revenue = movie._revenue
         if (movie._type != "") _type = movie._type
-        if (movie.budget != null) budget = movie._type
+        if (movie.budget != "") budget = movie._type
         if (movie.isDetailsReceived) isDetailsReceived = movie.isDetailsReceived
         if (movie.isFavorite) isFavorite = movie.isFavorite
     }
@@ -153,23 +152,23 @@ class Movie : Parcelable {
             movie.originalTitle = try {
                 jsonObj.getString("original_title")
             } catch (exception: JSONException) {
-                null
+                ""
             }
             movie.runtime = try {
                 jsonObj.getString("runtime")
             } catch (exception: JSONException) {
-                null
+                ""
             }
             movie.released = try {
                 jsonObj.getString("release_date")
             } catch (exception: JSONException) {
-                null
+                ""
             }
             movie._genre = genres
             movie.plot = try {
                 jsonObj.getString("overview")
             } catch (exception: JSONException) {
-                null
+                ""
             }
             movie._poster = try {
                 jsonObj.getString("poster_path")
@@ -179,12 +178,12 @@ class Movie : Parcelable {
             movie.rating = try {
                 jsonObj.getString("vote_average")
             } catch (exception: JSONException) {
-                null
+                ""
             }
             movie.votes = try {
                 jsonObj.getString("vote_count")
             } catch (exception: JSONException) {
-                null
+                ""
             }
             movie._revenue = try {
                 jsonObj.getInt("revenue")
@@ -199,7 +198,7 @@ class Movie : Parcelable {
             movie.budget = try {
                 jsonObj.getString("budget")
             } catch (exception: JSONException) {
-                null
+                ""
             }
 
             return movie
@@ -232,23 +231,23 @@ class Movie : Parcelable {
             movie.originalTitle = try {
                 jsonObj.getString("original_title")
             } catch (exception: JSONException) {
-                null
+                ""
             }
             movie.runtime = try {
                 jsonObj.getString("runtime")
             } catch (exception: JSONException) {
-                null
+                ""
             }
             movie.released = try {
                 jsonObj.getString("release_date")
             } catch (exception: JSONException) {
-                null
+                ""
             }
             movie._genre = genres
             movie.plot = try {
                 jsonObj.getString("overview")
             } catch (exception: JSONException) {
-                null
+                ""
             }
             movie._poster = try {
                 jsonObj.getString("poster_path")
@@ -258,12 +257,12 @@ class Movie : Parcelable {
             movie.rating = try {
                 jsonObj.getString("vote_average")
             } catch (exception: JSONException) {
-                null
+                ""
             }
             movie.votes = try {
                 jsonObj.getString("vote_count")
             } catch (exception: JSONException) {
-                null
+                ""
             }
             movie._revenue = try {
                 jsonObj.getInt("revenue")

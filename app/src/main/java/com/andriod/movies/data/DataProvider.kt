@@ -15,6 +15,7 @@ abstract class DataProvider {
         SubscriberType.SEARCH to HashSet(),
         SubscriberType.ERROR to HashSet(),
         SubscriberType.DETAILS to HashSet(),
+        SubscriberType.GENRES to HashSet(),
     )
 
     val data: MutableMap<String, Movie> = HashMap()
@@ -27,7 +28,7 @@ abstract class DataProvider {
             field = value
             notifySubscribers(SubscriberType.ERROR)
         }
-    val genres: MutableMap<Int, Genre> = HashMap()
+    val genres: MutableMap<String, Genre> = HashMap()
     var isGenresLoaded = false
 
     private val dataThread = HandlerThread("dataThread").apply { isDaemon = true;start() }
@@ -63,8 +64,8 @@ abstract class DataProvider {
         notifySubscribers((SubscriberType.DATA))
 
 
-        if (searchResultsData.containsKey(movie.id)){
-            searchResultsData[movie.id]?.populateData(data[movie.id]?:movie)
+        if (searchResultsData.containsKey(movie.id)) {
+            searchResultsData[movie.id]?.populateData(data[movie.id] ?: movie)
             notifySubscribers((SubscriberType.SEARCH))
         }
     }
@@ -74,21 +75,25 @@ abstract class DataProvider {
     abstract fun startService()
 
     open fun getMovieDetails(movie: Movie) {}
-    open fun requestMoreData(){}
+    open fun requestMoreData() {}
 
     protected open fun updateGenres(data: MutableMap<String, Movie> = this.data) {
         if (!isGenresLoaded) return
+
+        var dataChanged = false
 
         for (movie in data.values.filter { !it.isGenreUpdated }) {
             movie.isGenreUpdated = true
             if (movie._genre.isNullOrEmpty()) {
                 continue
             }
-            for (i in movie.genre.indices) {
-                movie._genre[i] = genres[movie._genre[i].toInt()]?.name ?: "?"
+            movie.genre.addAll(movie._genre)
+            for (i in movie._genre.indices) {
+                movie.genre[i] = genres[movie._genre[i]]?.name ?: "?"
             }
+            dataChanged = true
         }
-        notifySubscribers(SubscriberType.DATA)
+        if (dataChanged) notifySubscribers(SubscriberType.DATA)
     }
 
     companion object {

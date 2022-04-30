@@ -46,14 +46,12 @@ class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener,
         title: String?,
         contract: MovieListViewContract,
         sortBy: SortBy = SortBy.UNSORTED,
-        id: Int? = null,
         filter: MyPredicate,
     ) : super(context) {
         this.title = title ?: "?"
         this.filter = filter
         this.contract = contract
         this.sortBy = sortBy
-        if (id != null) this.id = id
 
         initView(context)
     }
@@ -83,7 +81,7 @@ class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener,
                 ) {
                     sortBy = SortBy.values()[position]
                     resortData()
-                    contract?.onStateChanged(this@MovieListView.id, sortBy)
+                    contract?.onStateChanged(this@MovieListView.title, sortBy)
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -99,9 +97,11 @@ class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener,
         return this.sortedWith { o1, o2 ->
             when (sortBy) {
                 SortBy.UNSORTED -> 0
-                SortBy.RATING -> o1.rating?.let { o2.rating?.compareTo(it) }!!
+                SortBy.RATING -> o1.rating.let { o2.rating.compareTo(it) }
                 SortBy.YEAR -> o2.year.compareTo(o1.year)
                 SortBy.TITLE -> o1.title.compareTo(o2.title)
+                SortBy.REVENUE -> o1.revenue.compareTo(o2.revenue)
+                SortBy.RELEASED -> o2.released.compareTo(o1.released)
             }
         }
     }
@@ -121,13 +121,13 @@ class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener,
 
     fun setData(movies: List<Movie>) {
         adapterMovie.movies = movies.filter(filter).sort()
-        binding.textViewHeader.isVisible = adapterMovie.movies.isNotEmpty()
+        binding.root.isVisible = adapterMovie.movies.isNotEmpty()
     }
 
     interface MovieListViewContract {
         fun onItemClick(movie: Movie)
         fun onFavoriteChanged(movie: Movie)
-        fun onStateChanged(viewId: Int, sortBy: SortBy)
+        fun onStateChanged(title: String, sortBy: SortBy)
     }
 
     override fun onItemClick(movie: Movie) {
@@ -151,6 +151,8 @@ class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener,
             RATING(1),
             YEAR(2),
             TITLE(3),
+            REVENUE(4),
+            RELEASED(5),
         }
     }
 }

@@ -12,6 +12,8 @@ import com.andriod.movies.MyViewModel
 import com.andriod.movies.R
 import com.andriod.movies.databinding.FragmentMovieListBinding
 import com.andriod.movies.entity.Movie
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.movie_list_view.view.*
 import java.util.*
 
@@ -36,6 +38,8 @@ class MovieListFragment : Fragment(), MovieListView.MovieListViewContract {
 
     private val listOfId = mutableMapOf<String, Int>()
     private val viewsState = mutableMapOf<String, MovieListView.Companion.SortBy>()
+
+    private val gson = Gson()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -62,14 +66,34 @@ class MovieListFragment : Fragment(), MovieListView.MovieListViewContract {
         isViewCreated = true
     }
 
+    private fun restoreState() {
+        if (viewsState.isNotEmpty()) return
+        val stringData: String = activity?.getPreferences(Context.MODE_PRIVATE)
+            ?.getString(SHARED_KEY_VIEWS_STATE, "") ?: ""
+        if (stringData.isNotBlank()) {
+            val setType =
+                object : TypeToken<HashMap<String, MovieListView.Companion.SortBy>?>() {}.type
+            viewsState.putAll(gson.fromJson(stringData, setType))
+        }
+    }
+
     override fun onDetach() {
         super.onDetach()
         isViewCreated = false
         _binding = null
     }
 
+    private fun saveState() {
+        val stringData: String = gson.toJson(viewsState)
+        if (stringData.isNotBlank()) activity?.getPreferences(Context.MODE_PRIVATE)
+            ?.edit()
+            ?.putString(SHARED_KEY_VIEWS_STATE, stringData)
+            ?.apply()
+    }
+
     private fun configureContent() {
         if (!isViewCreated) return
+        restoreState()
 
         groups.clear()
         lists.clear()
@@ -118,13 +142,12 @@ class MovieListFragment : Fragment(), MovieListView.MovieListViewContract {
                     if (!groups.contains(itemValue)) {
                         groups.add(itemValue)
 
-                        val id = getViewIdByTitle(itemValue ?: "")
-                        val stateId = "$id${showMode.name}"
+                        val stateId = "$itemValue${showMode.name}"
                         val sortBy = viewsState[stateId] ?: MovieListView.Companion.SortBy.UNSORTED
                             .also { viewsState[stateId] = it }
 
                         lists.add(
-                            MovieListView(context, itemValue, this@MovieListFragment, sortBy, id)
+                            MovieListView(context, itemValue, this@MovieListFragment, sortBy)
                             { movie ->
                                 if (groupByField.isList) {
                                     movie.listValue(groupByField)?.contains(itemValue!!) == true
@@ -155,6 +178,7 @@ class MovieListFragment : Fragment(), MovieListView.MovieListViewContract {
 
     companion object {
         private const val TAG = "@@MovieListFragment"
+        private const val SHARED_KEY_VIEWS_STATE = "views state"
 
         enum class GroupBy(
             val id: Int,
@@ -204,7 +228,8 @@ class MovieListFragment : Fragment(), MovieListView.MovieListViewContract {
         contract?.onMovieChanged(movie)
     }
 
-    override fun onStateChanged(viewId: Int, sortBy: MovieListView.Companion.SortBy) {
-        viewsState["$viewId${showMode.name}"] = sortBy
+    override fun onStateChanged(title: String, sortBy: MovieListView.Companion.SortBy) {
+        viewsState["$title${showMode.name}"] = sortBy
+        saveState()
     }
 }
