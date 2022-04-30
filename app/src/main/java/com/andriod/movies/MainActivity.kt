@@ -20,7 +20,8 @@ import com.andriod.movies.services.MovieDataDownloadService
 import com.andriod.movies.statusbar.StatusManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract, SettingsFragment.SettingsContract,
+class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
+    SettingsFragment.SettingsContract,
     MovieFragment.MovieContract {
     private var isLandscape = false
     private lateinit var bottomNavigationView: BottomNavigationView
@@ -39,10 +40,10 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract, S
         isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
         configureBottomView()
-        setStatusBar()
+        configureStatusBar()
     }
 
-    private fun setStatusBar() {
+    private fun configureStatusBar() {
         binding.statusBar.setStatuses(StatusManager.statuses)
         StatusManager.statuses.observe(this) {
             binding.statusBar.isVisible = it.values.isNotEmpty()
@@ -81,6 +82,9 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract, S
                 R.id.menu_bottom_item_settings -> {
                     showSettings()
                 }
+                R.id.menu_bottom_item_search_results -> {
+                    showList(MovieListFragment.Companion.ShowMode.SEARCHING)
+                }
                 else -> {
                     return@setOnItemSelectedListener false
                 }
@@ -90,6 +94,8 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract, S
     }
 
     private fun showSettings() {
+        supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+
         supportFragmentManager
             .beginTransaction()
             .replace(R.id.main_container, settingsFragment)
@@ -100,6 +106,7 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract, S
 
     private fun showList(showMode: MovieListFragment.Companion.ShowMode) {
         listFragment.showMode = showMode
+        supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
 
         supportFragmentManager
             .beginTransaction()
@@ -132,7 +139,7 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract, S
         setBottomView(when (mode) {
             MovieListFragment.Companion.ShowMode.LIST -> R.id.menu_bottom_item_list
             MovieListFragment.Companion.ShowMode.FAVORITES -> R.id.menu_bottom_item_favorites
-            MovieListFragment.Companion.ShowMode.SEARCHING -> R.id.menu_bottom_item_list
+            MovieListFragment.Companion.ShowMode.SEARCHING -> R.id.menu_bottom_item_search_results
         })
     }
 
@@ -160,7 +167,10 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract, S
     }
 
     private fun setBottomView(bottomItemId: Int) {
-        bottomNavigationView.menu.findItem(bottomItemId)?.isChecked = true
+        bottomNavigationView.menu.findItem(bottomItemId)?.apply {
+            isChecked = true
+            isVisible = true
+        }
     }
 
     private fun startSearching(query: String) {

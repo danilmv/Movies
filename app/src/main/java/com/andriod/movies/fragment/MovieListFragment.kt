@@ -3,6 +3,7 @@ package com.andriod.movies.fragment
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,9 +13,10 @@ import com.andriod.movies.MyViewModel
 import com.andriod.movies.R
 import com.andriod.movies.databinding.FragmentMovieListBinding
 import com.andriod.movies.entity.Movie
+import kotlinx.android.synthetic.main.movie_list_view.view.*
 import java.util.*
 
-class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
+class MovieListFragment : Fragment(), MovieListView.MovieListViewContract {
     private var _binding: FragmentMovieListBinding? = null
     private val binding: FragmentMovieListBinding get() = _binding!!
 
@@ -33,6 +35,9 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
     private val lists = TreeSet<MovieListView>()
     private var groupByField: GroupBy = MyViewModel.groupBy.value ?: GroupBy.TYPE
 
+    private val listOfId = mutableMapOf<String, Int>()
+    private val viewsState = mutableMapOf<String, MovieListView.Companion.SortBy>()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -40,6 +45,11 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
     ): View {
         _binding = FragmentMovieListBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        view.isSaveEnabled = true
     }
 
     override fun onResume() {
@@ -86,7 +96,7 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
                 val list = when (showMode) {
                     ShowMode.LIST -> it.values.toList()
                     ShowMode.FAVORITES -> it.values.toList().filter { movie -> movie.isFavorite }
-                    ShowMode.SEARCHING -> return@observe
+                    else -> return@observe
                 }
                 showData(list)
             }
@@ -105,8 +115,13 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
                     if (!groups.contains(itemValue)) {
                         groups.add(itemValue)
 
+                        val id = getViewIdByTitle(itemValue ?: "")
+                        val stateId = "$id${showMode.name}"
+                        val sortBy = viewsState[stateId] ?: MovieListView.Companion.SortBy.UNSORTED
+                            .also { viewsState[stateId] = it }
+
                         lists.add(
-                            MovieListView(context, itemValue, this@MovieListFragment)
+                            MovieListView(context, itemValue, this@MovieListFragment, sortBy, id)
                             { movie ->
                                 if (groupByField.isList) {
                                     movie.listValue(groupByField)?.contains(itemValue!!) == true
@@ -126,6 +141,10 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
         }
     }
 
+    private fun getViewIdByTitle(title: String): Int {
+        return listOfId[title] ?: View.generateViewId().also { listOfId[title] = it }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -134,7 +153,11 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
     companion object {
         private const val TAG = "@@MovieListFragment"
 
-        enum class GroupBy(val id: Int, val isList: Boolean = false, val isInverse:Boolean = false) {
+        enum class GroupBy(
+            val id: Int,
+            val isList: Boolean = false,
+            val isInverse: Boolean = false,
+        ) {
             TYPE(0),
             YEAR(1, isInverse = true),
             GENRE(2, true),
@@ -176,5 +199,9 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
 
     override fun onFavoriteChanged(movie: Movie) {
         contract?.onMovieChanged(movie)
+    }
+
+    override fun onStateChanged(viewId: Int, sortBy: MovieListView.Companion.SortBy) {
+        viewsState["$viewId${showMode.name}"] = sortBy
     }
 }

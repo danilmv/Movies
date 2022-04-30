@@ -27,4 +27,5 @@
     <string name="error_message_title">Error</string>
     <string name="retry_message">retry</string>
     <string name="start_service_button">start service</string>
+    <string name="last_search">last search</string>
 </resources>
