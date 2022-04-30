@@ -15,7 +15,5 @@ class MovieApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-
-        MyViewModel.initData(database)
     }
 }

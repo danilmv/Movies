@@ -42,10 +42,16 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        startLoadingData()
+
         isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
         configureBottomView()
         configureStatusBar()
+    }
+
+    private fun startLoadingData() {
+        MyViewModel.initData((application as MovieApplication).database)
     }
 
     private fun configureStatusBar() {

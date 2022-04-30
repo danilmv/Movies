@@ -68,6 +68,11 @@ app changes: added status console; fixed bugs with concurrency(nope) and wrong d
 
 [movies.apk from lesson8+](apks/app-debug-8+.apk)
 
+## Lesson9: ContentProvider
+app changes: added ContentProvider, responding to queries
+
+[movies.apk from lesson9](apks/app-debug-9.apk)
+
 
 
 

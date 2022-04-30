@@ -21,6 +21,12 @@
         </activity>
 
         <service android:name=".services.MovieDataDownloadService"/>
+
+        <provider
+            android:authorities="@string/authorities"
+            android:name=".contentprovider.VideoLinksContentProvider"
+            android:enabled="true"
+            android:exported="true"/>
     </application>
 
 </manifest>
