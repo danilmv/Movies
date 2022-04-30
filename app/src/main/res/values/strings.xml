@@ -7,6 +7,7 @@
     <string name="details_title" translatable="false">%1$s</string>
     <string name="details_actors">Actors: %1$s</string>
     <string name="details_box_office">Box office: %1$s</string>
+    <string name="details_revenue">Revenue: %1$s</string>
     <string name="details_plot" translatable="false">%1$s</string>
     <string name="details_rating" translatable="false">%1$s</string>
     <string name="details_votes" translatable="false">(%1$s)</string>
@@ -19,6 +20,16 @@
     <string name="title_list">List</string>
     <string name="title_favorites">Favorites</string>
     <string name="title_search">Search results</string>
-    <string name="details_runtime" translatable="false">%1$s</string>
+    <string name="details_runtime">Runtime: %1$s min</string>
     <string name="details_released">Released: %1$s</string>
+    <string name="details_genres">Genres: %1$s</string>
+    <string name="details_lists">Lists: %1$s</string>
+    <string name="error_message_title">Error</string>
+    <string name="retry_message">retry</string>
+    <string name="start_service_button">start service</string>
+    <string name="last_search">last search</string>
+    <string name="start_loading_button">start loading</string>
+    <string name="show_status_console_button">Show status console</string>
+    <string name="authorities" translatable="false">com.andriod.movies.provider</string>
+    <string name="background_switch">Background image</string>
 </resources>

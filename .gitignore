@@ -8,3 +8,8 @@
 .externalNativeBuild
 .cxx
 local.properties
+/app/src/main/res/examples/
+/apikey.properties
+/app/src/main/examples/
+/app/debug/output-metadata.json
+/app/release/output-metadata.json

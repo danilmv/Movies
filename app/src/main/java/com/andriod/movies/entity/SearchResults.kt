@@ -1,7 +1,8 @@
 package com.andriod.movies.entity
 
-import com.google.gson.annotations.SerializedName
-
 data class SearchResults(
-    @SerializedName("Search") val search: List<Movie>,
+    val page: Int,
+    val results: List<Movie>,
+    val total_pages: Int,
+    val total_results: Int
 )

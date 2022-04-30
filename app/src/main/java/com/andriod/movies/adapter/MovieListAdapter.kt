@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.andriod.movies.databinding.ItemMovieBinding
 import com.andriod.movies.entity.Movie
+import com.bumptech.glide.Glide
 
 class MovieListAdapter : RecyclerView.Adapter<MovieListAdapter.ViewHolder>() {
     var movies: List<Movie> = ArrayList()
@@ -45,9 +46,18 @@ class MovieListAdapter : RecyclerView.Adapter<MovieListAdapter.ViewHolder>() {
             isBindingInProgress = true
             this.movie = movie
             binding.textViewTitle.text = movie.title
-            binding.textViewRating.text = movie.imdbRating
+            binding.textViewRating.text = movie.rating
             binding.textViewYear.text = movie.year
             binding.toggleFavorite.isChecked = movie.isFavorite
+
+            movie.poster?.let {
+                Glide.with(binding.root)
+                    .load(it)
+                    .placeholder(binding.imageViewPoster.drawable)
+                    .centerCrop()
+                    .into(binding.imageViewPoster)
+            }
+
             isBindingInProgress = false
         }
     }

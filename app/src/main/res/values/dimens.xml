@@ -8,8 +8,10 @@
     <dimen name="list_header_margin">16dp</dimen>
     <dimen name="item_poster_size">100dp</dimen>
     <dimen name="details_poster_height">300dp</dimen>
-    <dimen name="details_poster_width">160dp</dimen>
+    <dimen name="details_poster_width">200dp</dimen>
     <dimen name="item_toggle_size">22dp</dimen>
     <dimen name="details_toggle_size">32dp</dimen>
     <dimen name="details_title_text_size">32sp</dimen>
+    <dimen name="status_bar_text_size">10sp</dimen>
+    <dimen name="spinner_videos_text_size">10sp</dimen>
 </resources>
