@@ -1,6 +1,7 @@
 package com.andriod.movies.fragment
 
 import android.content.Context
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -88,6 +89,13 @@ class MovieFragment : Fragment() {
                     .placeholder(imageViewPoster.drawable)
                     .centerCrop()
                     .into(imageViewPoster)
+            }
+
+            if (movie?.background?.isNotBlank() == true && MyViewModel.showFullscreenBackground.value == true) {
+                Glide.with(root)
+                    .load(movie?.background)
+                    .centerCrop()
+                    .into(imageViewBackground)
             }
         }
 

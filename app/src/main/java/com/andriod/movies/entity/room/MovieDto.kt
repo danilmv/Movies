@@ -21,4 +21,5 @@ data class MovieDto(
     @ColumnInfo(name = "media_type") val type: String,
     @ColumnInfo val isFavorite: Int,
     @ColumnInfo val isDetailed: Int,
+    @ColumnInfo val background: String?,
 )

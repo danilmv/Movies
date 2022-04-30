@@ -153,7 +153,8 @@ class RoomDataProvider(
             budget,
             _type,
             if (isFavorite) 1 else 0,
-            if (isDetailsReceived) 1 else 0)
+            if (isDetailsReceived) 1 else 0,
+            _background)
 
 
     private fun MovieDto.toMovie(): Movie {
@@ -174,6 +175,7 @@ class RoomDataProvider(
         movie._type = type
         movie.isFavorite = isFavorite == 1
         movie.isDetailsReceived = isDetailed == 1
+        movie._background = background
 
         return movie
     }
