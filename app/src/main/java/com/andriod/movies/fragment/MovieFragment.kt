@@ -42,16 +42,16 @@ class MovieFragment : Fragment() {
 
     private fun showMovieDetails() {
         binding.textViewTitle.text = String.format(getString(R.string.details_title), movie?.title)
-        binding.textViewActors.text =
-            String.format(getString(R.string.details_actors), movie?.actors ?: "?")
-        binding.textViewBoxOffice.text =
-            String.format(getString(R.string.details_box_office), movie?.boxOffice ?: "?")
+//        binding.textViewActors.text =
+//            String.format(getString(R.string.details_actors), movie?.actors ?: "?")
+//        binding.textViewBoxOffice.text =
+//            String.format(getString(R.string.details_box_office), movie?.boxOffice ?: "?")
         binding.textViewPlot.text =
             String.format(getString(R.string.details_plot), movie?.plot ?: "?")
         binding.textViewRating.text =
-            String.format(getString(R.string.details_rating), movie?.imdbRating ?: "?.?")
+            String.format(getString(R.string.details_rating), movie?.rating ?: "?.?")
         binding.textViewVotes.text =
-            String.format(getString(R.string.details_votes), movie?.imdbVotes ?: "?")
+            String.format(getString(R.string.details_votes), movie?.votes ?: "?")
         binding.textViewYear.text = String.format(getString(R.string.details_year), movie?.year)
         binding.textViewType.text = String.format(getString(R.string.details_type), movie?.type)
         binding.toggleFavorite.isChecked = movie?.isFavorite ?: false
@@ -61,8 +61,8 @@ class MovieFragment : Fragment() {
                 contract?.onMovieChanged(it)
             }
         }
-        binding.textViewRuntime.text =
-            String.format(getString(R.string.details_runtime), movie?.runtime ?: "? min")
+//        binding.textViewRuntime.text =
+//            String.format(getString(R.string.details_runtime), movie?.runtime ?: "? min")
 
         binding.textViewReleased.text =
             String.format(getString(R.string.details_released), movie?.released ?: "??.??.????")

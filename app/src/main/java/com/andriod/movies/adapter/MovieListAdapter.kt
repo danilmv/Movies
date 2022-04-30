@@ -45,7 +45,7 @@ class MovieListAdapter : RecyclerView.Adapter<MovieListAdapter.ViewHolder>() {
             isBindingInProgress = true
             this.movie = movie
             binding.textViewTitle.text = movie.title
-            binding.textViewRating.text = movie.imdbRating
+            binding.textViewRating.text = movie.rating
             binding.textViewYear.text = movie.year
             binding.toggleFavorite.isChecked = movie.isFavorite
             isBindingInProgress = false

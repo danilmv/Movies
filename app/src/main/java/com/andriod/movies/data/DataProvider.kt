@@ -4,10 +4,6 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import com.andriod.movies.entity.Movie
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
-import kotlin.collections.HashSet
 
 typealias Subscriber = (() -> Unit)
 
@@ -19,7 +15,7 @@ abstract class DataProvider {
     val data: MutableMap<String, Movie> = HashMap()
     private val handler = Handler(Looper.getMainLooper())
 
-    val searchResultsData: MutableList<Movie> = ArrayList()
+    val searchResultsData: MutableMap<String, Movie> = HashMap()
 
     protected fun notifySubscribers(type: SubscriberType) {
         subscribers[type]?.let {

@@ -14,7 +14,8 @@ import com.andriod.movies.entity.Movie
 
 typealias MyPredicate = (Movie) -> Boolean
 
-class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener, Comparable<MovieListView> {
+class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener,
+    Comparable<MovieListView> {
     private lateinit var binding: MovieListViewBinding
     private lateinit var adapterMovie: MovieListAdapter
     lateinit var title: String
@@ -84,6 +85,6 @@ class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener, Compar
     }
 
     override fun compareTo(other: MovieListView): Int {
-        return  title.compareTo(other.title)
+        return title.compareTo(other.title) * -1
     }
 }

@@ -6,20 +6,35 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class Movie(
-    @SerializedName("imdbID") val id: String,
-    @SerializedName("Title") val title: String,
-    @SerializedName("Year") val year: String,
-    @SerializedName("Rated") val rated: String,
-    @SerializedName("Runtime") val runtime: String,
-    @SerializedName("Released") val released: String,
-    @SerializedName("Genre") val genre: String,
-    @SerializedName("Director") val director: String,
-    @SerializedName("Actors") val actors: String,
-    @SerializedName("Plot") val plot: String,
-    @SerializedName("Poster") val poster: String,
-    val imdbRating: String,
-    val imdbVotes: String,
-    @SerializedName("BoxOffice") val boxOffice: String,
-    @SerializedName("Type") val type: String,
-    var isFavorite:Boolean = false,
-) : Parcelable
+    @SerializedName("id") val id: String,
+    @SerializedName("title") var _title: String?,
+    @SerializedName("name") val name: String?,
+    @SerializedName("original_title") val originalTitle: String,
+    @SerializedName("runtime") val runtime: String,
+    @SerializedName("release_date") val released: String?,
+    @SerializedName("genre_ids") var _genre: List<String>?,
+//    @SerializedName("Director") val director: String,
+//    @SerializedName("Actors") val actors: String,
+    @SerializedName("overview") val plot: String,
+    @SerializedName("poster_path") val poster: String,
+    @SerializedName("vote_average") val rating: String,
+    @SerializedName("vote_count") val votes: String,
+    @SerializedName("revenue") val revenue: String,
+    @SerializedName("media_type") var type: String = "",
+    var isFavorite: Boolean = false,
+
+    ) : Parcelable {
+    val year: String
+        get() = released?.substring(0, 4) ?: "????"
+
+    val title: String
+        get() = _title ?: name ?: "?"
+
+    val genre: List<String>
+        get() = if (_genre?.isNotEmpty() == true) _genre!! else listOf("?")
+
+    companion object{
+        const val TYPE_MOVIE = "movie"
+        const val TYPE_TV_SERIES = "tv"
+    }
+}

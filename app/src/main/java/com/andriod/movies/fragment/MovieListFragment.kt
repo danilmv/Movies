@@ -41,8 +41,8 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
     }
 
     private fun configureContent() {
-        when(showMode){
-            ShowMode.LIST->contract?.setTitle(getString(R.string.title_list))
+        when (showMode) {
+            ShowMode.LIST -> contract?.setTitle(getString(R.string.title_list))
             ShowMode.FAVORITES -> contract?.setTitle(getString(R.string.title_favorites))
             ShowMode.SEARCHING -> contract?.setTitle(getString(R.string.title_search))
         }
@@ -52,7 +52,9 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
         }
 
         if (showMode == ShowMode.SEARCHING) {
-            MyViewModel.searchResults.observe(viewLifecycleOwner) { showData(it) }
+            MyViewModel.searchResults.observe(viewLifecycleOwner) {
+                showData(it.values.toList())
+            }
         } else {
             MyViewModel.movies.observe(viewLifecycleOwner) {
                 val list = when (showMode) {
@@ -95,7 +97,7 @@ class MovieListFragment : Fragment(), MovieListView.OnItemClickListener {
         private fun Movie.fieldValue(groupBy: GroupBy) = when (groupBy) {
             GroupBy.TYPE -> this.type
             GroupBy.YEAR -> this.year
-            GroupBy.GENRE -> this.genre
+            GroupBy.GENRE -> this.genre.joinToString(",")
         }
 
         enum class ShowMode { LIST, FAVORITES, SEARCHING }
