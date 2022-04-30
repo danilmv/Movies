@@ -66,15 +66,15 @@ class StatusBarView : LinearLayout {
     private fun getStatusText(values: Map<Int, String>): String {
         if (values.isEmpty()) return ""
 
-        val sb = StringBuilder()
+        val sb = mutableListOf<String?>()
         for (group in StatusManager.groups) {
             try {
-                sb.append(getNextValueFromGroup(group, values))
+                sb.add(getNextValueFromGroup(group, values))
             } catch (e: Exception) {
                 return ""
             }
         }
-        return sb.toString()
+        return sb.joinToString("\n")
     }
 
     private fun getNextValueFromGroup(

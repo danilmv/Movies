@@ -37,5 +37,10 @@ app changes: lists of movies; my status bar
 <img src="printscreens/lesson5+_1.png" width="32%">
 <img src="printscreens/lesson5+_2.png" width="32%">
 
+## Lesson6: Concurrency: Looper, Handler; Services
+app changes: HandlerThread processing all requests; Service (for future background requests); fixed bug: retain lists state
+### Preview
+<img src="printscreens/lesson6_1.png" width="32%">
+
 
 

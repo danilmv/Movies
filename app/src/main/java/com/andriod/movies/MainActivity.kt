@@ -1,30 +1,35 @@
 package com.andriod.movies
 
 import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
+import androidx.fragment.app.FragmentManager
 import com.andriod.movies.databinding.ActivityMainBinding
 import com.andriod.movies.entity.Movie
 import com.andriod.movies.fragment.MovieFragment
 import com.andriod.movies.fragment.MovieListFragment
 import com.andriod.movies.fragment.SettingsFragment
+import com.andriod.movies.services.MovieDataDownloadService
 import com.andriod.movies.statusbar.StatusManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
+class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract, SettingsFragment.SettingsContract,
     MovieFragment.MovieContract {
     private var isLandscape = false
     private lateinit var bottomNavigationView: BottomNavigationView
     private var _binding: ActivityMainBinding? = null
     private val binding
         get() = _binding!!
+
+    private val listFragment = MovieListFragment()
+    private val settingsFragment = SettingsFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,8 +44,7 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
 
     private fun setStatusBar() {
         binding.statusBar.setStatuses(StatusManager.statuses)
-        StatusManager.statuses.observe(this){
-            Log.d(TAG, "setStatusBar() called")
+        StatusManager.statuses.observe(this) {
             binding.statusBar.isVisible = it.values.isNotEmpty()
         }
     }
@@ -88,28 +92,28 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
     private fun showSettings() {
         supportFragmentManager
             .beginTransaction()
-            .replace(R.id.main_container, SettingsFragment())
-            .addToBackStack(null)
+            .replace(R.id.main_container, settingsFragment)
             .commit()
 
         setTitle(getString(R.string.title_settings))
     }
 
     private fun showList(showMode: MovieListFragment.Companion.ShowMode) {
-        val fragment = MovieListFragment()
-        fragment.showMode = showMode
+        listFragment.showMode = showMode
+
         supportFragmentManager
             .beginTransaction()
-            .replace(R.id.main_container, fragment)
+            .replace(R.id.main_container, listFragment)
             .commit()
     }
 
     override fun changeMovie(movie: Movie) {
         MyViewModel.getMovieDetails(movie)
+        supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
 
         supportFragmentManager
             .beginTransaction()
-            .replace(R.id.main_container, MovieFragment.newInstance(movie))
+            .add(R.id.main_container, MovieFragment.newInstance(movie))
             .addToBackStack(null)
             .commit()
 
@@ -172,5 +176,9 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
 
     companion object {
         const val TAG = "@@MainActivity"
+    }
+
+    override fun onStartService() {
+        startService(Intent(this, MovieDataDownloadService::class.java))
     }
 }

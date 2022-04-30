@@ -7,6 +7,7 @@ import kotlin.collections.HashMap
 
 object StatusManager {
     private var currentId = 0
+    private var currentGroupId = 1000
 
     private val _statuses = MutableLiveData<Map<Int, String>>()
     val statuses: LiveData<Map<Int, String>> = _statuses
@@ -22,7 +23,7 @@ object StatusManager {
         _statuses.value = HashMap()
     }
 
-    fun create(message: String, groupId: Int = 0): Int {
+    fun create(message: String, groupId: Int = currentGroupId++): Int {
         val id = currentId++
         statusesMap[id] = message
         _statuses.postValue(statusesMap)

@@ -59,6 +59,8 @@ class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener,
     private fun configureRecyclerView() {
         adapterMovie = MovieListAdapter()
         adapterMovie.listener = this
+        adapterMovie.stateRestorationPolicy =
+            RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
         binding.recyclerView.layoutManager =
             LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
@@ -86,11 +88,11 @@ class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener,
     }
 
     override fun compareTo(other: MovieListView): Int = when (MyViewModel.groupBy.value) {
-        MovieListFragment.Companion.GroupBy.GENRE -> title.compareTo(other.title)
-        MovieListFragment.Companion.GroupBy.YEAR -> title.compareTo(other.title) * -1
-        MovieListFragment.Companion.GroupBy.TYPE -> title.compareTo(other.title)
         null -> 0
-        else -> title.compareTo(other.title)
+        else -> title.compareTo(other.title) * if (MyViewModel.groupBy.value!!.isInverse) -1 else 1
     }
 
+    companion object {
+        const val TAG = "@@MovieListView"
+    }
 }

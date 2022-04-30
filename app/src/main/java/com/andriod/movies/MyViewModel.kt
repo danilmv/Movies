@@ -51,4 +51,8 @@ object MyViewModel {
     fun getMovieDetails(movie: Movie) {
         if (!movie.isDetailsReceived) dummy.getMovieDetails(movie)
     }
+
+    fun getMoreData(){
+        dummy.requestMoreData()
+    }
 }
