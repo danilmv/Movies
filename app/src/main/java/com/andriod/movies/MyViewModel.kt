@@ -3,14 +3,25 @@ package com.andriod.movies
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.andriod.movies.data.DataProvider
-import com.andriod.movies.data.HttpConnectionDataProvider
+import com.andriod.movies.data.RetrofitDataProvider
+import com.andriod.movies.data.TheMovieDBService
 import com.andriod.movies.entity.Movie
 import com.andriod.movies.fragment.MovieListFragment
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 object MyViewModel {
     private val _movies = MutableLiveData<Map<String, Movie>>()
     val movies: LiveData<Map<String, Movie>> = _movies
-    private val dummy = HttpConnectionDataProvider()
+
+    private val retrofit: Retrofit = Retrofit.Builder()
+        .addConverterFactory(GsonConverterFactory.create())
+        .baseUrl("https://api.themoviedb.org/")
+        .build()
+
+    private val service: TheMovieDBService = retrofit.create(TheMovieDBService::class.java)
+
+    private val dummy: DataProvider = RetrofitDataProvider(service)
 
     var groupBy = MutableLiveData(MovieListFragment.Companion.GroupBy.LISTS)
 
@@ -52,7 +63,7 @@ object MyViewModel {
         if (!movie.isDetailsReceived) dummy.getMovieDetails(movie)
     }
 
-    fun getMoreData(){
+    fun getMoreData() {
         dummy.requestMoreData()
     }
 }

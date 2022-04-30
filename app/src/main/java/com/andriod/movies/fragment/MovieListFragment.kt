@@ -3,7 +3,6 @@ package com.andriod.movies.fragment
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -77,11 +76,7 @@ class MovieListFragment : Fragment(), MovieListView.MovieListViewContract {
 
         contract?.onModeChange(showMode)
 
-        when (showMode) {
-            ShowMode.LIST -> contract?.setTitle(getString(R.string.title_list))
-            ShowMode.FAVORITES -> contract?.setTitle(getString(R.string.title_favorites))
-            ShowMode.SEARCHING -> contract?.setTitle(getString(R.string.title_search))
-        }
+        setTitle()
 
         MyViewModel.groupBy.observe(viewLifecycleOwner) {
             groupByField = it
@@ -100,6 +95,14 @@ class MovieListFragment : Fragment(), MovieListView.MovieListViewContract {
                 }
                 showData(list)
             }
+        }
+    }
+
+    fun setTitle() {
+        when (showMode) {
+            ShowMode.LIST -> contract?.setTitle(getString(R.string.title_list))
+            ShowMode.FAVORITES -> contract?.setTitle(getString(R.string.title_favorites))
+            ShowMode.SEARCHING -> contract?.setTitle(getString(R.string.title_search))
         }
     }
 

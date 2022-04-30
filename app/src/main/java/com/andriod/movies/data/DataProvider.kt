@@ -30,12 +30,8 @@ abstract class DataProvider {
     val genres: MutableMap<Int, Genre> = HashMap()
     var isGenresLoaded = false
 
-    protected val dataThread = HandlerThread("dataThread").apply { isDaemon = true;start() }
+    private val dataThread = HandlerThread("dataThread").apply { isDaemon = true;start() }
     protected val dataHandler = Handler(dataThread.looper)
-
-    init {
-        startService()
-    }
 
     protected fun notifySubscribers(type: SubscriberType) {
         subscribers[type]?.let {
@@ -79,6 +75,21 @@ abstract class DataProvider {
 
     open fun getMovieDetails(movie: Movie) {}
     open fun requestMoreData(){}
+
+    protected open fun updateGenres(data: MutableMap<String, Movie> = this.data) {
+        if (!isGenresLoaded) return
+
+        for (movie in data.values.filter { !it.isGenreUpdated }) {
+            movie.isGenreUpdated = true
+            if (movie._genre.isNullOrEmpty()) {
+                continue
+            }
+            for (i in movie.genre.indices) {
+                movie._genre[i] = genres[movie._genre[i].toInt()]?.name ?: "?"
+            }
+        }
+        notifySubscribers(SubscriberType.DATA)
+    }
 
     companion object {
         const val TAG = "@@DataProvider"

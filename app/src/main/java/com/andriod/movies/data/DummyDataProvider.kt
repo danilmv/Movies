@@ -17,6 +17,10 @@ class DummyDataProvider : DataProvider() {
 
     private var doSearch = { }
 
+    init {
+        startService()
+    }
+
     override fun startService() {
 
         val movie: Movie = gson.fromJson(QUERY_RESULT, movieType)
