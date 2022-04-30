@@ -4,14 +4,21 @@
     <string name="favorites">favorites</string>
     <string name="settings">settings</string>
     <string name="search">search</string>
-    <string name="details_title">Title: %1$s</string>
+    <string name="details_title" translatable="false">%1$s</string>
     <string name="details_actors">Actors: %1$s</string>
     <string name="details_box_office">Box office: %1$s</string>
-    <string name="details_plot">Plot: %1$s</string>
-    <string name="details_rating">Rating: %1$s</string>
-    <string name="details_votes">Number of votes: %1$s</string>
-    <string name="details_year">Year: %1$s</string>
-    <string name="details_type">Type: %1$s</string>
+    <string name="details_plot" translatable="false">%1$s</string>
+    <string name="details_rating" translatable="false">%1$s</string>
+    <string name="details_votes" translatable="false">(%1$s)</string>
+    <string name="details_year" translatable="false">(%1$s)</string>
+    <string name="details_type" translatable="false">%1$s</string>
     <string name="list_title_movies">Movies</string>
     <string name="list_title_series">Series</string>
+    <string name="settings_group_by_title">Group by:</string>
+    <string name="title_settings">Settings</string>
+    <string name="title_list">List</string>
+    <string name="title_favorites">Favorites</string>
+    <string name="title_search">Search results</string>
+    <string name="details_runtime" translatable="false">%1$s</string>
+    <string name="details_released">Released: %1$s</string>
 </resources>
