@@ -41,6 +41,8 @@ class MovieListFragment : Fragment(), MovieListView.MovieListViewContract {
 
     private val gson = Gson()
 
+    private var configurationStarted = false
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -93,6 +95,12 @@ class MovieListFragment : Fragment(), MovieListView.MovieListViewContract {
 
     private fun configureContent() {
         if (!isViewCreated) return
+        if (configurationStarted) {
+            return
+        } else {
+            configurationStarted = true
+        }
+
         restoreState()
 
         groups.clear()
@@ -120,6 +128,7 @@ class MovieListFragment : Fragment(), MovieListView.MovieListViewContract {
                 showData(list)
             }
         }
+        configurationStarted = false
     }
 
     fun setTitle() {
@@ -213,6 +222,7 @@ class MovieListFragment : Fragment(), MovieListView.MovieListViewContract {
         fun onMovieChanged(movie: Movie)
         fun setTitle(title: String)
         fun onModeChange(mode: ShowMode)
+        fun onMassDetailsRequested(movies: List<Movie>)
     }
 
     override fun onAttach(context: Context) {
@@ -228,8 +238,15 @@ class MovieListFragment : Fragment(), MovieListView.MovieListViewContract {
         contract?.onMovieChanged(movie)
     }
 
-    override fun onStateChanged(title: String, sortBy: MovieListView.Companion.SortBy) {
+    override fun onStateChanged(
+        title: String,
+        sortBy: MovieListView.Companion.SortBy,
+        movies: List<Movie>,
+    ) {
         viewsState["$title${showMode.name}"] = sortBy
         saveState()
+        if (sortBy == MovieListView.Companion.SortBy.REVENUE) {
+            contract?.onMassDetailsRequested(movies)
+        }
     }
 }

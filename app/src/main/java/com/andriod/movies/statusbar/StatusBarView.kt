@@ -11,7 +11,13 @@ import com.andriod.movies.databinding.StatusBarViewBinding
 import java.lang.Thread.sleep
 
 
-class StatusBarView : LinearLayout {
+class StatusBarView @JvmOverloads constructor(
+    context: Context?,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : LinearLayout(context,
+    attrs,
+    defStyleAttr) {
 
     private lateinit var binding: StatusBarViewBinding
 
@@ -23,17 +29,7 @@ class StatusBarView : LinearLayout {
 
     private var lastTimeDataRefreshed: Long = 0
 
-    constructor(context: Context?) : super(context) {
-        initView(context)
-    }
-
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {
-        initView(context)
-    }
-
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context,
-        attrs,
-        defStyleAttr) {
+    init {
         readAttributes(attrs)
         initView(context)
     }

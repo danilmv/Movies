@@ -3,6 +3,7 @@ package com.andriod.movies.data
 import com.andriod.movies.data.dao.MoviesDao
 import com.andriod.movies.entity.Genre
 import com.andriod.movies.entity.Movie
+import com.andriod.movies.entity.Video
 import com.andriod.movies.entity.room.*
 import com.andriod.movies.statusbar.StatusManager
 
@@ -11,16 +12,15 @@ class RoomDataProvider(
     private val dao: MoviesDao,
 ) : RetrofitDataProvider(service) {
 
-    private val dataRequestStatusGroup = 2
-
     override fun startService() {
-        val statusId = StatusManager.create("DB requested", dataRequestStatusGroup)
+        val statusId = StatusManager.create("DB requested",
+            DataProvider.Companion.StatusGroup.ROOM_DATA_REQUESTED.id)
         dataHandler.post {
             StatusManager.change(statusId, "DB requested... genres")
             dao.getGenres().forEach {
-                genres[it.genreId] = it.toGenre()
-                if (genres.isNotEmpty()) isGenresLoaded = true
+                genres[it.genreId] = it.toGenre().also { genre -> genre.isSavedToDB = true }
             }
+//            if (genres.isNotEmpty()) isGenresLoaded = true
 
             StatusManager.change(statusId, "DB requested... movies")
             dao.getAllMovies().forEach {
@@ -29,14 +29,23 @@ class RoomDataProvider(
                     movie.addList(it.listId)
                 }
                 movie._genre = dao.getMovieGenres(movie.id).toMutableList()
+
+                dao.getMovieVideos(movie.id).forEach{ videoId->
+                    val video = dao.getVideo(videoId).toVideo()
+                    video.isSavedToDB = true
+                    movie.videos[video.key] = video
+                }
+
                 addMovieToData(movie)
 
                 updateGenres(mutableMapOf(Pair(movie.id, movie)))
+
+                movie.isSavedToDB = true
             }
 
             notifySubscribers(DataProvider.Companion.SubscriberType.DATA)
 
-            StatusManager.close(statusId)
+            StatusManager.close(statusId, "DB data received")
         }
 
         super.startService()
@@ -57,21 +66,34 @@ class RoomDataProvider(
 
     private fun saveDataToDB(movie: Movie) {
         dataHandler.post {
-            val movieDto = movie.toMovieDto()
-            if (dao.updateMovie(movieDto) == 0)
-                dao.insertMovie(movieDto)
+            if (!movie.isSavedToDB) {
+                val movieDto = movie.toMovieDto()
+                if (dao.updateMovie(movieDto) == 0)
+                    dao.insertMovie(movieDto)
 
-            val listsDto = movie.lists.toListsDto().toTypedArray()
-            if (dao.updateList(*listsDto) < movie.lists.size)
-                dao.insertList(*listsDto)
+                val listsDto = movie.lists.toListsDto().toTypedArray()
+                if (dao.updateList(*listsDto) < movie.lists.size)
+                    dao.insertList(*listsDto)
 
-            val movieListDto = movie.lists.toMovieListDto(movie.id).toTypedArray()
-            if (dao.updateMovieList(*movieListDto) < movie.lists.size)
-                dao.insertMovieList(*movieListDto)
+                val movieListDto = movie.lists.toMovieListDto(movie.id).toTypedArray()
+                if (dao.updateMovieList(*movieListDto) < movie.lists.size)
+                    dao.insertMovieList(*movieListDto)
 
-            val movieGenreDto = movie._genre.toMovieGenreDto(movie.id).toTypedArray()
-            if (dao.updateMovieGenres(*movieGenreDto) < movie.lists.size)
-                dao.insertMovieGenres(*movieGenreDto)
+                val movieGenreDto = movie._genre.toMovieGenreDto(movie.id).toTypedArray()
+                if (dao.updateMovieGenres(*movieGenreDto) < movie.lists.size)
+                    dao.insertMovieGenres(*movieGenreDto)
+            }
+
+            if (movie.videos.isNotEmpty()) {
+                val videosDto = movie.videos.values.toVideosDto().toTypedArray()
+                if (videosDto.isNotEmpty()) {
+                    dao.insertVideos(*videosDto)
+
+                    val movieVideosDto =
+                        movie.videos.values.toMovieVideosDto(movie.id).toTypedArray()
+                    dao.insertMovieVideos(*movieVideosDto)
+                }
+            }
         }
     }
 
@@ -87,6 +109,33 @@ class RoomDataProvider(
     override fun dataChanged(movie: Movie) {
         super.dataChanged(movie)
         saveDataToDB(movie)
+    }
+
+
+    private fun VideoDto.toVideo() = Video(name, videoId, site, type)
+
+    private fun MutableCollection<Video>.toMovieVideosDto(
+        movieId: String,
+        lang: String = "EN",
+    ): List<MovieVideoDto> {
+        val result = ArrayList<MovieVideoDto>()
+        forEach { video ->
+            if (!video.isSavedToDB) {
+                result.add(MovieVideoDto(movieId, video.key, lang))
+            }
+        }
+        return result
+    }
+
+    private fun MutableCollection<Video>.toVideosDto(): List<VideoDto> {
+        val result = ArrayList<VideoDto>()
+        forEach { video ->
+            if (!video.isSavedToDB) {
+                result.add(VideoDto(video.key, video.name, video.site, video.type))
+            }
+        }
+
+        return result
     }
 
     private fun Movie.toMovieDto() =

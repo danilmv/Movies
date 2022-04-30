@@ -84,9 +84,16 @@ class Movie : Parcelable {
 
     var isGenreUpdated = false
 
+    val videos = mutableMapOf<String, Video>()
+
+    var isSavedToDB = false
+
     fun addList(list: String) {
-        if (!lists.contains(list)) lists.add(list)
-        lists.remove("")
+        if (!lists.contains(list)) {
+            lists.add(list)
+            lists.remove("")
+            isSavedToDB = false
+        }
     }
 
     fun populateData(movie: Movie) {
@@ -106,6 +113,8 @@ class Movie : Parcelable {
         if (movie.budget != "") budget = movie._type
         if (movie.isDetailsReceived) isDetailsReceived = movie.isDetailsReceived
         if (movie.isFavorite) isFavorite = movie.isFavorite
+
+        isSavedToDB = false
     }
 
     companion object {

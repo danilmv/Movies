@@ -27,15 +27,8 @@ class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener,
 
     var sortBy: SortBy = SortBy.UNSORTED
 
-    constructor(context: Context?) : super(context) {
-        initView(context)
-    }
-
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {
-        initView(context)
-    }
-
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context,
+    @JvmOverloads
+    constructor(context: Context?, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : super(context,
         attrs,
         defStyleAttr) {
         initView(context)
@@ -81,7 +74,7 @@ class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener,
                 ) {
                     sortBy = SortBy.values()[position]
                     resortData()
-                    contract?.onStateChanged(this@MovieListView.title, sortBy)
+                    contract?.onStateChanged(this@MovieListView.title, sortBy, adapterMovie.movies)
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -127,7 +120,7 @@ class MovieListView : LinearLayout, MovieListAdapter.OnItemClickListener,
     interface MovieListViewContract {
         fun onItemClick(movie: Movie)
         fun onFavoriteChanged(movie: Movie)
-        fun onStateChanged(title: String, sortBy: SortBy)
+        fun onStateChanged(title: String, sortBy: SortBy, movies: List<Movie>)
     }
 
     override fun onItemClick(movie: Movie) {

@@ -33,4 +33,10 @@ interface TheMovieDBService {
         @Query("query") query: String,
         @Query("page") page: Int = 1,
     ): Call<SearchResults>
+
+    @GET("3/movie/{id}/videos?api_key=${BuildConfig.MOVIE_API_KEY}")
+    fun getVideos(
+        @Path("id") id: String,
+        @Query("lang") lang: String = "en",
+    ): Call<MovieVideos>
 }

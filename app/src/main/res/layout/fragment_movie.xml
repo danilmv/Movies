@@ -23,7 +23,8 @@
             android:layout_marginTop="@dimen/item_margin"
             android:layout_marginEnd="@dimen/item_margin"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/toggle_favorite"/>
 
         <ToggleButton
             android:id="@+id/toggle_favorite"
@@ -143,6 +144,29 @@
             app:layout_constraintStart_toEndOf="@id/image_view_poster"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/text_view_genres"/>
+
+        <Spinner
+            android:id="@+id/spinner_videos"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/item_margin"
+            android:layout_marginEnd="@dimen/item_margin"
+            app:layout_constraintStart_toEndOf="@id/image_button_video"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_view_lists"/>
+
+
+        <ImageButton
+            android:id="@+id/image_button_video"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_video"
+            android:layout_marginStart="@dimen/item_margin"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="@id/spinner_videos"
+            app:layout_constraintBottom_toBottomOf="@id/spinner_videos"
+            app:layout_constraintEnd_toStartOf="@id/spinner_videos"
+            app:layout_constraintStart_toEndOf="@id/image_view_poster"/>
 
         <TextView
             android:id="@+id/text_view_plot"

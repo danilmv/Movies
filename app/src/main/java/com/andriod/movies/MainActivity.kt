@@ -3,6 +3,7 @@ package com.andriod.movies
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
+import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.inputmethod.InputMethodManager
@@ -13,10 +14,12 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import com.andriod.movies.databinding.ActivityMainBinding
 import com.andriod.movies.entity.Movie
+import com.andriod.movies.entity.Video
 import com.andriod.movies.fragment.MovieFragment
 import com.andriod.movies.fragment.MovieListFragment
 import com.andriod.movies.fragment.SettingsFragment
 import com.andriod.movies.services.MovieDataDownloadService
+import com.andriod.movies.statusbar.StatusConsoleFragment
 import com.andriod.movies.statusbar.StatusManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -31,6 +34,8 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
 
     private val listFragment = MovieListFragment()
     private val settingsFragment = SettingsFragment()
+
+    private val statusConsoleFragment = StatusConsoleFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +53,13 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
         StatusManager.statuses.observe(this) {
             binding.statusBar.isVisible = it.values.isNotEmpty()
         }
+        binding.statusBar.setOnClickListener {
+            showStatusConsole()
+        }
+    }
+
+    private fun showStatusConsole() {
+        statusConsoleFragment.show(supportFragmentManager, FRAGMENT_TAG_STATUS_CONSOLE)
     }
 
     override fun onStart() {
@@ -131,6 +143,12 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
         MyViewModel.updateData(movie)
     }
 
+    override fun onPlayVideo(video: Video) {
+//        val playVideoDialog = DialogPlayVideo.newInstance(video)
+//        playVideoDialog.show(supportFragmentManager, "play video")
+        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(video.link)))
+    }
+
     override fun setTitle(title: String) {
         this.title = "${getString(R.string.app_name)}: $title"
     }
@@ -141,6 +159,10 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
             MovieListFragment.Companion.ShowMode.FAVORITES -> R.id.menu_bottom_item_favorites
             MovieListFragment.Companion.ShowMode.SEARCHING -> R.id.menu_bottom_item_search_results
         })
+    }
+
+    override fun onMassDetailsRequested(movies: List<Movie>) {
+        MyViewModel.getMassMovieDetails(movies)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -186,6 +208,7 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
 
     companion object {
         const val TAG = "@@MainActivity"
+        const val FRAGMENT_TAG_STATUS_CONSOLE = "status consele"
     }
 
     override fun onStartService() {
@@ -194,6 +217,10 @@ class MainActivity : AppCompatActivity(), MovieListFragment.MovieListContract,
 
     override fun onStartLoading() {
         MyViewModel.retryConnection()
+    }
+
+    override fun onShowStatusConsole() {
+        showStatusConsole()
     }
 
     override fun onBackPressed() {

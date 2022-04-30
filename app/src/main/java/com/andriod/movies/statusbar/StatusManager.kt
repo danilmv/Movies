@@ -17,6 +17,10 @@ object StatusManager {
     val groups get() = _groups
     private val groupById = mutableMapOf<Int, Int>()
 
+    private val _history = MutableLiveData<MutableList<String>>()
+    val history: LiveData<MutableList<String>> get() = _history
+    private val historyValue = mutableListOf<String>()
+
     const val TAG = "@@StatusManager"
 
     init {
@@ -26,25 +30,32 @@ object StatusManager {
     fun create(message: String, groupId: Int = currentGroupId++): Int {
         val id = currentId++
         statusesMap[id] = message
+        historyValue.add("$id: $message")
 
         if (_groups[groupId] == null) _groups[groupId] = TreeSet()
         _groups[groupId]?.add(id)
         groupById[id] = groupId
 
         _statuses.postValue(statusesMap)
+        _history.postValue(historyValue)
 
         return id
     }
 
     fun change(id: Int, message: String) {
         statusesMap[id] = message
+        historyValue.add("$id: $message")
+
         _statuses.postValue(statusesMap)
+        _history.postValue(historyValue)
     }
 
-    fun close(id: Int) {
+    fun close(id: Int, message: String = "") {
         statusesMap.remove(id)
-        _statuses.postValue(statusesMap)
+        historyValue.add("$id: closed $message")
 
+        _statuses.postValue(statusesMap)
         _groups[groupById[id]]?.remove(id)
+        _history.postValue(historyValue)
     }
 }

@@ -60,4 +60,18 @@ interface MoviesDao {
 
     @Update
     fun updateMovieGenres(vararg movieGenreDto: MovieGenreDto): Int
+
+//    MovieVideo
+
+    @Query("SELECT videoId FROM MovieVideo WHERE movieId = :movieId")
+    fun getMovieVideos(movieId: String): List<String>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun insertMovieVideos(vararg movieVideoDto: MovieVideoDto)
+
+    @Query("SELECT * FROM Videos WHERE videoId = :videoId")
+    fun getVideo(videoId: String): VideoDto
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun insertVideos(vararg videoDto: VideoDto)
 }
