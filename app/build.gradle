@@ -1,18 +1,18 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-    id 'org.jetbrains.kotlin.android.extensions'
     id 'kotlin-kapt'
 }
 
 android {
-    compileSdkVersion 30
+    namespace 'com.andriod.movies'
+    compileSdk 34
     buildToolsVersion "30.0.3"
 
     defaultConfig {
         applicationId "com.andriod.movies"
-        minSdkVersion 21
-        targetSdkVersion 30
+        minSdk 21
+        targetSdk 34
         versionCode 1
         versionName "1.0"
 
@@ -35,15 +35,15 @@ android {
 
     buildFeatures {
         viewBinding true
-    }
-
-    androidExtensions {
-        experimental = true
+        buildConfig true
     }
 
     buildTypes.each {
         Properties properties = new Properties()
-        properties.load(project.rootProject.file("apikey.properties").newDataInputStream())
+        def propertiesFile = project.rootProject.file("apikey.properties")
+        if (propertiesFile.exists()) {
+            properties.load(propertiesFile.newDataInputStream())
+        }
         def movieApiKey = properties.getProperty("themoviedb_api_key", "")
         it.buildConfigField "String", "MOVIE_API_KEY", movieApiKey
     }
@@ -51,8 +51,8 @@ android {
 
 dependencies {
 
-    implementation 'androidx.room:room-runtime:2.3.0'
-    kapt 'androidx.room:room-compiler:2.3.0'
+    implementation 'androidx.room:room-runtime:2.6.1'
+    kapt 'androidx.room:room-compiler:2.6.1'
 
     implementation 'com.github.bumptech.glide:glide:4.12.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
