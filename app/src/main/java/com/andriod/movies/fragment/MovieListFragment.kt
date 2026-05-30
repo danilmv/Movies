@@ -16,7 +16,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import kotlinx.android.synthetic.main.movie_list_view.view.*
 import java.util.*
 
 class MovieListFragment : Fragment(), MovieListView.MovieListViewContract {
